@@ -1,0 +1,351 @@
+.user-order-top-header11 {
+    margin-top: 70px;
+}
+
+/* .order-container {
+    width: 100%;
+    height: 500px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), #242428), url('https://www.theladders.com/wp-content/uploads/handshake_190617.jpg');
+    filter: blur(1px);
+    position: absolute;
+} */
+
+.title-order11 {
+    font-size: 25px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: white;
+    filter: drop-shadow(2px 2px 2px black);
+    text-align: left;
+
+    border-bottom: 1px solid white;
+    padding-bottom: 20px;
+
+    position: relative;
+    z-index: 1;
+    /* Ensure this is above the background container */
+}
+
+.order-requests11 {
+    max-width: 1000px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #141519;
+    position: relative;
+    z-index: 1;
+    /* Ensure this is above the background container */
+}
+
+/* .order-requests h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #ffdd95;
+} */
+
+.order-list11 {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-right: 25px;
+    
+}
+
+.order-item11 {
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #1d1f25;
+    color: white;
+    border: 1px solid #4d5059;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-item11:hover {
+    border: 1px solid #ff640a;
+}
+
+.order-item11-details {
+    margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #4d5059;
+    padding-bottom: 10px;
+}
+
+/* .order-item11-details-upper-left {
+
+} */
+
+.order-item11-details-upper-left-status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.order-item11-details-upper-left-status i {
+    font-size: 45px;
+    color: #ff640a;
+}
+
+.order-item11-details-upper-left-status strong {
+    font-size: 20px;
+    font-weight: 400;
+    color: white;
+    margin-top: 5px;
+}
+
+.order-item11-details-upper-right{
+    position: absolute;
+    right: 35px;
+    color: tomato;
+    text-align: right;
+    
+    right:55px;
+}
+
+.order-item11-details-upper-right-date{
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.order-item11-details-upper-right-lower-price {
+    font-size: 24px;
+    color: white;
+    font-weight: 400;
+}
+
+.order-item11-details-lower {
+    margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.order-item11-details-lower-left {
+    width: 50%;
+    padding-right: 20px;
+
+}
+
+.order-item11-details-lower-left-title {
+    font-size: 18px;
+    color: #ff640a;
+    margin-bottom: 10px;
+    font-weight: 400;
+
+    border-bottom: 1px solid white;
+    padding-bottom: 15px;
+
+}
+
+.order-item11-details-lower-left p {
+    margin: 0;
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.order-item11-details-lower-left-label {
+    color: rgba(255, 255, 255, 0.564);
+}
+
+.order-item11-details-lower-right {
+    width: 50%;
+    /* border-left: 2px solid #4d5059; */
+    padding-left: 20px;
+}
+
+.order-item11-details-lower-right-title {
+    font-size: 18px;
+    color: #ff640a;
+    margin-bottom: 10px;
+    font-weight: 400;
+    border-bottom: 1px solid white;
+    padding-bottom: 15px;
+}
+
+.order-item11-details-lower-right-product-details-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item11-details-lower-right-product-details-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: transparent;
+    border-bottom: 1px solid #4d5059;
+    color: white;
+}
+
+.order-item11-details-lower-right-product-details-item-image{
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.order-item11-details-lower-right-product-details-item-info {
+    flex: 1;
+}
+
+.order-item11-details-lower-right-product-details-item-info-name {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.order-item11-details-lower-right-product-details-item-info-qunatity{
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 5px;
+    border: 1px solid #ff640a;
+    padding: 2px 8px;
+    border-radius: 9px;
+    width: fit-content;
+}
+
+.order-item11-details-lower-right-product-details-item-info-2nd {
+    font-size: 14px;
+    font-weight: 400;
+
+}
+
+.order-item11-details-lower-right-product-details-item-info-2nd p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 400;
+    color: #2abdbb;
+}
+
+.review-button {
+    margin-top: 10px;
+    font-size: 10px;
+    padding: 3px 6px;
+    background-color: transparent;
+    border: 1px solid #ff640a;
+    color: #ff640a;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* Smooth transition for hover effect */
+}
+
+.review-button:hover {
+    color: white;
+}
+
+
+/* Hidden by default, and will fade in */
+.add-review-floating {
+    position: fixed; /* Change to fixed for positioning relative to the viewport */
+    top: 50%; /* Adjust as needed */
+    left: 50%; /* Adjust as needed */
+    transform: translate(-50%, -50%); /* Centers the floating box */
+    background-color: #141519; /* Background color */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensure it's above other elements */
+    opacity: 0; /* Starts hidden */
+    visibility: hidden; /* Ensures it's not visible when hidden */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition */
+}
+
+/* When the review is visible, make it opaque */
+.add-review-floating.show {
+    opacity: 1; /* Fully visible */
+    visibility: visible; /* Visible */
+}
+
+.rating-review-box11 {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.rating-review-box11 p {
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.rating-review-box11 select {
+    padding: 5px;
+    background-color: #1d1f25;
+    color: white;
+    border: 1px solid #4d5059;
+}
+
+.rating-review-box11 textarea {
+    padding: 5px;
+    background-color: #1d1f25;
+    color: white;
+    border: 1px solid #4d5059;
+}
+
+.rating-review-box11-button {
+    padding: 5px 10px;
+    background-color: #ff640a;
+    color: black;
+    border: 1px solid #ff640a;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    margin-top: 10px;
+}
+
+.rating-review-box11-button:hover {
+    background-color: #ff640ab8;
+}
+
+
+
+.order-item11-details-lower-bottom {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.order-item11-details-lower-bottom-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+    background-color: transparent;
+    border: 1px solid #ff640a;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 15px;
+    color: #ff640a;
+}
+
+.order-item11-details-lower-bottom-button p {
+    font-size: 15px;
+}
+
+.order-item11-details-lower-bottom-button i {
+    font-size: 20px;
+}
+
+.order-item11-details-lower-bottom-button:hover {
+    color: white;
+}

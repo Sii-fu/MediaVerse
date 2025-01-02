@@ -1,0 +1,38 @@
+.reply-card {
+    margin-left: 15px;
+    margin-right: 25px;
+    padding-top: 20px;
+
+    display: flex;
+    flex-direction: row;
+  }
+
+  .reply-card-avatar {
+    color: white;
+    margin-right: 10px;
+    font-size: 24px;
+    margin-top: 19px;
+  }
+
+  .reply-card-name {
+    margin-left: 10px;
+    color: #9e9ea0;
+    font-size: 9px;
+
+    text-align: justify;
+  }
+
+  .reply-card-text {
+    margin: 5px 0;
+    color: white;
+    font-size: 12px;
+
+    text-align: justify;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 500px; 
+
+    background-color: #222327;
+    padding: 9px;
+    border-radius: 15px;
+  }

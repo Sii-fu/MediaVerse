@@ -5565,6 +5565,37 @@ app.get('/test', async (req, res) => {
 });
 
 
+// Login route for COMPANY
+app.post('/login/company', async (req, res) => {
+    const { username, password } = req.body;
+    console.log('Received login request:', { username, password }); // Log the received request
+
+    try {
+        const result = await pool.query(
+            `SELECT user_name, password, com_id AS user_id
+             FROM login 
+             JOIN company ON login.id = company.com_id 
+             WHERE user_name = $1 AND password = $2`,
+            [username, password] // Positional parameters for parameterized query
+        );
+
+        console.log(`Query Result: ${JSON.stringify(result.rows)}`);
+
+        if (result.rows.length) {
+            res.status(200).send(result.rows[0]); // Respond to client
+            console.log("Login Successful");
+        } else {
+            console.log("Invalid Credentials");
+            res.status(401).send("Invalid Credentials"); // Respond to client
+        }
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+
 app.post('/login/user', async (req, res) => {
     const { username, password } = req.body;
     console.log('Received login request:', { username, password });  // Log the received request

@@ -57,7 +57,7 @@ function Navbar() {
                 <i class="fa fa-list"></i>My List
               </li>
             </Link>
-            <Link /*to={`/${username}/discussion`}*/>
+            <Link to={`/${username}/discussion`}>
               <li className="menu-list-item1">
                 <i class="fa fa-comments"></i>Discussion
               </li>

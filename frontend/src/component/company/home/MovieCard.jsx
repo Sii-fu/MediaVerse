@@ -31,7 +31,7 @@ const MovieCard = ({ movie }) => {
         </div>
         <div className="movie-card-long-3rd">
         <div className="movie-card-long-3rd-content">
-          <h3 className="movie-card-long-3rd-title">{movie.TITLE}</h3>
+          <h3 className="movie-card-long-3rd-title">{movie.title}</h3>
           <p className="movie-card-long-3rd-rate">
             {movie.rating} <i className="fa fa-star"></i>
           </p>

@@ -44,7 +44,7 @@ const RoleCard = ({ role }) => {
         },
         body: JSON.stringify({
           user_id: localStorage.getItem("user_id"),
-          role_id: role.role_id,
+          role_id: role.id,
           is_favorite: !isFavorite,
         }),
       });

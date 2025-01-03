@@ -8,7 +8,7 @@ const RoleCard = ({ role }) => {
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
-        console.log("role id:", role.NAME);
+        console.log("role id:", role.name);
         const response = await fetch(
           "http://localhost:5000/media/favorite/role/status",
           {
@@ -18,7 +18,7 @@ const RoleCard = ({ role }) => {
             },
             body: JSON.stringify({
               user_id: localStorage.getItem("user_id"),
-              role_id: role.ROLE_ID,
+              role_id: role.role_id,
             }),
           }
         );
@@ -32,7 +32,7 @@ const RoleCard = ({ role }) => {
       }
     };
     fetchFavorite();
-  }, [role.ROLE_ID]);
+  }, [role.role_id]);
 
   const toggleFavorite = async () => {
     setIsFavorite(!isFavorite);
@@ -44,7 +44,7 @@ const RoleCard = ({ role }) => {
         },
         body: JSON.stringify({
           user_id: localStorage.getItem("user_id"),
-          role_id: role.ROLE_ID,
+          role_id: role.id,
           is_favorite: !isFavorite,
         }),
       });
@@ -55,11 +55,22 @@ const RoleCard = ({ role }) => {
 
   return (
     <div className="role-card111">
-      <img src={role.IMG} alt={role.NAME} className="role-img111" />
+      <img src={role.img} alt={role.name} className="role-img111" />
       <div className="role-info111">
-        <h4>{role.NAME}</h4>
-        <p>{role.ROLE_TYPE}</p>
+        <h4>{role.name}</h4>
+        <p>{role.role_type}</p>
       </div>
+      <button
+        className="role-action111"
+        onClick={() => toggleFavorite(role.id)}
+      >
+        <i
+          className={`fa-regular fa-heart heart-icon ${
+            isFavorite ? "favorite" : ""
+          }`}
+        ></i>
+        {/* <FontAwesomeIcon icon={faHeart} className={`heart-icon ${isFavorite ? 'favorite' : ''}`} /> */}
+      </button>
     </div>
   );
 };

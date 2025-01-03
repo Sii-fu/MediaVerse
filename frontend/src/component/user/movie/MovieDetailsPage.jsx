@@ -74,9 +74,9 @@ const formatDate = (dateString) => {
 
 return (
     <div className="discussion-card111">
-        <h4 className="discussion-topic">{discussion.TOPIC}</h4>
-        <p style={{ color: '#ff640a', fontSize: '10px' }}>{formatDate(discussion.DIS_DATE)}</p>
-        <p className="discussion-desc">{discussion.DESCRIPTION}</p>
+        <h4 className="discussion-topic">{discussion.topic}</h4>
+        <p style={{ color: '#ff640a', fontSize: '10px' }}>{formatDate(discussion.dis_date)}</p>
+        <p className="discussion-desc">{discussion.description}</p>
     </div>
 );
 };

@@ -5,6 +5,8 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+
+import LandingPage from "./component/LandingPage.jsx";
 import Navbar from "./component/user/common/Navbar.jsx";
 import ScrollToTop from "./component/user/common/ScrollToTop.jsx";
 import Search from "./component/user/search/Search.jsx";
@@ -20,6 +22,7 @@ import ProductDetails from "./component/user/merch/ProductDetails.jsx";
 import MovieDetailsPage from "./component/user/movie/MovieDetailsPage.jsx";
 import CompanySection from "./component/user/company/CompanySection.jsx";
 import CompanyDetailsPage from "./component/user/company/CompanyDetailsPage.jsx";
+import Music from "./component/user/music/Music.jsx";
 
 import LayoutUser from "./component/Layout/LayoutUser.jsx";
 import LayoutAdmin from "./component/Layout/LayoutAdmin.jsx";
@@ -96,7 +99,8 @@ export default function App() {
       <div className="container">
         {/* <Navbar /> */}
         <Routes>
-          <Route path="/" element={<Login setUserType={setUserType} />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/Login" element={<Login setUserType={setUserType} />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/registration/user" element={<UserRegistration />} />
           <Route
@@ -134,7 +138,7 @@ export default function App() {
                 path="/:username/company/:companyID"
                 element={<CompanyDetailsPage />}
               />
-
+              <Route path="/:username/music" element={<Music />} />
               {/* /:movieId */}
             </Route>
           )}

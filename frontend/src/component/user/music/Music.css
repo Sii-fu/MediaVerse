@@ -1,0 +1,131 @@
+.music-container {
+  padding: 20px;
+  background-color:#555;
+  min-height: calc(100vh - 70px); /* Adjust for the navbar height */
+  color: white;
+
+  margin: 59px auto 40px auto;
+}
+
+.music-container-title {
+  font-size: 23px;
+  font-weight: 500;
+  margin-bottom: 30px;
+  margin-top: 35px;
+  justify-content: center;
+  text-align: center;
+}
+
+.music-container-title i{
+  margin-right: 15px;
+}
+
+.music-lower-container {
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto 40px auto; /* Center align horizontally */
+  width: 76%;
+  background-color: #222;
+}
+
+.music-lower-container-left {
+  display: flex;
+  flex-direction: column;
+  
+
+}
+
+.music-lower-container-left-upper-content{
+  background-color: #4a4e58;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 72px;
+}
+
+.music-lower-container-left-upper-content-img{
+  width: 667px;
+  height: 375px;
+  background-size: cover;
+  background-position: center;
+
+  border-radius: 3.82px;
+}
+
+.search-bar {
+  width: 40%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 30px;
+
+  position: absolute;
+
+}
+
+.music-lower-container-left-lower-content{
+  display: flex;
+  flex-direction: column;
+
+  background-color: #4a4e58;
+}
+
+.music-lower-container-right {
+  display: flex;
+  flex-direction: column;
+
+  background-color: #4a4e58;
+  margin-left: 30px;
+}
+
+.featured-song {
+  font-size: 1.5em;
+  margin: 10px 0;
+}
+
+.new-releases, .you-may-like {
+  width: 45%;
+}
+
+.card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card {
+  background-color: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: center;
+  width: 100px;
+}
+
+.card img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+
+.card h3 {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.card p {
+  font-size: 12px;
+  margin: 0 0 5px;
+}
+
+.top-trending ul {
+  list-style: none;
+  padding: 0;
+}
+
+.top-trending li {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #555;
+}

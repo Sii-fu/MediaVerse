@@ -1,15 +1,19 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import NavBar from '../company/common/Navbar.jsx';
-import Footer from '../user/common/Footer.jsx';
-import './Layout.css';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import NavBar from "../company/common/Navbar.jsx";
+import Footer from "../user/common/Footer.jsx";
+import Topper from "../company/common/Topper.jsx";
+import "./LayoutCompany.css";
 
 const Layout = () => {
   return (
-    <div className="layout">
-      <NavBar />
-      <div className="content">
-        <Outlet />
+    <div className="company-layout0">
+      <div className="company-layout">
+        <NavBar />
+        <div className="company-content-container">
+          <Topper />
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </div>

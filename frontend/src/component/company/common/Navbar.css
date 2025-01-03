@@ -1,20 +1,16 @@
-.navbar {
-  width: 100%;
-  height: 60px;
-  position: fixed;
-  top: 0;
-  z-index: 3;
-}
-
 .navbar-container3 {
-  width: 100%;
-  height: 60px;
+  width: 277px;
+  height: 600px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
-
-  background-color: #23252b;
+  background-color: #141519;
+  background: linear-gradient(180deg, #203641, black);
+  left: 0;
+  top: 0;
 }
+
 
 .logo-title3 {
   color: #ff640a;
@@ -25,21 +21,46 @@
 }
 
 .logo-container3 {
-  padding-left: 20px;
   cursor: pointer;
-  width: 10%;
+  margin-top: 20px;
 }
 
+.logo-container3-logo {
+  width:180px;
+
+}
+
+.profile-container3{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-container3 i{
+  color: white;
+  font-size: 80px;
+}
+
+.profile-container3-name{
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  margin-top: 10px;
+}
 
 .menu-container3 {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: left;
-  width: 70%;
+  width: 100%;
 }
 
 .menu-list3 {
   display: flex;
+  flex-direction: column;
   list-style: none;
   height: 100%;
 }
@@ -92,8 +113,9 @@
 }
 
 .logout-btn3 {
-  padding: 10px 20px;
-  margin-right: 5px;
+  width: 80%;
+  text-align: center;
+  padding: 8px 0px;
   background-color: #ff640a;
   color: black;
 

@@ -27,6 +27,12 @@ const Footer = () => {
           <button>ABOUT ME</button>
         </div>
         <div className="contact-info">
+          <h4>Ramisa Rahman</h4>
+          <p>202214081</p>
+          <p>ramisarahman@gmail.com</p>
+          <button>ABOUT ME</button>
+        </div>
+        <div className="contact-info">
           <h4>Shayla Mostafiz Samara</h4>
           <p>202214099</p>
           <p>shaylamustafizsamara@gmail.com</p>

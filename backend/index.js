@@ -7011,6 +7011,107 @@ app.post('/media/page', async (req, res) => {
 });
 
 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // route for COMPANY MY MEDIA
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    app.post('/mymedia', async (req, res) => {
+        const { com_id } = req.body;
+    
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            // Get all media IDs for the given company ID
+            const mediaIdsResult = await client.query(
+                `SELECT media_id FROM companyhasmedia WHERE com_id = $1`,
+                [com_id]
+            );
+    
+            const mediaIds = mediaIdsResult.rows.map(row => row.media_id);
+    
+            if (mediaIds.length === 0) {
+                res.status(404).send("No media found for the given company");
+                return;
+            }
+    
+            // Get all media details for the retrieved media IDs
+            const mediaQuery = `
+                SELECT media.*, company.name AS company_name 
+                FROM media
+                LEFT JOIN companyhasmedia ON media.media_id = companyhasmedia.media_id
+                LEFT JOIN company ON companyhasmedia.com_id = company.com_id
+                WHERE media.media_id = ANY($1)
+            `;
+    
+            const result = await client.query(mediaQuery, [mediaIds]);
+    
+            // Optional: Process and map the result rows to a specific structure
+            // const mediaList = result.rows.map(data => ({
+            //     id: data.media_id,
+            //     img: data.poster,
+            //     title: data.title,
+            //     description: data.description,
+            //     companyName: data.company_name
+            // }));
+    
+            res.send(result.rows);
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                client.release();
+            }
+        }
+    });
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // route for COMPANY PROFILE
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.post('/profile/company', async (req, res) => {
+        const { userid } = req.body;
+        console.log('Received company profile request:', { userid });
+      
+        let client;
+        try {
+          client = await pool.connect();
+          if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+          }
+      
+          // Execute the query
+          const result = await client.query(
+            `SELECT * FROM COMPANY WHERE COM_ID = $1`,
+            [userid] // Use $1 to parameterize the query
+          );
+      
+          console.log(`Query Result: ${JSON.stringify(result.rows)}`);
+      
+          if (result.rows.length > 0) {
+            res.send(result.rows[0]); // Send the first row as the company data
+            console.log("Company Data sent");
+          } else {
+            res.status(404).send("Company not found");
+          }
+        } catch (err) {
+          console.error("Error during database query: ", err);
+          res.status(500).send("Internal Server Error");
+        } finally {
+          if (client) {
+            client.release(); // Release the client back to the pool
+          }
+        }
+      });
+    
 
 
 

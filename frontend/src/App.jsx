@@ -5,6 +5,8 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+
+import LandingPage from "./component/LandingPage.jsx";
 import Navbar from "./component/user/common/Navbar.jsx";
 import ScrollToTop from "./component/user/common/ScrollToTop.jsx";
 import Search from "./component/user/search/Search.jsx";
@@ -20,6 +22,7 @@ import ProductDetails from "./component/user/merch/ProductDetails.jsx";
 import MovieDetailsPage from "./component/user/movie/MovieDetailsPage.jsx";
 import CompanySection from "./component/user/company/CompanySection.jsx";
 import CompanyDetailsPage from "./component/user/company/CompanyDetailsPage.jsx";
+import Music from "./component/user/music/Music.jsx";
 
 import LayoutUser from "./component/Layout/LayoutUser.jsx";
 import LayoutAdmin from "./component/Layout/LayoutAdmin.jsx";
@@ -35,6 +38,9 @@ import ViewRole from "./component/admin/role/ViewRole.jsx";
 import ProfileAdmin from "./component/admin/profile/ProfilePage.jsx";
 
 import HomeCompany from "./component/company/home/Home.jsx";
+import DashboardCompany from "./component/company/dashboard/Dashboard.jsx";
+import DisscussionCompany from "./component/company/discussion/DiscussionCompany.jsx";
+import Review from "./component/company/review/Review.jsx";
 import MediaForm from "./component/company/mediaform/MediaForm.jsx";
 import CompanyMovieDetailsPage from "./component/company/movie/MovieDetailsPage.jsx";
 import CompanyCollaborate from "./component/company/collaborate/CompanyCollaborate.jsx";
@@ -96,7 +102,8 @@ export default function App() {
       <div className="container">
         {/* <Navbar /> */}
         <Routes>
-          <Route path="/" element={<Login setUserType={setUserType} />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/Login" element={<Login setUserType={setUserType} />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/registration/user" element={<UserRegistration />} />
           <Route
@@ -134,7 +141,7 @@ export default function App() {
                 path="/:username/company/:companyID"
                 element={<CompanyDetailsPage />}
               />
-
+              <Route path="/:username/music" element={<Music />} />
               {/* /:movieId */}
             </Route>
           )}
@@ -180,7 +187,10 @@ export default function App() {
 
           {userType === "company" && (
             <Route element={<LayoutCompany />}>
-              <Route path="/:username/home" element={<HomeCompany />} />
+              <Route path="/:username/home" element={<DashboardCompany />} />
+              <Route path="/:username/mymedia" element={<HomeCompany />} />
+              <Route path="/:username/discussion" element={<DisscussionCompany />} />
+              <Route path="/:username/review" element={<Review />} />
               <Route path="/:username/mediaform" element={<MediaForm />} />
               <Route path="/:username/profile" element={<ProfileCompany />} />
               <Route

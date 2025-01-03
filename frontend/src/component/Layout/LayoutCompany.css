@@ -1,0 +1,14 @@
+.company-layout0 {
+    display: flex;
+    flex-direction: column;
+}
+
+.company-layout {
+    display: flex;
+    flex-direction: row;
+}
+
+.company-content-container {
+    flex: 1;
+
+}

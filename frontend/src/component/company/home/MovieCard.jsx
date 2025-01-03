@@ -15,7 +15,7 @@ const MovieCard = ({ movie }) => {
 
   return (
     <Link
-      to={`/company/${username}/media/${movie.MEDIA_ID}`}
+      to={`/company/${username}/media/${movie.media_id}`}
       className="link-product-card"
     >
       <div className="movie-card-long">
@@ -25,28 +25,28 @@ const MovieCard = ({ movie }) => {
         <div className="movie-card-long-2nd">
           <img
             className="movie-card-long-2nd-img"
-            src={movie.POSTER}
-            alt={movie.TITLE}
+            src={movie.poster}
+            alt={movie.title}
           />
         </div>
         <div className="movie-card-long-3rd">
         <div className="movie-card-long-3rd-content">
-          <h3 className="movie-card-long-3rd-title">{movie.TITLE}</h3>
+          <h3 className="movie-card-long-3rd-title">{movie.ttile}</h3>
           <p className="movie-card-long-3rd-rate">
-            {movie.RATING} <i className="fa fa-star"></i>
+            {movie.rating} <i className="fa fa-star"></i>
           </p>
-          <h3 className="movie-card-long-3rd-type">{movie.TYPE}</h3>
-          <p className="movie-card-long-3rd-desc">{movie.DESCRIPTION}</p>
+          <h3 className="movie-card-long-3rd-type">{movie.type}</h3>
+          <p className="movie-card-long-3rd-desc">{movie.description}</p>
           </div>
           <div className="movie-card-long-3rd-hover-content">
-            <h3 className="movie-card-long-3rd-title">{movie.TITLE}</h3>
+            <h3 className="movie-card-long-3rd-title">{movie.title}</h3>
             <div
               className="tooltip-container1"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
               <Link
-                to={`/company/${username}/media/${movie.MEDIA_ID}`}
+                to={`/company/${username}/media/${movie.media_id}`}
                 className="featured-link"
               >
                 <button className="movie-card-long-content-button">

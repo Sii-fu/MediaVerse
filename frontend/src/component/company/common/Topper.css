@@ -1,0 +1,65 @@
+.topper-container {
+    background-color: black; /* Background color */
+    padding: 10px 20px; /* Padding for spacing */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a raised effect */
+}
+  
+.topper-content {
+    margin: 0 auto; /* Center the content horizontally */
+    display: flex; /* Use flexbox for layout */
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center; /* Align items vertically */
+}
+  
+.topper-content-list {
+    list-style: none; /* Remove bullet points */
+    margin: 0; /* Reset margin */
+    padding: 0; /* Reset padding */
+    display: flex; /* Horizontal layout */
+    gap: 20px; /* Space between items */
+}
+  
+.topper-content-list-item3-add-media {
+    color: white; /* Text color */
+    font-family: 'Roboto', sans-serif; /* Font style */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    padding: 10px 25px; /* Padding inside items */
+    transition: background-color 0.3s; /* Smooth hover effect */
+    text-decoration: none; /* Remove underline for links */
+    display: flex; /* Flex for icon and text alignment */
+    align-items: center; /* Center icon and text vertically */
+    gap: 10px; /* Space between icon and text */
+
+    background-color: rgba(255, 100, 10, 0.8); /* Change background on hover */
+    color: black; /* Optional text color change */
+    border-radius: 20px; /* Rounded corners */
+}
+  
+.topper-content-list-item3-add-media:hover {
+    background-color:white; /* Change background on hover */
+    color: black; /* Optional text color change */
+}
+
+.topper-content-list-item3 {
+    color: white; /* Text color */
+    font-family: 'Roboto', sans-serif; /* Font style */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    padding: 10px 15px; /* Padding inside items */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth hover effect */
+    text-decoration: none; /* Remove underline for links */
+    display: flex; /* Flex for icon and text alignment */
+    align-items: center; /* Center icon and text vertically */
+    gap: 10px; /* Space between icon and text */
+}
+  
+.topper-content-list-item3:hover {
+    background-color: rgba(255, 100, 10, 0.8); /* Change background on hover */
+    color: black; /* Optional text color change */
+}
+  
+.topper-content-list-item3 i {
+    font-size: 18px; /* Icon size */
+}

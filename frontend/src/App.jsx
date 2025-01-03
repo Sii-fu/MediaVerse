@@ -38,6 +38,9 @@ import ViewRole from "./component/admin/role/ViewRole.jsx";
 import ProfileAdmin from "./component/admin/profile/ProfilePage.jsx";
 
 import HomeCompany from "./component/company/home/Home.jsx";
+import DashboardCompany from "./component/company/dashboard/Dashboard.jsx";
+import DisscussionCompany from "./component/company/discussion/DiscussionCompany.jsx";
+import Review from "./component/company/review/Review.jsx";
 import MediaForm from "./component/company/mediaform/MediaForm.jsx";
 import CompanyMovieDetailsPage from "./component/company/movie/MovieDetailsPage.jsx";
 import CompanyCollaborate from "./component/company/collaborate/CompanyCollaborate.jsx";
@@ -185,6 +188,9 @@ export default function App() {
           {userType === "company" && (
             <Route element={<LayoutCompany />}>
               <Route path="/:username/home" element={<HomeCompany />} />
+              <Route path="/:username/dashboard" element={<DashboardCompany />} />
+              <Route path="/:username/discussion" element={<DisscussionCompany />} />
+              <Route path="/:username/review" element={<Review />} />
               <Route path="/:username/mediaform" element={<MediaForm />} />
               <Route path="/:username/profile" element={<ProfileCompany />} />
               <Route

@@ -102,8 +102,8 @@ const ProfilePage = () => {
           </>
         ) : (
           <img
-            src={profile.IMG}
-            alt={profile.NAME}
+            src={profile.img}
+            alt={profile.name}
             className="profile-page3-Profile"
           />
         )}
@@ -117,11 +117,11 @@ const ProfilePage = () => {
             <input
               type="text"
               name="name"
-              value={profile.NAME}
+              value={profile.name}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.NAME}</span>
+            <span>{profile.name}</span>
           )}
         </div>
         <div className="profile-info3">
@@ -130,11 +130,11 @@ const ProfilePage = () => {
             <input
               type="email"
               name="email"
-              value={profile.EMAIL}
+              value={profile.email}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.EMAIL}</span>
+            <span>{profile.email}</span>
           )}
         </div>
         <div className="profile-info3">
@@ -142,11 +142,11 @@ const ProfilePage = () => {
           {isEditing ? (
             <textarea
               name="description"
-              value={profile.DESCRIPTION}
+              value={profile.description}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.DESCRIPTION}</span>
+            <span>{profile.description}</span>
           )}
         </div>
         <div className="profile-buttons3">

@@ -3,21 +3,28 @@ import MovieCard from "./MovieCard";
 import "./Home.css";
 
 function Home({ com_id }) {
-  // Accept com_id as a prop
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const Response = await fetch("http://localhost:5000/mymedia", {
+        const response = await fetch("http://localhost:5000/mymedia", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ com_id: localStorage.getItem("user_id") }),
         });
-        const Data = await Response.json();
-        setMovies(Data);
+
+        if (!response.ok) {
+          console.error("Failed to fetch data:", response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+
+        console.log("Fetched Data:", data); // Log the data to inspect its structure
+        setMovies(data);
       } catch (error) {
         console.error("Error fetching media data:", error);
       }
@@ -31,9 +38,13 @@ function Home({ com_id }) {
       <div className="mymedia-container2">
         <h2 className="title-mymedia2">My Media</h2>
         <div className="mymedia-form1">
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
+          {movies.length > 0 ? (
+            movies.map((movie) => (
+              <MovieCard key={movie.MEDIA_ID || movie.id} movie={movie} />
+            ))
+          ) : (
+            <p>No media available.</p>
+          )}
         </div>
       </div>
     </div>

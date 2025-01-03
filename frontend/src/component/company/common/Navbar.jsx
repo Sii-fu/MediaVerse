@@ -47,12 +47,12 @@ function Navbar() {
       </div>
       <div className="menu-container3">
         <ul className="menu-list3">
-          <Link to={`/${username}/dashboard`}>
+          <Link to={`/${username}/home`}>
             <li className="menu-list-item3">
             <i class="fa fa-cubes" aria-hidden="true"></i> Dashboard
             </li>
           </Link>
-          <Link to={`/${username}/home`}>
+          <Link to={`/${username}/mymedia`}>
             <li className="menu-list-item3">
             <i class="fa fa-video-camera" aria-hidden="true"></i>My Media
             </li>

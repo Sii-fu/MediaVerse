@@ -187,8 +187,8 @@ export default function App() {
 
           {userType === "company" && (
             <Route element={<LayoutCompany />}>
-              <Route path="/:username/home" element={<HomeCompany />} />
-              <Route path="/:username/dashboard" element={<DashboardCompany />} />
+              <Route path="/:username/home" element={<DashboardCompany />} />
+              <Route path="/:username/mymedia" element={<HomeCompany />} />
               <Route path="/:username/discussion" element={<DisscussionCompany />} />
               <Route path="/:username/review" element={<Review />} />
               <Route path="/:username/mediaform" element={<MediaForm />} />

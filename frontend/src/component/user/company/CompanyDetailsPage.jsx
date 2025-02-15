@@ -33,7 +33,7 @@ const CompanyDetailsPage = () => {
       } else {
         console.error('Failed to fetch company data');
       }
-      const response2 = await fetch(`http://localhost:5000/companydetailspage/medias`,
+      const response2 = await fetch(`http://localhost:5000/user/companies/medias`,
         { 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -61,7 +61,7 @@ const CompanyDetailsPage = () => {
     const fetchCompanyData = async () => {
 
       try {
-        const response = await fetch(`http://localhost:5000/companies/page`,
+        const response = await fetch(`http://localhost:5000/user/companies/page`,
           { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

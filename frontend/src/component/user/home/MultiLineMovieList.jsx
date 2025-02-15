@@ -9,7 +9,7 @@ const MultiLineMovieList = ({ data }) => {
   useEffect(() => {
     const fetchRoleMedia = async () => {
       try {
-        const response = await fetch('http://localhost:5000/media/rolemedia', {
+        const response = await fetch('http://localhost:5000/user/common/media/rolemedia', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -4,7 +4,9 @@ import "./MovieCard.css";
 
 const MovieCard = ({ movie }) => {
   const [username, setUsername] = useState("");
-  const [isHovered, setIsHovered] = useState(false); // State for hover
+  const [isHovered, setIsHovered] = useState(false);
+
+
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");

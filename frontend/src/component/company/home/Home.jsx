@@ -5,10 +5,11 @@ import "./Home.css";
 function Home({ com_id }) {
   const [movies, setMovies] = useState([]);
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/mymedia", {
+        const response = await fetch("http://localhost:5000/company/mymedia", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -21,6 +22,8 @@ function Home({ com_id }) {
           return;
         }
 
+        
+
         const data = await response.json();
 
         console.log("Fetched Data:", data); // Log the data to inspect its structure
@@ -30,8 +33,13 @@ function Home({ com_id }) {
       }
     };
 
+    
+
+    
     fetchData();
   }, []);
+
+  
 
   return (
     <div>

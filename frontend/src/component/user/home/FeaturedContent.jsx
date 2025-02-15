@@ -18,60 +18,60 @@ function FeaturedContent() {
 
   const mediaIds = ["57", "88", "13", "76", "16"];
 
-  // Fetch featured items from the backend
-  const fetchFeaturedItems = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/media/featured1", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mediaIds }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch featured content");
-      }
-
-      const data = await response.json();
-      setFeaturedItems(data);
-      console.log("Featured items:", data);
-    } catch (err) {
-      console.error("Failed to fetch featured content:", err);
-      setFeaturedItems([]); // Handle the error by setting to an empty array
-    }
-  };
-
-  // Fetch featured items from the backend
+  // // Fetch featured items from the backend
   // const fetchFeaturedItems = async () => {
   //   try {
-  //     const response = await fetch('http://localhost:5000/media/featured', {
-  //       method: 'GET',
+  //     const response = await fetch("http://localhost:5000/media/featured1", {
+  //       method: "POST",
   //       headers: {
-  //         'Content-Type': 'application/json',
+  //         "Content-Type": "application/json",
   //       },
+  //       body: JSON.stringify({ mediaIds }),
   //     });
 
   //     if (!response.ok) {
-  //       throw new Error('Failed to fetch featured content');
+  //       throw new Error("Failed to fetch featured content");
   //     }
 
   //     const data = await response.json();
-  //     const transformedData = data.map((item) => ({
-  //       id: item.id, // Make sure to include the id here
-  //       title: item.title,
-  //       imgSrc: item.imgSrc,
-  //       description: item.description,
-  //     }));
-
-  //     setFeaturedItems(transformedData);
-  //     // console.log('^^^^^^^^^^^^Featured items:', transformedData);
-
+  //     setFeaturedItems(data);
+  //     console.log("Featured items:", data);
   //   } catch (err) {
-  //     console.error('Failed to fetch featured content:', err);
+  //     console.error("Failed to fetch featured content:", err);
   //     setFeaturedItems([]); // Handle the error by setting to an empty array
   //   }
   // };
+
+  // Fetch featured items from the backend
+  const fetchFeaturedItems = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/user/common/media/featured', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch featured content');
+      }
+
+      const data = await response.json();
+      const transformedData = data.map((item) => ({
+        id: item.id, // Make sure to include the id here
+        title: item.title,
+        imgSrc: item.imgSrc,
+        description: item.description,
+      }));
+
+      setFeaturedItems(transformedData);
+      // console.log('^^^^^^^^^^^^Featured items:', transformedData);
+
+    } catch (err) {
+      console.error('Failed to fetch featured content:', err);
+      setFeaturedItems([]); // Handle the error by setting to an empty array
+    }
+  };
 
   // Fetch data only once when the component mounts
   useEffect(() => {
@@ -103,7 +103,7 @@ function FeaturedContent() {
       //     featuredItems.length
       //       ? `linear-gradient(to left, rgba(0,0,0,0), #000000),
       //          linear-gradient(to bottom, rgba(0,0,0,0), #000000),
-      //          url(${featuredItems[currentIndex].poster})`
+      //          url(${featuredItems[currentIndex].imgSrc})`
       //       : 'none',
       //   marginLeft: '0px'
       // }}
@@ -113,7 +113,7 @@ function FeaturedContent() {
           <div className="allsection2">
             <div className="section12">
               <img
-                src={featuredItems[currentIndex].poster}
+                src={featuredItems[currentIndex].imgSrc}
                 alt={featuredItems[currentIndex].title}
                 className="movie-img"
               />

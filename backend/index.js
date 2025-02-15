@@ -1,3 +1,340 @@
+const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg'); // PostgreSQL client library
+
+// Create Express app
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json()); // Middleware to parse JSON
+
+
+app.use("/registration", require("./routes/common/registration"));
+app.use("/login", require("./routes/common/login"));
+app.use("/media/search", require("./routes/users/media/search"));
+app.use("/media", require("./routes/users/media/media"));
+app.use("/media/review", require("./routes/users/media/review"));
+
+
+
+app.use("/user/common", require("./routes/users/common"));
+app.use("/user/profile", require("./routes/users/profile"));
+app.use("/user/companies", require("./routes/users/companies"));
+app.use("/user/list/media", require("./routes/users/list/list"));
+
+
+
+
+app.use("/company", require("./routes/company/mymedia/mymedia"));
+
+
+// Create a connection pool for PostgreSQL
+const pool = new Pool({
+    connectionString: 'postgres://postgres.zedlpacpxbakvsvhdbms:vYpVqLlOX4XArcLe@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres',
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+// Test the connection pool
+
+pool.connect()
+  .then(client => {
+    console.log('Connected to the PostgreSQL database');
+    client.release(); // Release the connection back to the pool
+  })
+  .catch(err => console.error('Error connecting to the PostgreSQL database:', err));
+
+  
+
+
+
+
+
+app.get('/discussions', async (req, res) => {
+    let client;
+    try {
+        client = await pool.connect();
+        console.log('Received discussion request');
+
+        const query = `
+            SELECT DISTINCT 
+                DISCUSSION.DIS_ID, 
+                TITLE, 
+                TOPIC, 
+                DISCUSSION.DESCRIPTION, 
+                REPLY_COUNT, 
+                DISCUSSIONABOUTMEDIA.DIS_DATE, 
+                MEDIA.POSTER
+            FROM DISCUSSION 
+            JOIN DISCUSSIONABOUTMEDIA 
+                ON DISCUSSION.DIS_ID = DISCUSSIONABOUTMEDIA.DIS_ID 
+            JOIN MEDIA 
+                ON DISCUSSIONABOUTMEDIA.MEDIA_ID = MEDIA.MEDIA_ID
+            WHERE PARENT_TOPIC IS NULL
+            ORDER BY DISCUSSIONABOUTMEDIA.DIS_DATE DESC, DISCUSSION.REPLY_COUNT DESC
+        `;
+
+        const result = await client.query(query);
+
+        res.send(result.rows);
+        console.log("Discussion Data sent");
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection: ", err);
+            }
+        }
+    }
+});
+
+
+
+
+app.post('/discussions/my', async (req, res) => {
+    const { user_id } = req.body;
+    console.log('Fetching discussions for user:', user_id);
+    let client;
+    try {
+        client = await pool.connect();
+
+        const query = `
+            SELECT DISTINCT 
+                DISCUSSION.DIS_ID, 
+                TITLE, 
+                TOPIC, 
+                DISCUSSION.DESCRIPTION, 
+                REPLY_COUNT, 
+                DISCUSSIONABOUTMEDIA.DIS_DATE, 
+                MEDIA.POSTER
+            FROM DISCUSSION 
+            JOIN DISCUSSIONABOUTMEDIA 
+                ON DISCUSSION.DIS_ID = DISCUSSIONABOUTMEDIA.DIS_ID 
+            JOIN MEDIA 
+                ON DISCUSSIONABOUTMEDIA.MEDIA_ID = MEDIA.MEDIA_ID
+            JOIN USERSTARTDISCUSSION 
+                ON DISCUSSION.DIS_ID = USERSTARTDISCUSSION.DIS_ID
+            WHERE USERSTARTDISCUSSION.USER_ID = $1 AND PARENT_TOPIC IS NULL
+            ORDER BY DISCUSSIONABOUTMEDIA.DIS_DATE DESC, DISCUSSION.REPLY_COUNT DESC
+        `;
+
+        const result = await client.query(query, [user_id]);
+
+        res.status(200).send(result.rows);
+        console.log("User Discussions Data sent");
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection: ", err);
+            }
+        }
+    }
+});
+
+
+
+
+app.post('/discussions/replies', async (req, res) => {
+    const { discussion_id } = req.body;
+    console.log('Received discussion replies request:', { discussion_id });
+    let client;
+    try {
+        client = await pool.connect();
+
+        const query = `
+            SELECT 
+                DISCUSSION.DIS_ID, 
+                USERS.NAME, 
+                DISCUSSION.DESCRIPTION, 
+                DISCUSSION.REPLY_COUNT
+            FROM DISCUSSION
+            JOIN USERSTARTDISCUSSION 
+                ON DISCUSSION.DIS_ID = USERSTARTDISCUSSION.DIS_ID
+            JOIN USERS 
+                ON USERSTARTDISCUSSION.USER_ID = USERS.USER_ID
+            WHERE DISCUSSION.PARENT_TOPIC = $1
+            ORDER BY DISCUSSION.REPLY_COUNT ASC
+        `;
+
+        const result = await client.query(query, [discussion_id]);
+
+        res.send(result.rows);
+        console.log("Discussion Replies Data sent");
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection: ", err);
+            }
+        }
+    }
+});
+
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // route for COMPANY MY MEDIA
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    app.post('/mymedia', async (req, res) => {
+        const { com_id } = req.body;
+    
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            // Get all media IDs for the given company ID
+            const mediaIdsResult = await client.query(
+                `SELECT media_id FROM companyhasmedia WHERE com_id = $1`,
+                [com_id]
+            );
+    
+            const mediaIds = mediaIdsResult.rows.map(row => row.media_id);
+    
+            if (mediaIds.length === 0) {
+                res.status(404).send("No media found for the given company");
+                return;
+            }
+    
+            // Get all media details for the retrieved media IDs
+            const mediaQuery = `
+                SELECT media.*, company.name AS company_name 
+                FROM media
+                LEFT JOIN companyhasmedia ON media.media_id = companyhasmedia.media_id
+                LEFT JOIN company ON companyhasmedia.com_id = company.com_id
+                WHERE media.media_id = ANY($1)
+            `;
+    
+            const result = await client.query(mediaQuery, [mediaIds]);
+    
+            // Optional: Process and map the result rows to a specific structure
+            // const mediaList = result.rows.map(data => ({
+            //     id: data.media_id,
+            //     img: data.poster,
+            //     title: data.title,
+            //     description: data.description,
+            //     companyName: data.company_name
+            // }));
+    
+            res.send(result.rows);
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                client.release();
+            }
+        }
+    });
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // route for COMPANY PROFILE
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.post('/profile/company', async (req, res) => {
+        const { userid } = req.body;
+        console.log('Received company profile request:', { userid });
+      
+        let client;
+        try {
+          client = await pool.connect();
+          if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+          }
+      
+          // Execute the query
+          const result = await client.query(
+            `SELECT * FROM COMPANY WHERE COM_ID = $1`,
+            [userid] // Use $1 to parameterize the query
+          );
+      
+          console.log(`Query Result: `);
+      
+          if (result.rows.length > 0) {
+            res.send(result.rows[0]); // Send the first row as the company data
+            console.log("Company Data sent");
+          } else {
+            res.status(404).send("Company not found");
+          }
+        } catch (err) {
+          console.error("Error during database query: ", err);
+          res.status(500).send("Internal Server Error");
+        } finally {
+          if (client) {
+            client.release(); // Release the client back to the pool
+          }
+        }
+      });
+    
+
+
+
+
+// Start the server
+app.listen(5000, () => {
+  console.log('Server started on http://localhost:5000');
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // const express = require('express');
 // const cors = require('cors');
 // const oracledb = require('oracledb');
@@ -11,15 +348,20 @@
 // app.use(cors());
 // app.use(express.json()); // Middleware to parse JSON
 
-function generateUserId(username) {
-    //will return a short unique integer of 4 digit based on the username and current time
-    return Math.abs(username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
-}
 
-function generateLoginId(username, password) {
-    //will generate a login id based on the username and password nad time\
-    return Math.abs(username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + password.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;    
-}
+
+
+// // Create a connection pool
+// oracledb.createPool({
+//     user: "ADMIN",
+//     password: "admin",
+//     connectString: "localhost:1521/orclpdb",
+//     poolMin: 5,
+//     poolMax: 20,
+//     poolIncrement: 5
+// }).then(pool => {
+//     console.log('Connection pool started');
+
 
 function generateMediaId(title) {
     //will generate a media id based on the title and time
@@ -38,195 +380,8 @@ function generateDiscussionId(topic) {
 }
 
 
-function generateReviewId(title) {
-    //will generate a review id based on the title and time
-    return Math.abs(title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
-}
 
 
-// // Create a connection pool
-// oracledb.createPool({
-//     user: "ADMIN",
-//     password: "admin",
-//     connectString: "localhost:1521/orclpdb",
-//     poolMin: 5,
-//     poolMax: 20,
-//     poolIncrement: 5
-// }).then(pool => {
-//     console.log('Connection pool started');
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR USER REGISTRATION
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-    //registration route
-    // app.post('/registration/user', async (req, res) => {
-    //     const { username, password, name, dob, email, city, street, house, phone, genres } = req.body;
-    //     console.log('Received user registration request:', { username, password, name, dob, email, city, street, house, phone, genres });
-    
-    //     // Generate IDs
-        
-    //     const login_id = generateLoginId(username, password); // Generate Login ID in Node.js
-    //     console.log('Generated Login ID:', login_id);
-    
-    //     let con;
-    //     try {
-    //         con = await pool.getConnection();
-    //         if (!con) {
-    //             return res.status(500).send("Connection Error");
-    //         }
-
-    //         const resultt = await con.execute(`SELECT USERS_SEQ.NEXTVAL as user_id FROM dual`);
-    //         const user_id = resultt.rows[0].USER_ID;
-    //         // Ensure DOB is in the correct format (YYYY-MM-DD)
-    //         const formattedDob = new Date(dob).toISOString().split('T')[0]; // Example conversion
-    
-    //         // Define bind parameters for calling the stored procedure
-    //         const bindParams = {
-    //             p_username: username,
-    //             p_password: password,
-    //             p_name: name,
-    //             p_dob: formattedDob, // Use the formatted DOB here
-    //             p_email: email,
-    //             p_city: city,
-    //             p_street: street,
-    //             p_house: house,
-    //             p_phone: phone,
-    //             p_genres: genres.join(','),  // Assuming genres is an array, join it into a string
-    //             p_login_id: login_id,  // Pass the generated login_id as an input parameter
-    //             p_user_id: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT }  // Output parameter for user ID
-    //         };
-    
-    //         // Execute the stored procedure
-    //         const result = await con.execute(
-    //             `BEGIN 
-    //                 RegisterUser(
-    //                     :p_username, :p_password, :p_name, TO_DATE(:p_dob, 'YYYY-MM-DD'), :p_email, :p_city, :p_street, :p_house, :p_phone, 
-    //                     :p_genres, :p_login_id, :p_user_id
-    //                 );
-    //             END;`,
-    //             bindParams
-    //         );
-    
-    //         const userId = result.outBinds.p_user_id;
-    //         console.log(`User registered with User ID: ${userId} and Login ID: ${login_id}`);
-    
-    //         // Commit the transaction
-    //         await con.commit();
-    //         console.log("Transaction committed successfully.");
-    
-    //         // Respond with success
-    //         res.status(201).json({
-    //             message: `User registered successfully.`,
-    //             userId: userId,
-    //             loginId: login_id
-    //         });
-    
-    //     } catch (err) {
-    //         // Handle errors during the query execution
-    //         console.error("Error during database operation: ", err);
-    
-    //         // Attempt to roll back the transaction if there is a failure
-    //         if (con) {
-    //             try {
-    //                 await con.rollback();
-    //                 console.log("Transaction rolled back due to error.");
-    //             } catch (rollbackErr) {
-    //                 console.error("Error during transaction rollback: ", rollbackErr);
-    //             }
-    //         }
-    
-    //         // Send the error response with more details
-    //         res.status(500).json({ message: "Internal Server Error. Unable to register user.", error: err.message });
-    
-    //     } finally {
-    //         // Ensure the connection is closed
-    //         if (con) {
-    //             try {
-    //                 await con.close();
-    //                 console.log("Database connection closed.");
-    //             } catch (closeErr) {
-    //                 console.error("Error closing the database connection: ", closeErr);
-    //             }
-    //         }
-    //     }
-    // });
-    
-    
-    
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR MERCHANIDISER REGISTRATION
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-//     app.post('/registration/merchandiser', async (req, res) => {
-//         const { username, password, name, description, email, city, street, house, phone } = req.body;
-//         console.log('Received merchandiser registration request:', { username, password, name, description, email, city, street, house, phone });
-    
-//         const login_id = generateLoginId(username, password);  // Generate login_id in Node.js
-//         console.log('Generated Login ID:', login_id);
-    
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-    
-//             // Bind parameters for the stored procedure call
-//             const bindParams = {
-//                 p_username: username,
-//                 p_password: password,
-//                 p_name: name,
-//                 p_description: description,
-//                 p_email: email,
-//                 p_city: city,
-//                 p_street: street,
-//                 p_house: house,
-//                 p_phone: phone,
-//                 p_login_id: login_id, // Send login_id as input parameter
-//                 p_merch_id: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT } // Output parameter for MERCH_ID
-//             };
-    
-//             // Execute the stored procedure
-//             const result = await con.execute(
-//                 `BEGIN 
-//                     RegisterMerchandiser(
-//                       :p_username, :p_password, :p_name, :p_description, :p_email, :p_city, :p_street, :p_house, :p_phone, :p_login_id, :p_merch_id
-//                     ); 
-//                  END;`,
-//                 bindParams
-//             );
-    
-//             const merchId = result.outBinds.p_merch_id;  // Retrieve the MERCH_ID from the output bind
-//             console.log(`Merchandiser registered with Merch ID: ${merchId} and Login ID: ${login_id}`);
-    
-//             // Send success response
-//             res.status(201).send("Merchandiser registered successfully");
-    
-//             // Commit the transaction
-//             await con.commit();
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-    
-    
 
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //     // ROUTE FOR CHECK USERNAME EXIST USER REGISTRATION
@@ -530,173 +685,8 @@ function generateReviewId(title) {
     
     
 
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // Login route for ADMIN
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-//     app.post('/login/admin', async (req, res) => {
-//         const { username, password } = req.body;
-//         console.log('Received login request:', { username, password }); // Log the received request
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT USER_NAME, PASSWORD, ADMIN_ID as "user_id" 
-//                 FROM LOGIN JOIN ADMIN ON LOGIN.ID = ADMIN.ADMIN_ID
-//                 WHERE USER_NAME = :username AND PASSWORD = :password`,
-//                 { username, password } // Named bind variables
-//             );
-//             console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-//             if (result.rows.length) {
-//                 //send the full user data to the client
-//                 res.status(200).send(result.rows[0]); // Respond to client
-//             } else {
-//                 console.log("Invalid Credentials");
-//                 res.status(401).send("Invalid Credentials"); // Respond to client
-//             }
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // Login route for USER
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-//     app.post('/login/user', async (req, res) => {
-//         const { username, password } = req.body;
-//         console.log('Received login request:', { username, password }); // Log the received request
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT USER_NAME, PASSWORD, USER_ID as "user_id" 
-//                 FROM LOGIN JOIN USERS ON LOGIN.ID = USERS.USER_ID
-//                 WHERE USER_NAME = :username AND PASSWORD = :password`,
-//                 { username, password } // Named bind variables
-//             );
-//             console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-//             if (result.rows.length) {
-//                 //send the full user data to the client
-//                 res.status(200).send(result.rows[0]); // Respond to client
-//             } else {
-//                 console.log("Invalid Credentials");
-//                 res.status(401).send("Invalid Credentials"); // Respond to client
-//             }
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-// //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// // Login route for MERCHANDISER 
-// //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     app.post('/login/merchandiser', async (req, res) => {
-//         const { username, password } = req.body;
-//         console.log('Received login request:', { username, password }); // Log the received request
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT USER_NAME, PASSWORD, MER_ID as "user_id"
-//                 FROM LOGIN JOIN MERCHANDISER ON LOGIN.ID = MERCHANDISER.MER_ID WHERE USER_NAME = :username AND PASSWORD = :password`,
-//                 { username, password } // Named bind variables
-//             );
-//             console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-//             if (result.rows.length) {
-//                 res.status(200).send(result.rows[0]); // Respond to client
-//                 console.log("Login Successful");
-//             } else {
-//                 console.log("Invalid Credentials");
-//                 res.status(401).send("Invalid Credentials"); // Respond to client
-//             }
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-// //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// // Login route for COMPANY 
-// //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//     app.post('/login/company', async (req, res) => {
-//         const { username, password } = req.body;
-//         console.log('Received login request:', { username, password }); // Log the received request
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT USER_NAME, PASSWORD, COM_ID as "user_id"
-//                 FROM LOGIN JOIN COMPANY ON LOGIN.ID = COMPANY.COM_ID WHERE USER_NAME = :username AND PASSWORD = :password`,
-//                 { username, password } // Named bind variables
-//             );
-//             console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-//             if (result.rows.length) {
-//                 res.status(200).send(result.rows[0]); // Respond to client
-//                 console.log("Login Successful");
-//             }
-//             else {
-//                 console.log("Invalid Credentials");
-//                 res.status(401).send("Invalid Credentials"); // Respond to client
-//             }
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         }
-//     });
 
 // //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // // route for ADMIN PROFILE
@@ -793,135 +783,6 @@ function generateReviewId(title) {
 //         }
 //     });
 
-// //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// // route for USER PROFILE
-// //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-// app.post('/profile/user', async (req, res) => {
-//     const { user_id } = req.body;
-//     console.log('Received user profile request:', { user_id });
-
-//     let con;
-//     try {
-//         // Get connection from the pool
-//         con = await pool.getConnection();
-//         if (!con) {
-//             return res.status(500).send("Connection Error");
-//         }
-
-//         // Execute the query to get user details
-//         const result = await con.execute(
-//             `SELECT USER_NAME, 
-//                     NAME, 
-//                     DOB, 
-//                     EMAIL, 
-//                     PHONE, 
-//                     TREAT(ADDRESS AS address_type).city AS CITY,
-//                     TREAT(ADDRESS AS address_type).street AS STREET,
-//                     TREAT(ADDRESS AS address_type).house AS HOUSE
-//              FROM USERS WHERE USER_ID = :user_id`,
-//             { user_id } // Named bind variables
-//         );
-
-//         console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-//         if (result.rows.length) {
-//             // Send back the user data
-//             res.json(result.rows[0]);
-//             console.log("User Data sent");
-//         } else {
-//             // If no user was found, return 404
-//             res.status(404).send("User not found");
-//         }
-//     } catch (err) {
-//         console.error("Error during database query:", err);
-//         res.status(500).send("Internal Server Error");
-//     } finally {
-//         // Close the connection after the request is handled
-//         if (con) {
-//             try {
-//                 await con.close();
-//             } catch (err) {
-//                 console.error("Error closing database connection:", err);
-//             }
-//         }
-//     }
-// });
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // route for USER PROFILE UPDATE
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//     app.post('/profile/user/update', async (req, res) => {
-//         const { user_id, NAME, DOB, EMAIL, CITY, STREET, HOUSE, PHONE } = req.body;
-//         console.log('Received user profile update request:', { user_id, NAME, DOB, EMAIL, CITY, STREET, HOUSE, PHONE });
-    
-//         // Validate that all fields are provided
-//         if (!user_id || !NAME || !DOB || !EMAIL || !CITY || !STREET || !HOUSE || !PHONE) {
-//             return res.status(400).json({ message: "All fields are required" });
-//         }
-    
-//         // Log the DOB value to verify its format
-//         console.log('DOB before formatting:', DOB);
-    
-//         // Ensure DOB is in YYYY-MM-DD format
-//         const formattedDOB = new Date(DOB).toISOString().split('T')[0];
-//         console.log('Formatted DOB:', formattedDOB);
-    
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).json({ message: "Connection Error" });
-//                 return;
-//             }
-    
-//             // Update the USERS table and set the ADDRESS column using the address_type object constructor
-//             const query = `
-//                 UPDATE USERS 
-//                 SET NAME = :NAME, 
-//                     DOB = TO_DATE(:DOB, 'YYYY-MM-DD'), 
-//                     EMAIL = :EMAIL, 
-//                     PHONE = :PHONE, 
-//                     ADDRESS = address_type(:CITY, :STREET, :HOUSE)  -- Update the address object
-//                 WHERE USER_ID = :user_id
-//             `;
-    
-//             const result = await con.execute(query, {
-//                 NAME, 
-//                 DOB: formattedDOB, 
-//                 EMAIL, 
-//                 PHONE, 
-//                 CITY, 
-//                 STREET, 
-//                 HOUSE, 
-//                 user_id
-//             });
-//             console.log(`Query Result: ${JSON.stringify(result)}`);
-    
-//             await con.commit();
-    
-//             // Return the updated profile
-//             const updatedProfile = { user_id, NAME, DOB: formattedDOB, EMAIL, CITY, STREET, HOUSE, PHONE };
-//             res.status(200).json(updatedProfile);
-//             console.log("Profile updated successfully");
-    
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).json({ message: "Internal Server Error" });
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-    
 
 
         
@@ -1702,764 +1563,12 @@ function generateReviewId(title) {
     
 
 
-
-
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR MEADIA SEARCH 
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//     app.post('/media/search', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-//             console.log('Received search request:', req.body);
-//             const { searchTerm, selectedGenres, selectedMediaType } = req.body;
-    
-//             // Construct the genre filter part of the query
-//             const genreFilter = selectedGenres.length ? `AND (${selectedGenres.map(g => `GENRE LIKE '%${g}%'`).join(' AND ')})` : '';
-    
-//             // Construct the media type filter part of the query
-//             const mediaTypeFilter = selectedMediaType ? `AND LOWER(TYPE) = LOWER(:selectedMediaType)` : '';
-    
-//             // Combine the filters into the query
-//             const query = `
-//                 SELECT * FROM MEDIA_SEARCH
-//                 WHERE LOWER(TITLE) LIKE LOWER(:searchTerm)
-//                 ${genreFilter}
-//                 ${mediaTypeFilter}
-//                 ORDER BY RATING DESC
-//             `;
-    
-//             // Execute the query with the search term and selected media type
-//             const result = await con.execute(query, { searchTerm: `%${searchTerm}%`, selectedMediaType });
-    
-//             const transformData = (data) => ({
-//                 id: data.MEDIA_ID,
-//                 img: data.POSTER,
-//                 title: data.TITLE,
-//                 description: data.DESCRIPTION,
-//                 rating: data.RATING / 2, // Assuming the original rating is out of 10 and the new one is out of 5
-//                 releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-//                 type: data.TYPE.charAt(0).toUpperCase() + data.TYPE.slice(1).toLowerCase(),
-//                 episodes: data.EPISODE || 0,
-//                 duration: data.DURATION,
-//                 genre: data.GENRE.split(',').map(g => g.trim()),
-//                 companyName: 'Example Productions',
-//                 role: [],
-//                 news: [],
-//                 review: []
-//             });
-    
-//             const transformedData = result.rows.map(transformData);
-    
-//             res.send(transformedData);
-//             console.log("Search Data sent:", transformedData);
-//         } catch (err) {
-//             console.error("Error during database query:", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection:", err);
-//                 }
-//             }
-//         }
-//     });
-    
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR MEADIA SEARCH BY GENRE 
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//     app.post('/media/search/genre', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-//             console.log('Received search request:', req.body);
-//             const { searchTerm, selectedGenres } = req.body;
-//             const genreFilter = selectedGenres.length ? `AND (${selectedGenres.map(g => `GENRE LIKE '%${g}%'`).join(' AND ')})` : '';
-//             const result = await con.execute(
-//                 `SELECT * FROM MEDIA WHERE UPPER(TITLE) LIKE UPPER(:searchTerm) ${genreFilter} ORDER BY RATING DESC`,
-//                 { searchTerm: `%${searchTerm}%` } // Named bind variables
-//             );
-    
-//             const transformData = (data) => {
-//                 return {
-//                     id: data.MEDIA_ID,
-//                     img: data.POSTER,
-//                     title: data.TITLE,
-//                     description: data.DESCRIPTION,
-//                     rating: data.RATING / 2, // Assuming the original rating is out of 10 and the new one is out of 5
-//                     releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-//                     type: data.TYPE.charAt(0).toUpperCase() + data.TYPE.slice(1).toLowerCase(),
-//                     episodes: data.EPISODE || 0,
-//                     duration: data.DURATION,
-//                     genre: data.GENRE.split(',').map(g => g.trim()),
-//                     companyName: 'Example Productions',
-//                     role: [],
-//                     news: [],
-//                     review: []
-//                 };
-//             };
-//             const transformedData = result.rows.map(transformData);
-    
-//             res.send(transformedData);
-//             console.log(transformData);
-//             console.log("Search Data sent");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR MEDIA PAGE 
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    
-
-//     app.post('/media/page', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-//             console.log('Received media request:', req.body);
-//             const { id } = req.body;
-    
-//             // Fetch media details using the MEDIA_COMPANY_DETAILS view
-//             const mediaResult = await con.execute(
-//                 `SELECT * FROM MEDIA_COMPANY_DETAILS WHERE MEDIA_ID = :id`, 
-//                 { id }
-//             );
-    
-//             if (!mediaResult.rows.length) {
-//                 res.status(404).send("Media not found");
-//                 return;
-//             }
-    
-//             // Fetch associated roles using the MEDIA_ROLE_DETAILS view
-//             const roleResult = await con.execute(
-//                 `SELECT * FROM MEDIA_ROLE_DETAILS WHERE MEDIA_ID = :id`,
-//                 { id }
-//             );
-    
-//             // Fetch news related to the media using the MEDIA_NEWS_DETAILS view
-//             const newsResult = await con.execute(
-//                 `SELECT * FROM MEDIA_NEWS_DETAILS WHERE MEDIA_ID = :id`,
-//                 { id }
-//             );
-    
-//             // Fetch reviews for the media using the MEDIA_REVIEW_DETAILS view
-//             const reviewResult = await con.execute(
-//                 `SELECT * FROM MEDIA_REVIEW_DETAILS WHERE MEDIA_ID = :id`,
-//                 { id }
-//             );
-    
-//             // Transform the data
-//             const mediaData = mediaResult.rows[0];
-//             const transformedData = {
-//                 id: mediaData.MEDIA_ID,
-//                 img: mediaData.POSTER,
-//                 title: mediaData.TITLE,
-//                 description: mediaData.DESCRIPTION,
-//                 rating: mediaData.RATING,
-//                 releaseDate: new Date(mediaData.RELEASE_DATE).toISOString().split('T')[0],
-//                 type: mediaData.TYPE,
-//                 episodes: mediaData.EPISODE || 0,
-//                 duration: mediaData.DURATION,
-//                 genre: mediaData.GENRE ? mediaData.GENRE.split(',').map(g => g.trim()) : [],
-//                 trailer: mediaData.TRAILER,
-//                 companyName: mediaData.COMPANY_NAME,
-//                 role: roleResult.rows, // Roles from MEDIA_ROLE_DETAILS
-//                 news: newsResult.rows.map(row => ({
-//                     topic: row.HEADLINE,
-//                     description: row.DESCRIPTION,
-//                     date: row.NEWS_DATE
-//                 })),
-//                 review: reviewResult.rows.map(row => ({
-//                     name: row.REVIEWER_NAME,
-//                     id: row.R_ID,
-//                     description: row.DESCRIPTION,
-//                     rating: row.RATING,
-//                     date: row.REVIEW_DATE
-//                 }))
-//             };
-    
-//             res.send(transformedData);
-//             console.log("Media Data sent");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-    
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR MEDIA add review
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//     app.post('/media/review/add', async (req, res) => {
-//         const { user_id, media_id, rating, description } = req.body;
-//         console.log('Received add review request:', { user_id, media_id, description, rating });
-
-//         if (!media_id || !user_id || !rating || !description) {
-//             res.status(400).send("Missing required fields");
-//             return;
-//         }
-
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const review_id = generateReviewId(description);
-//             const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-
-//             // Insert review into REVIEWRATING table
-//             await con.execute(
-//                 `INSERT INTO REVIEWRATING (R_ID, DESCRIPTION, RATING, REVIEW_FOR, REVIEW_DATE)
-//                 VALUES (:review_id, :description, :rating, 'MEDIA', TO_DATE(:review_date, 'YYYY-MM-DD'))`,
-//                 { review_id, description, rating, review_date: currentDate }, { autoCommit: true }
-//             );
-//             console.log(`Review Insert time: ${currentDate}`);
-//             // Insert into USERGIVEREVIEW table
-//             await con.execute(
-//                 `INSERT INTO USERGIVEREVIEW (R_ID, USER_ID)
-//                 VALUES (:review_id, :user_id)`,
-//                 { review_id, user_id }, { autoCommit: true }
-//             );
-
-//             // Insert into REVIEWABOUTMEDIA table
-//             await con.execute(
-//                 `INSERT INTO REVIEWABOUTMEDIA (MEDIA_ID, R_ID)
-//                 VALUES (:media_id, :review_id)`,
-//                 { media_id, review_id }, { autoCommit: true }
-//             );
-
-//             //get previous rating_count and rating
-//             const previousRating = await con.execute(
-//                 `SELECT RATING, RATING_COUNT FROM MEDIA WHERE MEDIA_ID = :media_id`,
-//                 { media_id }
-//             );
-//             const previousRatingCount = previousRating.rows[0].RATING_COUNT;
-//             const previousRatingValue = previousRating.rows[0].RATING;
-//             //calculate new rating
-//             const newRating = ((previousRatingValue * previousRatingCount) + rating) / (previousRatingCount + 1);
-//             //update rating and rating_count
-//             await con.execute(
-//                 `UPDATE MEDIA SET RATING = :newRating, RATING_COUNT = RATING_COUNT + 1 WHERE MEDIA_ID = :media_id`,
-//                 { newRating, media_id } , { autoCommit: true }
-//             );
-
-//             // Commit the transaction
-//             await con.commit();
-//             res.status(201).send("Review added successfully");
-//             console.log("Review added successfully");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (closeErr) {
-//                     console.error("Error closing database connection: ", closeErr);
-//                 }
-//             }
-//         }
-//     });
-
-
-    
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR MEDIA REVIEW
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//     app.post('/media/review', async (req, res) => {
-//         const { id } = req.body;
-//         console.log('Received media review request:', id);
-
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT REVIEWRATING.R_ID, REVIEWRATING.DESCRIPTION, REVIEWRATING.RATING, USERS.NAME
-//                 FROM REVIEWRATING
-//                 JOIN USERGIVEREVIEW ON REVIEWRATING.R_ID = USERGIVEREVIEW.R_ID
-//                 JOIN REVIEWABOUTMEDIA ON REVIEWRATING.R_ID = REVIEWABOUTMEDIA.R_ID
-//                 JOIN USERS ON USERGIVEREVIEW.USER_ID = USERS.USER_ID
-//                 WHERE REVIEWABOUTMEDIA.MEDIA_ID = :id
-//                 ORDER BY REVIEWRATING.REVIEW_DATE DESC`,
-//                 { id }, { autoCommit: true }
-//             );
-//             console.log(`Query Result: `, result.rows);
-
-//             if (!result.rows.length) {
-//                 res.status(404).send("No reviews found for the given media");
-//                 return;
-//             }
-
-//             const transformData = (data) => ({
-//                 id: data.R_ID,
-//                 name: data.NAME,
-//                 description: data.DESCRIPTION,
-//                 rating: data.RATING
-//             });
-
-//             const transformedData = result.rows.map(transformData);
-
-//             res.send(transformedData);
-//             console.log("Review Data sent");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR product review fetch
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//     app.post('/products/review', async (req, res) => {
-//         const { id } = req.body;
-//         console.log('Received product review request:', id);
-
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT REVIEWRATING.R_ID, REVIEWRATING.DESCRIPTION, REVIEWRATING.RATING, USERS.NAME
-//                 FROM REVIEWRATING
-//                 JOIN USERGIVEREVIEW ON REVIEWRATING.R_ID = USERGIVEREVIEW.R_ID
-//                 JOIN REVIEWABOUTPRODUCT ON REVIEWRATING.R_ID = REVIEWABOUTPRODUCT.R_ID
-//                 JOIN USERS ON USERGIVEREVIEW.USER_ID = USERS.USER_ID
-//                 WHERE REVIEWABOUTPRODUCT.PRO_ID = :id
-//                 ORDER BY REVIEWRATING.REVIEW_DATE DESC`,
-//                 { id }, { autoCommit: true }
-//             );
-//             console.log(`Query Result: `, result.rows);
-
-//             if (!result.rows.length) {
-//                 res.status(404).send("No reviews found for the given product");
-//                 return;
-//             }
-
-//             const transformData = (data) => ({
-//                 id: data.R_ID,
-//                 name: data.NAME,
-//                 description: data.DESCRIPTION,
-//                 rating: data.RATING
-//             });
-
-//             const transformedData = result.rows.map(transformData);
-            
-//             res.send(transformedData);
-//             console.log("Review Data sent");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-
-//             }
-//         }
-//     });
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR PRODUCT ADD REVIEW
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//     app.post('/products/review/add', async (req, res) => {
-//         const { user_id, product_id, rating, description } = req.body;
-//         console.log('Received add review request:', { user_id, product_id, description, rating });
-    
-//         if (!product_id || !user_id || !rating || !description) {
-//             res.status(400).send("Missing required fields");
-//             return;
-//         }
-    
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-    
-//             const review_id = generateReviewId(description);
-//             const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-    
-//             // Insert review into REVIEWRATING table
-//             await con.execute(
-//                 `INSERT INTO REVIEWRATING (R_ID, DESCRIPTION, RATING, REVIEW_FOR, REVIEW_DATE)
-//                 VALUES (:review_id, :description, :rating, 'PRODUCT', TO_DATE(:review_date, 'YYYY-MM-DD'))`,
-//                 { review_id, description, rating, review_date: currentDate }
-//             );
-    
-//             // Insert into USERGIVEREVIEW table
-//             await con.execute(
-//                 `INSERT INTO USERGIVEREVIEW (R_ID, USER_ID)
-//                 VALUES (:review_id, :user_id)`,
-//                 { review_id, user_id }
-//             );
-    
-//             // Insert into REVIEWABOUTPRODUCT table
-//             await con.execute(
-//                 `INSERT INTO REVIEWABOUTPRODUCT (PRO_ID, R_ID)
-//                 VALUES (:product_id, :review_id)`,
-//                 { product_id, review_id }
-//             );
-    
-//             // Step 1: Retrieve current rating and rating count from PRODUCTS table
-//             const productResult = await con.execute(
-//                 `SELECT RATING, RATING_COUNT FROM PRODUCTS WHERE PRO_ID = :product_id`,
-//                 { product_id }
-//             );
-    
-//             if (productResult.rows.length === 0) {
-//                 throw new Error("Product not found");
-//             }
-    
-//             // Access the first row from the result (as an array)
-//             const currentRating = productResult.rows[0][0]; // RATING
-//             const ratingCount = productResult.rows[0][1];   // RATING_COUNT
-    
-//             // Step 2: Calculate the new average rating
-//             const newRatingCount = (ratingCount || 0) + 1;  // Increment rating count
-//             const newRating = ((currentRating || 0) * (ratingCount || 0) + rating) / newRatingCount;
-    
-//             // Step 3: Update the PRODUCTS table with the new rating and rating count
-//             await con.execute(
-//                 `UPDATE PRODUCTS 
-//                  SET RATING = :newRating, 
-//                      RATING_COUNT = :newRatingCount 
-//                  WHERE PRO_ID = :product_id`,
-//                 { newRating, newRatingCount, product_id }
-//             );
-    
-//             // Commit the transaction
-//             await con.commit();
-//             res.status(201).send("Review added successfully and product rating updated");
-//             console.log("Review added and product rating updated successfully");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (closeErr) {
-//                     console.error("Error closing database connection: ", closeErr);
-//                 }
-//             }
-//         }
-//     });
-    
-    
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE for all products
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//     app.get('/products', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             console.log('Received product request');
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT * FROM PRODUCTS
-//                 ORDER BY RATING DESC, QUANTITY DESC`
-//             );
-
-//             // const transformData = (data) => ({
-//             //     id: data.PRO_ID,
-//             //     img: data.IMG_SRC,
-//             //     title: data.TITLE,
-//             //     description: data.DESCRIPTION,
-//             //     rating: data.RATING,
-//             //     price: data.PRICE,
-//             //     stock: data.STOCK,
-//             //     category: data.CATEGORY,
-//             //     review: []
-//             // });
-
-//             // const transformedData = result.rows.map(transformData);
-
-//             // res.send(transformedData);
-//             res.send(result.rows);
-//             console.log("Product Data sent");
-//         } catch (err) {
-//             console.error("Error during database query:", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection:", err);
-//                 }
-//             }
-//         }
-//     });
-    
-    
-
-
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR PRODUCT DETAILS
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//     app.post('/products/details', async (req, res) => {
-//         try {
-//             const { id } = req.body;
-//             console.log('Received product request');
-//             const con = await pool.getConnection();
-//             if (!con) {
-//                 throw new Error("Connection Error");
-//             }
-//             const result = await con.execute(
-//                 `SELECT * FROM PRODUCTS WHERE PRO_ID = :id`,
-//                 { id }
-//             );
-//             console.log(`Query Result: `, result.rows);
-    
-//             if (!result.rows.length) {
-//                 res.status(404).send("Product not found");
-//                 return;
-//             }
-    
-//             res.send(result.rows[0]);
-//             console.log("Product Data sent");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         }
-//     });
-
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //     // ROUTE FOR FEATURED MEDIA
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//     app.post('/media/featured1', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-            
-//             const mediaIds = req.body.mediaIds; // Assuming mediaIds is an array of IDs sent in the request body
-            
-//             if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
-//                 res.status(400).send("Invalid media IDs");
-//                 return;
-//             }
-            
-//             console.log('Received media IDs:', mediaIds);
-            
-//             // Create a SQL query to fetch media details for the given IDs
-//             const query = `
-//                 SELECT *
-//                 FROM MEDIA
-//                 WHERE MEDIA_ID IN (${mediaIds.map(id => `'${id}'`).join(',')})
-//             `;
-            
-//             const result = await con.execute(query);
-            
-//             const transformData = (data) => ({
-//                 id: data.MEDIA_ID,
-//                 title: data.TITLE,
-//                 description: data.DESCRIPTION,
-//                 rating: data.RATING,
-//                 ratingCount: data.RATING_COUNT,
-//                 type: data.TYPE,
-//                 genre: data.GENRE,
-//                 trailer: data.TRAILER,
-//                 poster: data.POSTER, 
-//                 duration: data.DURATION,
-//                 releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-//                 episodes: data.EPISODE || 0,
-                
-//             });
-            
-//             const transformedData = result.rows.map(transformData);
-            
-//             res.send(transformedData);
-//             console.log("Media Data sent");
-//         } catch (err) {
-//             console.error("Error during database query:", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection:", err);
-//                 }
-//             }
-//         }
-//     });
+
     
-
-//     app.get('/media/featured', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-//             console.log('Received media request');
-        
-//             const query = `
-//                 SELECT MEDIA_ID, TITLE, IMG_SRC, DESCRIPTION
-//                 FROM MEDIA_FEATURED
-//             `;
-//             const result = await con.execute(query);
-        
-//             const transformData = (data) => ({
-//                 id: data.MEDIA_ID,
-//                 title: data.TITLE,
-//                 imgSrc: data.IMG_SRC,
-//                 description: data.DESCRIPTION
-//             });
-        
-//             const transformedData = result.rows.map(transformData);
-        
-//             res.send(transformedData);
-//             console.log("Media Data sent");
-//         } catch (err) {
-//             console.error("Error during database query:", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection:", err);
-//                 }
-//             }
-//         }
-//     });
-    
-
-
-
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//     // ROUTE FOR FEATURED PRODUCTS
-//     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//     app.post('/media/products', async (req, res) => {
-//         let { media_id } = req.body;
-//         console.log('Received media product request:', media_id);
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-//             const result = await con.execute(
-//                 `SELECT * FROM PRODUCTS
-//                 WHERE PRO_ID IN (
-//                     SELECT PRO_ID FROM PRODUCTBASEDONMEDIA
-//                     WHERE MEDIA_ID = :media_id
-//                 )`,
-//                 { media_id }
-//             );
-//             // console.log(`Query Result: `, result.rows);
-//             res.send(result.rows);
-//             console.log("Product Data sent");
-//         } catch (err) {
-//             console.error("Error during database query:", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection:", err);
-//                 }
-//             }
-//         }
-//     });
-
-
-            
-
-
-
-
 
 
     
@@ -4585,64 +3694,6 @@ function generateReviewId(title) {
 
 
 
-//     app.post('/companydetailspage/medias', async (req, res) => {
-//         const { com_id } = req.body;
-//         console.log('Received company details page media request:', { com_id });
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 return res.status(500).send("Connection Error");
-//             }
-
-//             const result = await con.execute(
-//                 `SELECT *
-//                 FROM MEDIA
-//                 JOIN COMPANYHASMEDIA ON MEDIA.MEDIA_ID = COMPANYHASMEDIA.MEDIA_ID
-//                 WHERE COMPANYHASMEDIA.COM_ID = :com_id
-//                 ORDER BY MEDIA.RELEASE_DATE DESC`,
-//                 { com_id }
-//             );
-
-//             console.log(`Query Result: `, result.rows);
-
-//             if (result.rows.length === 0) {
-//                 return res.status(404).send("No media found for the specified company");
-//             }
-
-//             const transformData = (data) => {
-//                 return {
-//                     id: data.MEDIA_ID,
-//                     img: data.POSTER,
-//                     title: data.TITLE,
-//                     description: data.DESCRIPTION,
-//                     rating: data.RATING / 2, // Assuming the original rating is out of 10 and the new one is out of 5
-//                     releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-//                     type: data.TYPE.charAt(0).toUpperCase() + data.TYPE.slice(1).toLowerCase(),
-//                     episodes: data.EPISODE || 0,
-//                     duration: data.DURATION,
-//                     genre: data.GENRE.split(',').map(g => g.trim()),
-//                     companyName: 'Example Productions',
-//                     role: [],
-//                     news: [],
-//                     review: []
-//                 };
-//             };
-//             const mediaList = result.rows.map(transformData);
-//             res.send(mediaList);
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //     // ROUTE for quantity check
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -5517,1606 +4568,3 @@ function generateReviewId(title) {
 
 
 
-
-
-
-
-
-
-
-
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg'); // PostgreSQL client library
-
-// Create Express app
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json()); // Middleware to parse JSON
-
-// Create a connection pool for PostgreSQL
-const pool = new Pool({
-    connectionString: 'postgres://postgres.zedlpacpxbakvsvhdbms:vYpVqLlOX4XArcLe@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres',
-    ssl: {
-      rejectUnauthorized: false
-    }
-  });
-  
-
-// Test the connection pool
-pool.connect()
-  .then(client => {
-    console.log('Connected to the PostgreSQL database');
-    client.release(); // Release the connection back to the pool
-  })
-  .catch(err => console.error('Error connecting to the PostgreSQL database:', err));
-
-// Example route to test database connection
-app.get('/test', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW() AS current_time');
-    res.status(200).json({ success: true, data: result.rows[0] });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-
-// Login route for COMPANY
-app.post('/login/company', async (req, res) => {
-    const { username, password } = req.body;
-    console.log('Received login request:', { username, password }); // Log the received request
-
-    try {
-        const result = await pool.query(
-            `SELECT user_name, password, com_id AS user_id
-             FROM login 
-             JOIN company ON login.id = company.com_id 
-             WHERE user_name = $1 AND password = $2`,
-            [username, password] // Positional parameters for parameterized query
-        );
-
-        console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-        if (result.rows.length) {
-            res.status(200).send(result.rows[0]); // Respond to client
-            console.log("Login Successful");
-        } else {
-            console.log("Invalid Credentials");
-            res.status(401).send("Invalid Credentials"); // Respond to client
-        }
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-
-
-
-app.post('/mymedia', async (req, res) => {
-    const { com_id } = req.body;
-
-    try {
-        // Get all media IDs for the given company ID
-        const mediaIdsResult = await pool.query(
-            `SELECT media_id FROM companyhasmedia WHERE com_id = $1`,
-            [com_id]
-        );
-
-        const mediaIds = mediaIdsResult.rows.map(row => row.media_id);
-
-        if (mediaIds.length === 0) {
-            res.status(404).send("No media found for the given company");
-            return;
-        }
-
-        // Get all media details for the retrieved media IDs
-        const mediaQuery = `
-            SELECT media.*, company.name AS company_name 
-            FROM media
-            LEFT JOIN companyhasmedia ON media.media_id = companyhasmedia.media_id
-            LEFT JOIN company ON companyhasmedia.com_id = company.com_id
-            WHERE media.media_id = ANY($1)
-        `;
-
-        const result = await pool.query(mediaQuery, [mediaIds]);
-
-        res.send(result.rows);
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-
-
-
-
-
-
-
-app.post('/login/user', async (req, res) => {
-    const { username, password } = req.body;
-    console.log('Received login request:', { username, password });  // Log the received request
-
-    let client;
-    try {
-        // Connect to the PostgreSQL client
-        client = await pool.connect();
-
-        // Query the LOGIN table and join it with USERS to verify credentials
-        const result = await client.query(
-            `SELECT USER_NAME, PASSWORD, USER_ID AS "user_id"
-            FROM LOGIN
-            JOIN USERS ON LOGIN.ID = USERS.USER_ID
-            WHERE USER_NAME = $1 AND PASSWORD = $2`, 
-            [username, password]  // Use placeholders for parameterized query
-        );
-        
-        console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-        if (result.rows.length) {
-            // If credentials match, send the user data back to the client
-            res.status(200).json(result.rows[0]);
-        } else {
-            // If credentials don't match, send an error response
-            console.log("Invalid Credentials");
-            res.status(401).send("Invalid Credentials");
-        }
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        // Release the client back to the pool
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-
-app.post('/profile/user', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Received user profile request:', { user_id });
-
-    let client;
-    try {
-        // Connect to the PostgreSQL client
-        client = await pool.connect();
-
-        // Query to get user details from USERS table
-        const result = await client.query(
-            `SELECT USER_NAME, 
-                    NAME, 
-                    DOB, 
-                    EMAIL, 
-                    PHONE, 
-                    CITY, 
-                    STREET, 
-                    HOUSE
-             FROM USERS 
-             WHERE USER_ID = $1`, 
-            [user_id]  // Use $1 to bind the user_id parameter
-        );
-
-        console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-
-        if (result.rows.length) {
-            // Send the user data if found
-            res.status(200).json(result.rows[0]);
-            console.log("User Data sent");
-        } else {
-            // If user not found, return 404
-            res.status(404).send("User not found");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        // Release the client back to the pool
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-
-
-app.get('/companies', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect(); // Use client.connect() to connect to the database
-        console.log('Received company request');
-        
-        const result = await client.query(
-            `SELECT 
-                C.COM_ID, C.USER_NAME, C.NAME, C.IMG, C.DESCRIPTION, C.EMAIL, 
-                COUNT(CHM.MEDIA_ID) AS MEDIA_COUNT
-            FROM 
-                COMPANY C
-            JOIN 
-                COMPANYHASMEDIA CHM ON C.COM_ID = CHM.COM_ID
-            GROUP BY 
-                C.COM_ID, C.USER_NAME, C.NAME, C.IMG, C.DESCRIPTION, C.EMAIL
-            ORDER BY 
-                MEDIA_COUNT DESC limit 5`
-        );
-
-        // console.log('Query Result:', result.rows);
-
-        res.send(result.rows); // Send the company data as the response
-        console.log('Company Data sent');
-    } catch (err) {
-        console.error('Error during database query:', err);
-        res.status(500).send('Internal Server Error');
-    } finally {
-        if (client) {
-            try {
-                client.release(); // Release the client back to the pool
-            } catch (err) {
-                console.error('Error releasing client:', err);
-            }
-        }
-    }
-});
-
-
-
-app.post('/companies/page', async (req, res) => {
-    const { companyID } = req.body;
-    console.log('Received company request:', companyID);
-    
-    let client;
-    try {
-        client = await pool.connect();
-        console.log('Connected to database');
-        
-        const companyQuery = 'SELECT * FROM COMPANY WHERE COM_ID = $1';
-        const companyResult = await client.query(companyQuery, [companyID]);
-        
-        const newsQuery = `
-            SELECT MEDIA_TITLE, NEWS_ID, DESCRIPTION, HEADLINE, NEWS_DATE 
-            FROM COMPANY_NEWS_DETAILS 
-            WHERE COM_ID = $1
-        `;
-        const newsResult = await client.query(newsQuery, [companyID]);
-        
-        if (!companyResult.rows.length) {
-            res.status(404).send("Company not found");
-            return;
-        }
-
-        const companyData = companyResult.rows[0];
-        companyData.news = newsResult.rows;
-        
-        res.send(companyData);
-        console.log("Company Data sent", companyData);
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-app.get('/media', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        console.log('Received media request');
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        const result = await client.query('SELECT * FROM MEDIA_VIEW');
-
-        const transformData = (data) => ({
-            id: data.MEDIA_ID,
-            img: data.POSTER,
-            title: data.TITLE,
-            description: data.DESCRIPTION,
-            rating: data.RATING,
-            releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-            type: data.TYPE,
-            episodes: data.EPISODE || 0,
-            duration: data.DURATION,
-            genre: data.GENRE ? data.GENRE.split(',').map(g => g.trim()) : [],
-            companyName: 'Example Productions',
-            role: [],
-            news: [],
-            review: []
-        });
-
-        const transformedData = result.rows.map(transformData);
-
-        res.send(transformedData);
-        console.log("Media Data sent");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection:", err);
-            }
-        }
-    }
-});
-
-
-
-
-
-// ROUTE FOR MEDIA SEARCH 
-app.post('/media/search', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        console.log('Received search request:', req.body);
-        const { searchTerm, selectedGenres, selectedMediaType } = req.body;
-
-        const genreFilter = selectedGenres.length ? `AND (${selectedGenres.map(g => `GENRE LIKE '%${g}%'`).join(' AND ')})` : '';
-        const mediaTypeFilter = selectedMediaType ? `AND LOWER(TYPE) = LOWER(:selectedMediaType)` : '';
-
-        const query = `
-            SELECT * FROM MEDIA_SEARCH
-            WHERE LOWER(TITLE) LIKE LOWER(:searchTerm)
-            ${genreFilter}
-            ${mediaTypeFilter}
-            ORDER BY RATING DESC
-        `;
-
-        const result = await client.query(query, { searchTerm: `%${searchTerm}%`, selectedMediaType });
-
-        const transformData = (data) => ({
-            id: data.MEDIA_ID,
-            img: data.POSTER,
-            title: data.TITLE,
-            description: data.DESCRIPTION,
-            rating: data.RATING / 2,
-            releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-            type: data.TYPE.charAt(0).toUpperCase() + data.TYPE.slice(1).toLowerCase(),
-            episodes: data.EPISODE || 0,
-            duration: data.DURATION,
-            genre: data.GENRE.split(',').map(g => g.trim()),
-            companyName: 'Example Productions',
-            role: [],
-            news: [],
-            review: []
-        });
-
-        const transformedData = result.rows.map(transformData);
-
-        res.send(transformedData);
-        console.log("Search Data sent:", transformedData);
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection:", err);
-            }
-        }
-    }
-});
-app.post('/media/search/genre', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        console.log('Received search request:', req.body);
-
-        const { searchTerm, selectedGenres } = req.body;
-
-        // Build genre filter dynamically
-        const genreFilter = selectedGenres.length 
-            ? `AND (${selectedGenres.map((_, index) => `GENRE ILIKE $${index + 2}`).join(' AND ')})`
-            : '';
-
-        const query = `
-            SELECT * 
-            FROM MEDIA 
-            WHERE UPPER(TITLE) LIKE UPPER($1) 
-            ${genreFilter} 
-            ORDER BY RATING DESC
-        `;
-
-        // Build parameter array
-        const params = [`%${searchTerm}%`, ...selectedGenres.map(genre => `%${genre}%`)];
-
-        const result = await client.query(query, params);
-
-        // Transform the data for the response
-        const transformData = (data) => ({
-            id: data.media_id,
-            img: data.poster,
-            title: data.title,
-            description: data.description,
-            rating: data.rating / 2,
-            releaseDate: new Date(data.release_date).toISOString().split('T')[0],
-            type: data.type.charAt(0).toUpperCase() + data.type.slice(1).toLowerCase(),
-            episodes: data.episode || 0,
-            duration: data.duration,
-            genre: data.genre.split(',').map(g => g.trim()),
-            companyName: 'Example Productions',
-            role: [],
-            news: [],
-            review: []
-        });
-
-        const transformedData = result.rows.map(transformData);
-
-        res.send(transformedData);
-        console.log("Search Data sent");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection:", err);
-            }
-        }
-    }
-});
-
-
-app.post('/notifications', async (req, res) => {
-    const { user_id } = req.body;
-
-    if (!user_id) {
-        res.status(400).send("Missing required fields");
-        return;
-    }
-
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        const query = `
-            SELECT
-                NEWSANDUPDATES.NEWS_ID,
-                NEWSANDUPDATES.HEADLINE,
-                NEWSANDUPDATES.DESCRIPTION,
-                NEWSTOMEDIA.NEWS_DATE,
-                MEDIA.TITLE AS MEDIA_TITLE,
-                MEDIA.MEDIA_ID AS MEDIA_ID,
-                MEDIA.POSTER AS MEDIA_POSTER
-            FROM
-                NEWSANDUPDATES
-            JOIN
-                NEWSTOMEDIA ON NEWSANDUPDATES.NEWS_ID = NEWSTOMEDIA.NEWS_ID
-            JOIN
-                MEDIA ON NEWSTOMEDIA.MEDIA_ID = MEDIA.MEDIA_ID
-            WHERE
-                NEWSTOMEDIA.MEDIA_ID IN (
-                    SELECT MEDIA_ID
-                    FROM USERWATCHANDFAVORITE
-                    WHERE USER_ID = :user_id
-                )
-            ORDER BY
-                NEWSTOMEDIA.NEWS_DATE DESC
-        `;
-
-        const result = await client.query(query, { user_id });
-
-        if (result.rows.length === 0) {
-            res.status(404).send("No notifications found");
-            return;
-        }
-
-        const notifications = result.rows.map(row => ({
-            news_id: row.NEWS_ID,
-            headline: row.HEADLINE,
-            description: row.DESCRIPTION,
-            news_date: row.NEWS_DATE,
-            media_title: row.MEDIA_TITLE,
-            media_id: row.MEDIA_ID,
-            media_poster: row.MEDIA_POSTER
-        }));
-
-        res.status(200).json(notifications);
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-app.get('/medias', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-        console.log('Received Media request');
-        const result = await client.query(
-            `SELECT * FROM MEDIA`
-        );
-        console.log(`Query Result: `, result.rows);
-
-        res.send(result.rows);
-        console.log("MEDIA Data sent");
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-
-app.post('/media/foryou', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Received recommendation request:', { user_id });
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            return res.status(500).send("Connection Error");
-        }
-
-        const query = `
-            SELECT DISTINCT
-                M.media_id, 
-                M.title, 
-                M.description, 
-                M.rating, 
-                M.rating_count, 
-                M.type, 
-                M.genre, 
-                M.trailer, 
-                M.poster, 
-                M.duration, 
-                M.release_date, 
-                M.episode
-            FROM 
-                media M
-            JOIN 
-                preferredgenre P ON REGEXP_LIKE(M.genre, REPLACE(P.genres, ',', '|'))
-            WHERE 
-                P.user_id = $1
-                AND NOT EXISTS (
-                    SELECT 1 
-                    FROM userwatchandfavorite uwf 
-                    WHERE uwf.user_id = P.user_id 
-                    AND uwf.media_id = M.media_id
-                )
-            ORDER BY 
-                M.rating DESC;
-
-        `;
-
-        const result = await client.query(query, [user_id]);
-        console.log(`Query Result: `, result.rows);
-
-        const transformData = (data) => {
-            const releaseDate = new Date(data.release_date);
-            const releaseDateStr = !isNaN(releaseDate) ? releaseDate.toISOString().split('T')[0] : null; // Only format if it's a valid date
-        
-            return {
-                id: data.media_id,
-                img: data.poster,
-                title: data.title,
-                description: data.description,
-                rating: data.rating,
-                releaseDate: releaseDate, // Use the formatted date or null
-                type: data.type,
-                episodes: data.episode || 0,
-                duration: data.duration,
-                genre: data.genre ? data.genre.split(',').map(g => g.trim()) : [], // Safely handle undefined GENRE
-                companyName: 'Example Productions',
-                role: [],
-                news: [],
-                review: []
-            };
-        };
-        
-        
-
-        const List = result.rows.map(transformData);
-
-        if (result.rows.length === 0) {
-            return res.status(404).send("No recommendation found");
-        }
-
-        res.send(List);
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-
-app.post('/media/favRole', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Received FAV ROLE request:', { user_id });
-    let client;
-
-    try {
-        client = await pool.connect();
-        if (!client) {
-            return res.status(500).send("Connection Error");
-        }
-        /* top 3 fav role from actor */
-        const favrole = `
-            SELECT *
-            FROM ROLE 
-            JOIN PREFERENCEFORROLE ON ROLE.ROLE_ID = PREFERENCEFORROLE.ROLE_ID
-            WHERE PREFERENCEFORROLE.USER_ID = $1
-        `;
-        const result = await client.query(favrole, [user_id]);
-        console.log(`Query Result: `, result.rows);
-
-        if (result.rows.length === 0) {
-            return res.status(404).send("No recommendation found");
-        }
-
-        res.send(result.rows);
-    }
-    catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    }
-    finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-app.post('/media/rolemedia', async (req, res) => {
-    const { role_ids } = req.body;  // Expecting role_ids as an array
-    console.log('Received ROLE recommendation request:', { role_ids });
-    let client;
-
-    try {
-        client = await pool.connect();
-        if (!client) {
-            return res.status(500).send("Connection Error");
-        }
-
-        let List = [];
-
-        // Loop through each role_id to fetch its details and media
-        for (const role_id of role_ids) {
-            // Fetch role details for current role_id
-            const roleDetailQuery = await client.query(
-                `SELECT * 
-                FROM ROLE
-                WHERE ROLE_ID = $1`,
-                [role_id]
-            );
-
-            // Fetch media details associated with the current role_id
-            const mediaQuery = await client.query(
-                `SELECT * 
-                FROM MEDIA
-                JOIN MEDIAHASROLE ON MEDIA.MEDIA_ID = MEDIAHASROLE.MEDIA_ID
-                WHERE ROLE_ID = $1`,
-                [role_id]
-            );
-
-            const roleDetail = roleDetailQuery.rows[0];
-
-            const mediaByRoleId = mediaQuery.rows.map((media) => ({
-                id: media.media_id,
-                title: media.title,
-                description: media.description,
-                rating: media.rating,
-                ratingCount: media.rating_count,
-                type: media.type,
-                genre: media.genre,
-                trailer: media.trailer,
-                img: media.poster,
-                duration: media.duration,
-                releaseDate: media.release_date,
-                episodes: media.episode || 0
-            }));
-            
-            // Push the role and its media to the final list
-            List.push({
-                image: roleDetail.img,
-                name: roleDetail.name,
-                movies: mediaByRoleId
-            });
-            
-        }
-
-        // Log the final result
-        console.log(`roleMedia Result: `, List);
-
-        if (List.length === 0) {
-            return res.status(404).send("No recommendation found");
-        }
-
-        res.send(List);
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-
-// ROUTE FOR USER HOME NEWS
-
-// Backend route
-app.get('/home/news', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        // Fetch latest news with associated media and poster
-        const newsQuery = `
-            SELECT MEDIA.MEDIA_ID, MEDIA.TITLE, MEDIA.POSTER, NEWSANDUPDATES.NEWS_ID, 
-                   NEWSANDUPDATES.DESCRIPTION, NEWSANDUPDATES.HEADLINE, 
-                   NEWSTOMEDIA.NEWS_DATE
-            FROM NEWSANDUPDATES
-            JOIN NEWSTOMEDIA ON NEWSANDUPDATES.NEWS_ID = NEWSTOMEDIA.NEWS_ID
-            JOIN MEDIA ON NEWSTOMEDIA.MEDIA_ID = MEDIA.MEDIA_ID
-            ORDER BY NEWSTOMEDIA.NEWS_DATE DESC`;
-
-        const newsResult = await client.query(newsQuery);
-
-        // Assume top 2 news for left section, next 6 for right section
-        const topNews = newsResult.rows.slice(0, 2);  // Top 2 news for the left side
-        const latestNews = newsResult.rows.slice(2, 8); // Next 6 news for the right side
-
-        res.send({
-            topNews,
-            latestNews
-        });
-
-    } catch (err) {
-        console.error("Error fetching news: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-
-app.post('/media/planToWatch', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Received plan to watch request:', { user_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const result = await client.query(
-            `SELECT * FROM MEDIA 
-            WHERE MEDIA_ID IN (
-                SELECT MEDIA_ID FROM USERWATCHANDFAVORITE 
-                WHERE USER_ID = $1
-                AND STATUS = 'PLAN_TO_WATCH'
-            )`,
-            [user_id]
-        );
-        res.send(result.rows);
-        console.log("Plan to Watch Data sent");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-app.post('/media/planToWatch/delete', async (req, res) => {
-    const { user_id, media_id } = req.body;
-    console.log('Received delete request for plan to watch:', { user_id, media_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const checkResult = await client.query(
-            `SELECT * FROM USERWATCHANDFAVORITE 
-            WHERE USER_ID = $1
-            AND MEDIA_ID = $2`,
-            [user_id, media_id]
-        );
-
-        if (checkResult.rows.length === 0) {
-            res.status(404).send("Record not found or already deleted");
-        } else {
-            const result = await client.query(
-                `DELETE FROM USERWATCHANDFAVORITE
-                WHERE USER_ID = $1 AND MEDIA_ID = $2 AND STATUS = 'PLAN_TO_WATCH'`,
-                [user_id, media_id]
-            );
-            res.send("Deleted successfully");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-
-app.post('/media/watched', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Received WATCHED request:', { user_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const result = await client.query(
-            `SELECT * FROM MEDIA 
-            WHERE MEDIA_ID IN (
-                SELECT MEDIA_ID FROM USERWATCHANDFAVORITE 
-                WHERE USER_ID = $1
-                AND STATUS = 'WATCHED'
-            )`,
-            [user_id]
-        );
-        res.send(result.rows);
-        console.log("Watched Data sent");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-app.post('/media/watched/delete', async (req, res) => {
-    const { user_id, media_id } = req.body;
-    console.log('Received delete request for watched:', { user_id, media_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const checkResult = await client.query(
-            `SELECT * FROM USERWATCHANDFAVORITE 
-            WHERE USER_ID = $1
-            AND MEDIA_ID = $2`,
-            [user_id, media_id]
-        );
-
-        if (checkResult.rows.length === 0) {
-            res.status(404).send("Record not found or already deleted");
-        } else {
-            const result = await client.query(
-                `DELETE FROM USERWATCHANDFAVORITE
-                WHERE USER_ID = $1 AND MEDIA_ID = $2 AND STATUS = 'WATCHED'`,
-                [user_id, media_id]
-            );
-            res.send("Deleted successfully");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-app.post('/media/favorite', async (req, res) => {
-    const { user_id, media_id, is_favorite } = req.body;
-    console.log('Received favorite request:', { user_id, media_id, is_favorite });
-    let client;
-    try {
-        client = await pool.connect();
-        let status = is_favorite ? 'Y' : 'N';
-        
-        const checkResult = await client.query(
-            `SELECT * FROM USERWATCHANDFAVORITE 
-            WHERE USER_ID = $1
-            AND MEDIA_ID = $2`,
-            [user_id, media_id]
-        );
-
-        if (checkResult.rows.length === 0) {
-            await client.query(
-                `INSERT INTO USERWATCHANDFAVORITE (USER_ID, MEDIA_ID, FAVORITE)
-                VALUES ($1, $2, $3)`,
-                [user_id, media_id, status]
-            );
-            res.send("Favorite status updated successfully");
-        } else {
-            await client.query(
-                `UPDATE USERWATCHANDFAVORITE 
-                SET FAVORITE = $3
-                WHERE USER_ID = $1
-                AND MEDIA_ID = $2`,
-                [user_id, media_id, status]
-            );
-            res.send("Favorite status updated successfully");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-app.post('/media/favorite/mylist', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Received favorite request:', { user_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const result = await client.query(
-            `SELECT * FROM MEDIA
-            WHERE MEDIA_ID IN (
-                SELECT MEDIA_ID FROM USERWATCHANDFAVORITE
-                WHERE USER_ID = $1
-                AND FAVORITE = 'Y'
-            )`,
-            [user_id]
-        );
-        res.send(result.rows);
-        console.log("Favorite Data sent");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-app.post('/media/favorite/status', async (req, res) => {
-    const { user_id, media_id } = req.body;
-    console.log('Received favorite status request:', { user_id, media_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const result = await client.query(
-            `SELECT FAVORITE FROM USERWATCHANDFAVORITE
-            WHERE USER_ID = $1
-            AND MEDIA_ID = $2`,
-            [user_id, media_id]
-        );
-        if (result.rows.length === 0) {
-            res.status(404).send("Not found");
-        } else {
-            if (result.rows[0].favorite === 'Y') {
-                res.status(200).send("Favorite");
-            } else {
-                res.status(404).send("Not favorite");
-            }
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-app.post('/media/favorite/delete', async (req, res) => {
-    const { user_id, media_id } = req.body;
-    console.log('Received delete request for favorite:', { user_id, media_id });
-    let client;
-    try {
-        client = await pool.connect();
-        const checkResult = await client.query(
-            `SELECT * FROM USERWATCHANDFAVORITE 
-            WHERE USER_ID = $1
-            AND MEDIA_ID = $2`,
-            [user_id, media_id]
-        );
-
-        if (checkResult.rows.length === 0) {
-            res.status(404).send("Record not found or already deleted");
-        } else {
-            const result = await client.query(
-                `DELETE FROM USERWATCHANDFAVORITE
-                WHERE USER_ID = $1 AND MEDIA_ID = $2`,
-                [user_id, media_id]
-            );
-            res.send("Deleted successfully");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-
-app.post('/media/favorite/roles', async (req, res) => {
-    const { user_id } = req.body;
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-        console.log('Received roles request');
-        const result = await client.query(
-            `SELECT ROLE.ROLE_ID, ROLE.NAME, ROLE.IMG, ROLE.ROLE_TYPE 
-            FROM ROLE 
-            JOIN PREFERENCEFORROLE
-            ON ROLE.ROLE_ID = PREFERENCEFORROLE.ROLE_ID
-            WHERE PREFERENCEFORROLE.USER_ID = $1
-            ORDER BY ROLE.NAME ASC`,
-            [user_id]
-        );
-        res.send(result.rows);
-        console.log("----------Roles Data sent");
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-app.post('/media/favorite/roles/delete', async (req, res) => {
-    const { user_id, role_id } = req.body;
-    console.log('Received delete request for role:', { user_id, role_id });
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        const checkResult = await client.query(
-            `SELECT * FROM PREFERENCEFORROLE
-            WHERE USER_ID = $1
-            AND ROLE_ID = $2`,
-            [user_id, role_id]
-        );
-
-        console.log(`Query Result: `, checkResult.rows);
-
-        if (checkResult.rows.length === 0) {
-            res.status(404).send("Record not found or already deleted");
-        } else {
-            const result = await client.query(
-                `DELETE FROM PREFERENCEFORROLE
-                WHERE USER_ID = $1
-                AND ROLE_ID = $2`,
-                [user_id, role_id]
-            );
-            console.log(`Query Result: `, result);
-            res.send("Deleted successfully");
-            console.log("Deleted successfully");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-app.post('/media/favorite/role', async (req, res) => {
-    const { user_id, role_id, is_favorite } = req.body;
-    console.log('Received favorite request:', { user_id, role_id, is_favorite });
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        let status = is_favorite ? 'Y' : 'N';
-        if (status === 'Y') {
-            const result = await client.query(
-                `INSERT INTO PREFERENCEFORROLE (USER_ID, ROLE_ID)
-                VALUES ($1, $2)`,
-                [user_id, role_id]
-            );
-            console.log(`Query Result: `, result);
-            res.send("Role added to favorite successfully");
-        } else {
-            const result = await client.query(
-                `DELETE FROM PREFERENCEFORROLE
-                WHERE USER_ID = $1
-                AND ROLE_ID = $2`,
-                [user_id, role_id]
-            );
-            console.log(`Query Result: `, result);
-            res.send("Role removed from favorite successfully");
-        }
-        console.log("Favorite status updated successfully");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-
-app.post('/media/favorite/role/status', async (req, res) => {
-    const { user_id, role_id } = req.body;
-    console.log('------------\nReceived favorite status request:', { user_id, role_id });
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        const result = await client.query(
-            `SELECT * FROM PREFERENCEFORROLE
-            WHERE USER_ID = $1
-            AND ROLE_ID = $2`,
-            [user_id, role_id]
-        );
-        console.log("-----------Favorite Status Data of Role sent");
-
-        if (result.rows.length === 0) {
-            res.status(404).send("Not favorite");
-        } else {
-            res.status(200).send("Favorite");
-        }
-
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-        }
-    }
-});
-
-
-
-app.get('/discussions', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        console.log('Received discussion request');
-
-        const query = `
-            SELECT DISTINCT 
-                DISCUSSION.DIS_ID, 
-                TITLE, 
-                TOPIC, 
-                DISCUSSION.DESCRIPTION, 
-                REPLY_COUNT, 
-                DISCUSSIONABOUTMEDIA.DIS_DATE, 
-                MEDIA.POSTER
-            FROM DISCUSSION 
-            JOIN DISCUSSIONABOUTMEDIA 
-                ON DISCUSSION.DIS_ID = DISCUSSIONABOUTMEDIA.DIS_ID 
-            JOIN MEDIA 
-                ON DISCUSSIONABOUTMEDIA.MEDIA_ID = MEDIA.MEDIA_ID
-            WHERE PARENT_TOPIC IS NULL
-            ORDER BY DISCUSSIONABOUTMEDIA.DIS_DATE DESC, DISCUSSION.REPLY_COUNT DESC
-        `;
-
-        const result = await client.query(query);
-
-        res.send(result.rows);
-        console.log("Discussion Data sent");
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-app.post('/discussions/my', async (req, res) => {
-    const { user_id } = req.body;
-    console.log('Fetching discussions for user:', user_id);
-    let client;
-    try {
-        client = await pool.connect();
-
-        const query = `
-            SELECT DISTINCT 
-                DISCUSSION.DIS_ID, 
-                TITLE, 
-                TOPIC, 
-                DISCUSSION.DESCRIPTION, 
-                REPLY_COUNT, 
-                DISCUSSIONABOUTMEDIA.DIS_DATE, 
-                MEDIA.POSTER
-            FROM DISCUSSION 
-            JOIN DISCUSSIONABOUTMEDIA 
-                ON DISCUSSION.DIS_ID = DISCUSSIONABOUTMEDIA.DIS_ID 
-            JOIN MEDIA 
-                ON DISCUSSIONABOUTMEDIA.MEDIA_ID = MEDIA.MEDIA_ID
-            JOIN USERSTARTDISCUSSION 
-                ON DISCUSSION.DIS_ID = USERSTARTDISCUSSION.DIS_ID
-            WHERE USERSTARTDISCUSSION.USER_ID = $1 AND PARENT_TOPIC IS NULL
-            ORDER BY DISCUSSIONABOUTMEDIA.DIS_DATE DESC, DISCUSSION.REPLY_COUNT DESC
-        `;
-
-        const result = await client.query(query, [user_id]);
-
-        res.status(200).send(result.rows);
-        console.log("User Discussions Data sent");
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-
-
-app.post('/discussions/replies', async (req, res) => {
-    const { discussion_id } = req.body;
-    console.log('Received discussion replies request:', { discussion_id });
-    let client;
-    try {
-        client = await pool.connect();
-
-        const query = `
-            SELECT 
-                DISCUSSION.DIS_ID, 
-                USERS.NAME, 
-                DISCUSSION.DESCRIPTION, 
-                DISCUSSION.REPLY_COUNT
-            FROM DISCUSSION
-            JOIN USERSTARTDISCUSSION 
-                ON DISCUSSION.DIS_ID = USERSTARTDISCUSSION.DIS_ID
-            JOIN USERS 
-                ON USERSTARTDISCUSSION.USER_ID = USERS.USER_ID
-            WHERE DISCUSSION.PARENT_TOPIC = $1
-            ORDER BY DISCUSSION.REPLY_COUNT ASC
-        `;
-
-        const result = await client.query(query, [discussion_id]);
-
-        res.send(result.rows);
-        console.log("Discussion Replies Data sent");
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-app.post('/media/page', async (req, res) => {
-    let client;
-    try {
-        client = await pool.connect();
-        if (!client) {
-            return res.status(500).send("Connection Error");
-        }
-        console.log('Received media request:', req.body);
-        const { id } = req.body;
-
-        // Fetch media details using the MEDIA_COMPANY_DETAILS view
-        const mediaResult = await client.query(
-            `SELECT * FROM MEDIA_COMPANY_DETAILS WHERE MEDIA_ID = $1`, 
-            [id]
-        );
-
-        if (!mediaResult.rows.length) {
-            return res.status(404).send("Media not found");
-        }
-
-        // Fetch associated roles using the MEDIA_ROLE_DETAILS view
-        const roleResult = await client.query(
-            `SELECT * FROM MEDIA_ROLE_DETAILS WHERE MEDIA_ID = $1`,
-            [id]
-        );
-
-        // Fetch news related to the media using the MEDIA_NEWS_DETAILS view
-        const newsResult = await client.query(
-            `SELECT * FROM MEDIA_NEWS_DETAILS WHERE MEDIA_ID = $1`,
-            [id]
-        );
-
-        // Fetch reviews for the media using the MEDIA_REVIEW_DETAILS view
-        const reviewResult = await client.query(
-            `SELECT * FROM MEDIA_REVIEW_DETAILS WHERE MEDIA_ID = $1`,
-            [id]
-        );
-
-        // Transform the data
-        const mediaData = mediaResult.rows[0];
-        const transformedData = {
-            id: mediaData.media_id,
-            img: mediaData.poster,
-            title: mediaData.title,
-            description: mediaData.description,
-            rating: mediaData.rating,
-            releaseDate: new Date(mediaData.release_date).toISOString().split('T')[0],  // Format the date
-            type: mediaData.type,
-            episodes: mediaData.episode || 0,
-            duration: mediaData.duration,
-            genre: mediaData.genre ? mediaData.genre.split(',').map(g => g.trim()) : [],  // Keep genre as is
-            trailer: mediaData.trailer,
-            companyName: mediaData.company_name,
-            role: roleResult.rows,
-            news: newsResult.rows.map(row => ({
-                topic: row.headline || '',  // No transformation to lowercase
-                description: row.description || '',  // No transformation to lowercase
-                date: row.news_date
-            })),
-            review: reviewResult.rows.map(row => ({
-                name: row.reviewer_name || '',  // No transformation to lowercase
-                id: row.r_id,
-                description: row.description || '',  // No transformation to lowercase
-                rating: row.rating,
-                date: row.review_date
-            }))
-        };
-
-        res.send(transformedData);
-        console.log("Media Data sent");
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            try {
-                client.release();
-            } catch (err) {
-                console.error("Error releasing database connection: ", err);
-            }
-        }
-    }
-});
-
-
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // route for COMPANY MY MEDIA
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    app.post('/mymedia', async (req, res) => {
-        const { com_id } = req.body;
-    
-        let client;
-        try {
-            client = await pool.connect();
-            if (!client) {
-                res.status(500).send("Connection Error");
-                return;
-            }
-    
-            // Get all media IDs for the given company ID
-            const mediaIdsResult = await client.query(
-                `SELECT media_id FROM companyhasmedia WHERE com_id = $1`,
-                [com_id]
-            );
-    
-            const mediaIds = mediaIdsResult.rows.map(row => row.media_id);
-    
-            if (mediaIds.length === 0) {
-                res.status(404).send("No media found for the given company");
-                return;
-            }
-    
-            // Get all media details for the retrieved media IDs
-            const mediaQuery = `
-                SELECT media.*, company.name AS company_name 
-                FROM media
-                LEFT JOIN companyhasmedia ON media.media_id = companyhasmedia.media_id
-                LEFT JOIN company ON companyhasmedia.com_id = company.com_id
-                WHERE media.media_id = ANY($1)
-            `;
-    
-            const result = await client.query(mediaQuery, [mediaIds]);
-    
-            // Optional: Process and map the result rows to a specific structure
-            // const mediaList = result.rows.map(data => ({
-            //     id: data.media_id,
-            //     img: data.poster,
-            //     title: data.title,
-            //     description: data.description,
-            //     companyName: data.company_name
-            // }));
-    
-            res.send(result.rows);
-        } catch (err) {
-            console.error("Error during database query: ", err);
-            res.status(500).send("Internal Server Error");
-        } finally {
-            if (client) {
-                client.release();
-            }
-        }
-    });
-
-
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // route for COMPANY PROFILE
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-    app.post('/profile/company', async (req, res) => {
-        const { userid } = req.body;
-        console.log('Received company profile request:', { userid });
-      
-        let client;
-        try {
-          client = await pool.connect();
-          if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-          }
-      
-          // Execute the query
-          const result = await client.query(
-            `SELECT * FROM COMPANY WHERE COM_ID = $1`,
-            [userid] // Use $1 to parameterize the query
-          );
-      
-          console.log(`Query Result: ${JSON.stringify(result.rows)}`);
-      
-          if (result.rows.length > 0) {
-            res.send(result.rows[0]); // Send the first row as the company data
-            console.log("Company Data sent");
-          } else {
-            res.status(404).send("Company not found");
-          }
-        } catch (err) {
-          console.error("Error during database query: ", err);
-          res.status(500).send("Internal Server Error");
-        } finally {
-          if (client) {
-            client.release(); // Release the client back to the pool
-          }
-        }
-      });
-    
-
-
-
-
-// Start the server
-app.listen(5000, () => {
-  console.log('Server started on http://localhost:5000');
-});

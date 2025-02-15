@@ -15,7 +15,7 @@ const Notification = () => {
     const fetchNotifications = async () => {
       try {
         console.log("user_id:", user_id);
-        const response = await fetch("http://localhost:5000/notifications", {
+        const response = await fetch("http://localhost:5000/user/common/notifications", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

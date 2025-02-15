@@ -37,7 +37,7 @@ function Home() {
 
   const fetchForYouMovies = async () => {
     try {
-      const response = await fetch("http://localhost:5000/media/foryou", {
+      const response = await fetch("http://localhost:5000/user/common/media/foryou", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ function Home() {
   useEffect(() => {
     const fetchFavRoleMovies = async () => {
       try {
-        const response = await fetch("http://localhost:5000/media/favRole", {
+        const response = await fetch("http://localhost:5000/user/common/media/favRole", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

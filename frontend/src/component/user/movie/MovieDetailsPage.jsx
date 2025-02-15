@@ -160,7 +160,7 @@ const MovieDetailsPage = () => {
     const fetchMovieDis = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/discussions/media",
+          "http://localhost:5000/user/discussions/media",
           {
             method: "POST",
             headers: {
@@ -342,7 +342,7 @@ const MovieDetailsPage = () => {
     }
 
     try {
-      await fetch("http://localhost:5000/discussions/add", {
+      await fetch("http://localhost:5000/user/discussions/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -360,7 +360,7 @@ const MovieDetailsPage = () => {
     const fetchMovieDis = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/discussions/media",
+          "http://localhost:5000/user/discussions/media",
           {
             method: "POST",
             headers: {

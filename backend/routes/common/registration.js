@@ -14,95 +14,6 @@ function generateLoginId(username, password) {
     return Math.abs(username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + password.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;    
 }
 
-
-// Route to check username for users
-router.post('/user/check-username', async (req, res) => {
-    const { username } = req.body;
-
-    console.log('Received username check request for user:', username);
-
-    try {
-        console.log('Preparing to query database for user username...');
-        const result = await pool.query(
-            `SELECT COUNT(*) AS count FROM users WHERE user_name = $1`,
-            [username]
-        );
-
-        console.log('Query executed successfully. Count:', result.rows[0].count);
-
-        if (+result.rows[0].count > 0) {
-            res.status(409).send("Username already exists");
-        } else {
-            res.status(200).send("Username available");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-// Route to check username for merchandiser
-router.post('/merch/check-username', async (req, res) => {
-    const { username } = req.body;
-
-    console.log('Received username check request for merchandiser:', username);
-
-    try {
-        console.log('Preparing to query database for merchandiser username...');
-        const result = await pool.query(
-            `SELECT COUNT(*) AS count FROM merchandiser WHERE user_name = $1`,
-            [username]
-        );
-
-        console.log('Query executed successfully. Count:', result.rows[0].count);
-
-        if (+result.rows[0].count > 0) {
-            res.status(409).send("Username already exists");
-        } else {
-            res.status(200).send("Username available");
-        }
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// ROUTE FOR CHECK USERNAME EXIST COMPANY REGISTRATION
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-router.post('/company/check-username', async (req, res) => {
-    const { username } = req.body;
-
-    console.log('Received username check request:', req.body);
-
-    
-    try {
-        console.log('Preparing to query database...');
-        const result = await pool.query(
-            `SELECT COUNT(*) AS count FROM company WHERE user_name = $1`,
-            [username]
-        );
-        console.log('Query executed successfully:', result.rows[0].count);
-
-        
-        if (+result.rows[0].count > 0) {
-            res.status(409).send("Username already exists");
-        } else {
-            res.status(200).send("Username available");
-        }
-    } catch (err) {
-        console.error("Error during database query: ", err);
-        res.status(500).send("Internal Server Error");
-    } 
-});
-
-
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// ROUTE FOR COMPANY REGISTRATION
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 router.post('/company', async (req, res) => {
     const { username, password, name, email, description, imageUrl } = req.body;
     console.log('Received company registration request:', { username, password, name, email, description, imageUrl });
@@ -147,14 +58,6 @@ router.post('/company', async (req, res) => {
         }
     }
 });
-
-
-
-
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // ROUTE FOR USER REGISTRATION
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 router.post('/user', async (req, res) => {
     const { username, password, name, dob, email, city, street, house, phone, genres } = req.body;
@@ -220,65 +123,80 @@ router.post('/user', async (req, res) => {
     }
 });
 
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// ROUTE FOR MERCHANIDISER REGISTRATION
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+router.post('/user/check-username', async (req, res) => {
+    const { username } = req.body;
 
-router.post('/merchandiser', async (req, res) => {
-    const { username, password, name, description, email, city, street, house, phone } = req.body;
-    console.log('Received merchandiser registration request:', { username, password, name, description, email, city, street, house, phone });
+    console.log('Received username check request:', username);
 
-    const login_id = generateLoginId(username, password);  // Generate login_id in Node.js
-    console.log('Generated Login ID:', login_id);
-
-    let client;
     try {
-        client = await pool.connect();
-        if (!client) {
-            res.status(500).send("Connection Error");
-            return;
-        }
-
-        // Execute the stored procedure
-        const result = await client.query(
-            `SELECT register_merchandiser($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) AS merch_id`,
-            [username, password, name, description, email, city, street, house, phone, login_id]
+        console.log('Preparing to query database for user username...');
+        const result = await pool.query(
+            `SELECT COUNT(*) AS count FROM users WHERE user_name = $1`,
+            [username]
         );
 
-        const merchId = result.rows[0].merch_id;  // Retrieve the MERCH_ID from the output
-        console.log(`Merchandiser registered with Merch ID: ${merchId} and Login ID: ${login_id}`);
+        console.log('Query executed successfully. Count:', result.rows[0].count);
 
-        // Commit the transaction
-        await client.query('COMMIT');
-        console.log("Transaction committed successfully.");
-
-        // Send success response
-        res.status(201).send("Merchandiser registered successfully");
-
+        if (+result.rows[0].count > 0) {
+            res.status(409).send("Username already exists");
+        } else {
+            res.status(200).send("Username available");
+        }
     } catch (err) {
-        console.error("Error during database query: ", err);
-
-        // Attempt to roll back the transaction if there is a failure
-        if (client) {
-            try {
-                await client.query('ROLLBACK');
-                console.log("Transaction rolled back due to error.");
-            } catch (rollbackErr) {
-                console.error("Error during transaction rollback: ", rollbackErr);
-            }
-        }
-
+        console.error("Error during database query:", err);
         res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
-            client.release();
-            console.log("Database connection closed.");
-        }
     }
 });
 
+router.post('/company/check-username', async (req, res) => {
+    const { username } = req.body;
 
+    console.log('Received username check request for company:', username);
 
+    try {
+        console.log('Preparing to query database for company username...');
+        const result = await pool.query(
+            `SELECT COUNT(*) AS count FROM company WHERE user_name = $1`,
+            [username]
+        );
+
+        console.log('Query executed successfully. Count:', result.rows[0].count);
+
+        if (+result.rows[0].count > 0) {
+            res.status(409).send("Username already exists");
+        } else {
+            res.status(200).send("Username available");
+        }
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post('/company/check-username', async (req, res) => {
+    const { username } = req.body;
+
+    console.log('Received username check request for company:', username);
+
+    try {
+        console.log('Preparing to query database for company username...');
+        const result = await pool.query(
+            `SELECT COUNT(*) AS count FROM company WHERE user_name = $1`,
+            [username]
+        );
+
+        console.log('Query executed successfully. Count:', result.rows[0].count);
+
+        if (+result.rows[0].count > 0) {
+            res.status(409).send("Username already exists");
+        } else {
+            res.status(200).send("Username available");
+        }
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 
 module.exports = router;

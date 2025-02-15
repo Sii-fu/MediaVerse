@@ -4,20 +4,20 @@ import pro1 from "./pro.jpeg";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
-    NAME: "",
-    DOB: "",
-    EMAIL: "",
-    CITY: "",
-    STREET: "",
-    HOUSE: "",
-    PHONE: "",
+    name: "",
+    dob: "",
+    email: "",
+    city: "",
+    street: "",
+    house: "",
+    phone: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:5000/profile/admin", {
+        const response = await fetch("http://localhost:5000/admin/profile", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const ProfilePage = () => {
       };
 
       const response = await fetch(
-        "http://localhost:5000/profile/admin/update",
+        "http://localhost:5000/admin/profile/update",
         {
           method: "POST",
           headers: {
@@ -95,11 +95,11 @@ const ProfilePage = () => {
             <input
               type="text"
               name="NAME"
-              value={profile.NAME}
+              value={profile.name}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.NAME}</span>
+            <span>{profile.name}</span>
           )}
         </div>
         <div className="profile-info2">
@@ -108,11 +108,11 @@ const ProfilePage = () => {
             <input
               type="date"
               name="DOB"
-              value={profile.DOB.split("T")[0]}
+              value={profile.dob.split("T")[0]}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.DOB.split("T")[0]}</span>
+            <span>{profile.dob.split("T")[0]}</span>
           )}
         </div>
         <div className="profile-info2">
@@ -121,11 +121,11 @@ const ProfilePage = () => {
             <input
               type="email"
               name="EMAIL"
-              value={profile.EMAIL}
+              value={profile.email}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.EMAIL}</span>
+            <span>{profile.email}</span>
           )}
         </div>
         <div className="profile-info2">
@@ -134,11 +134,11 @@ const ProfilePage = () => {
             <input
               type="text"
               name="CITY"
-              value={profile.CITY}
+              value={profile.city}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.CITY}</span>
+            <span>{profile.city}</span>
           )}
         </div>
         <div className="profile-info2">
@@ -147,11 +147,11 @@ const ProfilePage = () => {
             <input
               type="text"
               name="STREET"
-              value={profile.STREET}
+              value={profile.street}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.STREET}</span>
+            <span>{profile.street}</span>
           )}
         </div>
         <div className="profile-info2">
@@ -160,11 +160,11 @@ const ProfilePage = () => {
             <input
               type="text"
               name="HOUSE"
-              value={profile.HOUSE}
+              value={profile.house}
               onChange={handleChange}
             />
           ) : (
-            <span>{profile.HOUSE}</span>
+            <span>{profile.house}</span>
           )}
         </div>
         <div className="profile-buttons2">

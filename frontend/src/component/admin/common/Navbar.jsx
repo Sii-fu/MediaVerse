@@ -62,11 +62,6 @@ function Navbar() {
                     <i className="fa-solid fa-user-tie"></i> Company
                   </span>
                 </Link>
-                <Link to={`/${username}/merchandiserlist`}>
-                  <span className="dropdown2-item">
-                    <i className="fa-solid fa-store"></i> Merchandiser
-                  </span>
-                </Link>
               </div>
             </li>
 

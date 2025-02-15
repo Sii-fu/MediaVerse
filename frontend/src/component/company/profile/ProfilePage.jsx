@@ -19,12 +19,8 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      console.log("Fetching profile data...");
-      console.log(
-        "USER ID________________________" + localStorage.getItem("user_id")
-      );
       try {
-        const response = await fetch("http://localhost:5000/profile/company", {
+        const response = await fetch("http://localhost:5000/company/profile", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

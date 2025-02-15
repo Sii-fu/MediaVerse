@@ -7,10 +7,10 @@ const roleTypes = ["DIRECTOR", "WRITER", "ACTOR", "ACTRESS"];
 const AdminRoleCard = ({ role }) => {
   return (
     <div className="admin-role-card">
-      <img src={role.IMG} alt={role.NAME} className="admin-role-img" />
+      <img src={role.img} alt={role.name} className="admin-role-img" />
       <div className="admin-role-info">
-        <h4>{role.NAME}</h4>
-        <p>{role.ROLE_TYPE}</p>
+        <h4>{role.name}</h4>
+        <p>{role.role_type}</p>
       </div>
     </div>
   );
@@ -35,7 +35,7 @@ function ViewRole() {
   useEffect(() => {
     const fetchRolelist = async () => {
       try {
-        const response = await fetch("http://localhost:5000/roles", {
+        const response = await fetch("http://localhost:5000/admin/list/roles", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -64,11 +64,11 @@ function ViewRole() {
 
   // Function to filter roles by both search query and selected role types
   const filteredRoles = roles.filter((role) => {
-    const matchesSearchQuery = role.NAME.toLowerCase().includes(
+    const matchesSearchQuery = role.name?.toLowerCase().includes(
       searchQuery.toLowerCase()
     );
     const matchesRoleType = selectedRoleTypes.length
-      ? selectedRoleTypes.includes(role.ROLE_TYPE)
+      ? selectedRoleTypes.includes(role.role_type)
       : true;
     return matchesSearchQuery && matchesRoleType;
   });
@@ -110,7 +110,7 @@ function ViewRole() {
       {/* Display Filtered Roles */}
       <div className="rolelist-list">
         {filteredRoles.map((role) => (
-          <AdminRoleCard key={role.ROLE_ID} role={role} />
+          <AdminRoleCard key={role.role_id} role={role} />
         ))}
       </div>
 

@@ -77,9 +77,6 @@ router.post('/notifications', async (req, res) => {
     }
 });
 
-
-
-
 // fixed featured content in home page
 router.post('/media/featured1', async (req, res) => {
     let client;
@@ -141,55 +138,49 @@ router.post('/media/featured1', async (req, res) => {
     }
 });
 
+router.get('/media/featured', async (req, res) => {
+    let client;
+    try {
+        client = await pool.connect();
+        if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+        console.log('Received media request');
+    
+        const query = `
+            SELECT MEDIA_ID, TITLE, IMG_SRC, DESCRIPTION
+            FROM MEDIA_FEATURED
+        `;
+        const result = await client.query(query);
+    
+        const transformData = (data) => ({
+            id: data.media_id,
+            title: data.title,
+            imgSrc: data.img_src,
+            description: data.description
+        });
+    
+        const transformedData = result.rows.map(transformData);
+    
+        res.send(transformedData);        
+        console.log("featured Data sent");
+        console.log(transformedData);
 
 
-
-    router.get('/media/featured', async (req, res) => {
-        let client;
-        try {
-            client = await pool.connect();
-            if (!client) {
-                res.status(500).send("Connection Error");
-                return;
-            }
-            console.log('Received media request');
-        
-            const query = `
-                SELECT MEDIA_ID, TITLE, IMG_SRC, DESCRIPTION
-                FROM MEDIA_FEATURED
-            `;
-            const result = await client.query(query);
-        
-            const transformData = (data) => ({
-                id: data.media_id,
-                title: data.title,
-                imgSrc: data.img_src,
-                description: data.description
-            });
-        
-            const transformedData = result.rows.map(transformData);
-        
-            res.send(transformedData);        
-            console.log("featured Data sent");
-            console.log(transformedData);
-
-
-        } catch (err) {
-            console.error("Error during database query:", err);
-            res.status(500).send("Internal Server Error");
-        } finally {
-            if (client) {
-                try {
-                    client.release();
-                } catch (err) {
-                    console.error("Error releasing database connection:", err);
-                }
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection:", err);
             }
         }
-    });
-
-
-
+    }
+});
 
 router.post('/media/foryou', async (req, res) => {
     const { user_id } = req.body;
@@ -277,9 +268,6 @@ router.post('/media/foryou', async (req, res) => {
     }
 });
 
-
-
-
 router.post('/media/favRole', async (req, res) => {
     const { user_id } = req.body;
     console.log('Received FAV ROLE request:', { user_id });
@@ -320,8 +308,6 @@ router.post('/media/favRole', async (req, res) => {
         }
     }
 });
-
-
 
 router.post('/media/rolemedia', async (req, res) => {
     const { role_ids } = req.body;  // Expecting role_ids as an array
@@ -403,10 +389,7 @@ router.post('/media/rolemedia', async (req, res) => {
     }
 });
 
-
 // ROUTE FOR USER HOME NEWS
-
-// Backend route
 router.get('/home/news', async (req, res) => {
     let client;
     try {

@@ -5,6 +5,7 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 const RoleCard = ({ role }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  console.log("role:", role);
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
@@ -58,7 +59,7 @@ const RoleCard = ({ role }) => {
       <img src={role.img} alt={role.name} className="role-img111" />
       <div className="role-info111">
         <h4>{role.name}</h4>
-        <p>{role.role_type}</p>
+        <p>{role.type}</p>
       </div>
       <button
         className="role-action111"

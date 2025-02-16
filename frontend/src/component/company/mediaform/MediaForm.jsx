@@ -67,7 +67,7 @@ const MediaForm = () => {
   }, []);
 
   const filteredRoles = roles.filter((role) =>
-    role.NAME.toLowerCase().includes(searchTerm.toLowerCase())
+    role.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSearchChange = (e) => {
@@ -134,12 +134,12 @@ const MediaForm = () => {
   const handleRoleSelection = (role) => {
     console.log("Role selected:", role);
     const newRole = {
-      role_id: role.ROLE_ID,
-      name: role.NAME,
+      role_id: role.role_id,
+      name: role.name,
     };
 
     setSelectedRoles((prevRoles) => {
-      if (prevRoles.some((r) => r.role_id === role.ROLE_ID)) {
+      if (prevRoles.some((r) => r.role_id === role.role_id)) {
         return prevRoles; // If yes, return the current state without changes
       }
       const updatedRoles = [...prevRoles, newRole];
@@ -413,16 +413,16 @@ const MediaForm = () => {
                   filteredRoles.length > 0 &&
                   filteredRoles.map((role) => (
                     <div
-                      key={role.ROLE_ID}
+                      key={role.role_id}
                       className="role-result"
                       onClick={() => handleRoleSelection(role)}
                     >
                       <img
-                        src={role.IMG}
-                        alt={role.NAME}
+                        src={role.img}
+                        alt={role.name}
                         className="role-thumbnail"
                       />
-                      <div className="role-name">{role.NAME}</div>
+                      <div className="role-name">{role.name}</div>
                     </div>
                   ))}
               </div>

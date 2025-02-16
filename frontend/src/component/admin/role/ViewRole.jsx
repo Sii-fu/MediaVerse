@@ -7,10 +7,10 @@ const roleTypes = ["DIRECTOR", "WRITER", "ACTOR", "ACTRESS"];
 const AdminRoleCard = ({ role }) => {
   return (
     <div className="admin-role-card">
-      <img src={role.IMG} alt={role.NAME} className="admin-role-img" />
+      <img src={role.img} alt={role.name} className="admin-role-img" />
       <div className="admin-role-info">
-        <h4>{role.NAME}</h4>
-        <p>{role.ROLE_TYPE}</p>
+        <h4>{role.name}</h4>
+        <p>{role.role_type}</p>
       </div>
     </div>
   );
@@ -64,7 +64,7 @@ function ViewRole() {
 
   // Function to filter roles by both search query and selected role types
   const filteredRoles = roles.filter((role) => {
-    const matchesSearchQuery = role.NAME.toLowerCase().includes(
+    const matchesSearchQuery = role.name.toLowerCase().includes(
       searchQuery.toLowerCase()
     );
     const matchesRoleType = selectedRoleTypes.length

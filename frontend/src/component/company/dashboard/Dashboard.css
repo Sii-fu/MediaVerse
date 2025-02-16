@@ -9,9 +9,9 @@
   }
   
   .last-activity {
-    background-color: #23252b;
+    background-color: #15161a;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 2px;
   }
   
   .last-activity h2 {
@@ -27,7 +27,7 @@
   .activity-item img {
     width: 60px;
     height: 60px;
-    border-radius: 10px;
+    border-radius: 0px;
   }
   
   .activity-item div {
@@ -52,10 +52,10 @@
   
   .channel-overview,
   .real-time-activity {
-    background-color: #23252b;
+    background-color: #15161a;
     flex: 1;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 1px;
   }
   
   .channel-overview h2 {
@@ -70,9 +70,9 @@
   
   .stat {
     flex: 1;
-    background-color: #2c2f36;
+    background-color: #22242b;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 4px;
     text-align: center;
   }
   
@@ -89,9 +89,9 @@
   }
   
   .chart {
-    background-color: #2c2f36;
-    height: 150px;
-    border-radius: 10px;
+    background-color: #22242b;
+    height: 300px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -113,3 +113,30 @@
     font-size: 14px;
   }
   
+
+  .activity-item2 {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+  }
+  
+  .activity-item2 img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  
+  .activity-item2 div {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .activity-item2 p {
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .activity-item2 span {
+    font-size: 12px;
+    color: gray;
+  }

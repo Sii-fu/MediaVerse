@@ -45,7 +45,7 @@ function CompanyList() {
       <div className="companylist-section-header">
         <input
           type="text"
-          placeholder="Search for merchandiser...."
+          placeholder="Search for company...."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="companylist-section-header-search-bar"

@@ -67,18 +67,20 @@ const ReviewCard = ({ review }) => {
 };
 
 const DiscussionCard = ({ discussion }) => {
-const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
-};
-
-return (
+  };
+  console.log(discussion);
+  return (
     <div className="discussion-card111">
-        <h4 className="discussion-topic">{discussion.TOPIC}</h4>
-        <p style={{ color: '#ff640a', fontSize: '10px' }}>{formatDate(discussion.DIS_DATE)}</p>
-        <p className="discussion-desc">{discussion.DESCRIPTION}</p>
+      <h4 className="discussion-topic">{discussion.topic}</h4>
+      <p style={{ color: "#ff640a", fontSize: "10px" }}>
+        {formatDate(discussion.dis_date)}
+      </p>
+      <p className="discussion-desc">{discussion.description}</p>
     </div>
-);
+  );
 };
 
 const MovieDetailsPage = () => {
@@ -488,7 +490,7 @@ const MovieDetailsPage = () => {
           </div>
 
           <div className="allsection1-section1-watchlist-buttons">
-          <button
+            <button
               className="allsection1-section1-watchlist-button1"
               onClick={handlePlanToWatch}
             >
@@ -501,7 +503,6 @@ const MovieDetailsPage = () => {
               {" "}
               <i class="fa-regular fa-bookmark"></i> ADD TO WATCHLIST
             </button>
-            
           </div>
 
           <p className="allsection1-section1-desc">
@@ -516,8 +517,10 @@ const MovieDetailsPage = () => {
             ))}
           </p>
           <p className="allsection1-section1-epi">
-            <div>Episodes</div> 
-            <div>{movieDetails.episodes === 0 ? 'Movie' : movieDetails.episodes}</div>
+            <div>Episodes</div>
+            <div>
+              {movieDetails.episodes === 0 ? "Movie" : movieDetails.episodes}
+            </div>
           </p>
           <p className="allsection1-section1-epi">
             <div>Duration</div> {movieDetails.duration}
@@ -528,7 +531,6 @@ const MovieDetailsPage = () => {
           <p className="allsection1-section1-epi">
             <div>Company</div> {movieDetails.companyName}
           </p>
-
         </div>
 
         <div className="allsection1-section2">
@@ -537,14 +539,13 @@ const MovieDetailsPage = () => {
               url={movieDetails.trailer}
               className="trailer-player1"
             />
-            <div 
-              className="allsection1-section2-button" 
-              onClick={() => window.open(movieDetails.trailer, '_blank')}
-              style={{ cursor: 'pointer' }}
+            <div
+              className="allsection1-section2-button"
+              onClick={() => window.open(movieDetails.trailer, "_blank")}
+              style={{ cursor: "pointer" }}
             >
               <i className="fa-brands fa-google-play"></i> WATCH TRAILER
             </div>
-
           </div>
         </div>
       </div>
@@ -566,6 +567,80 @@ const MovieDetailsPage = () => {
                 </p>
               )}
             </div>
+          </div>
+          <div className="where-to-watch-section-container">
+          <div className="where-to-watch-section">
+  <div className="where-to-watch-online">
+    <h3>Where to Watch Online</h3>
+    <ul>
+      {[
+        { name: "Netflix", url: "https://www.netflix.com" },
+        { name: "Amazon Prime", url: "https://www.primevideo.com" },
+        { name: "Hulu", url: "https://www.hulu.com" },
+        { name: "Disney+", url: "https://www.disneyplus.com" },
+      ].map((platform, index) => (
+        <li key={index}>
+          <a href={platform.url} target="_blank" rel="noopener noreferrer">
+            {platform.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <div className="where-to-watch-theater">
+    <h3>Where to Watch in Theater</h3>
+    <ul>
+      {[
+        {
+          name: "AMC",
+          date: "2025-01-10",
+          time: "7:30 PM",
+          location: "123 AMC Theater, Main Street, City",
+          ticketUrl: "https://www.amctheatres.com",
+        },
+        {
+          name: "Regal Cinemas",
+          date: "2025-01-11",
+          time: "6:00 PM",
+          location: "456 Regal Blvd, Downtown, City",
+          ticketUrl: "https://www.regmovies.com",
+        },
+        {
+          name: "Cinemark",
+          date: "2025-01-12",
+          time: "8:00 PM",
+          location: "789 Cinemark Avenue, Suburb, City",
+          ticketUrl: "https://www.cinemark.com",
+        },
+        {
+          name: "Local Indie Theater",
+          date: "2025-01-13",
+          time: "5:00 PM",
+          location: "101 Indie Lane, Arts District, City",
+          ticketUrl: "https://www.localindietheater.com",
+        },
+      ].map((theater, index) => (
+        <li key={index}>
+          <div>
+            <strong>{theater.name}</strong>
+            <p>Date: {theater.date}</p>
+            <p>Time: {theater.time}</p>
+            <p>Location: {theater.location}</p>
+            <a
+              href={theater.ticketUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ticket-book-link"
+            >
+              Book Tickets
+            </a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
           </div>
           {/* Reviews Section */}
           <div className="reviews-section111">
@@ -621,9 +696,12 @@ const MovieDetailsPage = () => {
             <div className="discussions-section-inner">
               <h3 className="discussion-title">Discussions</h3>
               {discussions.length > 0 ? (
-                discussions.map((discussion, index) => (
-                  <DiscussionCard key={index} discussion={discussion} />
-                ))
+                discussions.map(
+                  (discussion, index) => (
+                    console.log(discussion),
+                    (<DiscussionCard key={index} discussion={discussion} />)
+                  )
+                )
               ) : (
                 <p style={{ marginLeft: "20px", color: "white" }}>
                   No discussions available yet. Be the first to start a
@@ -680,7 +758,7 @@ const MovieDetailsPage = () => {
           </div>
 
           {/*Advertisement Section */}
-          <div className="company-details-middle111">
+          {/* <div className="company-details-middle111">
             <div className="products-section1111">
               <h3 className="products-title1111">Advertisement</h3>
               <div className="product-list1111">
@@ -695,7 +773,7 @@ const MovieDetailsPage = () => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -20,11 +20,11 @@ function Topper() {
                 <i class="fa-solid fa-folder-plus"></i>Add Media
             </li>
           </Link>
-          <Link to={`/${username}/company/collaborate`}>
+          {/* <Link to={`/${username}/company/collaborate`}> */}
             <li className="topper-content-list-item3">
               <i class="fa-solid fa-bell"></i>
             </li>
-          </Link>
+          {/* </Link> */}
         </ul>
       </div>
     </div>

@@ -36,6 +36,7 @@ import MerchandiserList from "./component/admin/merch/MerchandiserList.jsx";
 import AddRole from "./component/admin/role/AddRole.jsx";
 import ViewRole from "./component/admin/role/ViewRole.jsx";
 import ProfileAdmin from "./component/admin/profile/ProfilePage.jsx";
+import Report from "./component/admin/report/Report.jsx";
 
 import HomeCompany from "./component/company/home/Home.jsx";
 import DashboardCompany from "./component/company/dashboard/Dashboard.jsx";
@@ -46,6 +47,8 @@ import CompanyMovieDetailsPage from "./component/company/movie/MovieDetailsPage.
 import CompanyCollaborate from "./component/company/collaborate/CompanyCollaborate.jsx";
 import CollabDetailsCompany from "./component/company/collaborate/CollabDetails.jsx";
 import ProfileCompany from "./component/company/profile/ProfilePage.jsx";
+import DiscussionCompanyDetails from "./component/company/discussion/DiscussionCompanyDetails.jsx";
+
 
 import HomeMerch from "./component/merch/home/Home.jsx";
 import ProfileMerch from "./component/merch/profile/ProfilePage.jsx";
@@ -149,6 +152,7 @@ export default function App() {
           {userType === "admin" && (
             <Route element={<LayoutAdmin />}>
               <Route path="/:username/home" element={<HomeAdmin />} />
+              <Route path="/:username/report" element={<Report />} />
               <Route path="/:username/userlist" element={<UserList />} />
               <Route path="/:username/companylist" element={<CompanyList />} />
               <Route
@@ -190,6 +194,7 @@ export default function App() {
               <Route path="/:username/home" element={<DashboardCompany />} />
               <Route path="/:username/mymedia" element={<HomeCompany />} />
               <Route path="/:username/discussion" element={<DisscussionCompany />} />
+              <Route path="/:username/discussion/:id" element={<DiscussionCompanyDetails />} />
               <Route path="/:username/review" element={<Review />} />
               <Route path="/:username/mediaform" element={<MediaForm />} />
               <Route path="/:username/profile" element={<ProfileCompany />} />

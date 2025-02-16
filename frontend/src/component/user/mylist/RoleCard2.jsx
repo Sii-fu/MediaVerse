@@ -8,10 +8,10 @@ const RoleCard2 = ({ role, handleDeleteRole }) => {
     // console.log(role);
   return (
     <div className="role2-card">
-            <img src={role.IMG} alt={role.NAME} className="role2-img" />
+            <img src={role.img} alt={role.name} className="role2-img" />
             <div className="role2-info">
-                <h4>{role.NAME}</h4>
-                <p>{role.ROLE_TYPE}</p>
+                <h4>{role.name}</h4>
+                <p>{role.role_type}</p>
             </div>
             <button className='role2-action' onClick={handleDeleteRole}>
               <FontAwesomeIcon icon={faXmark} className="remove-icon"/>

@@ -231,45 +231,45 @@ const Mylist = () => {
           <div className='favrole-con'>
             <h2>Actors</h2>
             {favoriteRoles
-              .filter((role) => role.ROLE_TYPE === 'ACTOR')
+              .filter((role) => role.role_type === 'ACTOR')
               .map((role) => (
                 <RoleCard2
-                  key={role.NAME}
+                  key={role.name}
                   role={role}
-                  handleDeleteRole={() => handleDeleteRole(role.ROLE_ID)}
+                  handleDeleteRole={() => handleDeleteRole(role.role_id)}
                 />
               ))}
 
             <h2>Actresses</h2>
             {favoriteRoles
-              .filter((role) => role.ROLE_TYPE === 'ACTRESS')
+              .filter((role) => role.role_type === 'ACTRESS')
               .map((role) => (
                 <RoleCard2
-                  key={role.NAME}
+                  key={role.name}
                   role={role}
-                  handleDeleteRole={() => handleDeleteRole(role.ROLE_ID)}
+                  handleDeleteRole={() => handleDeleteRole(role.role_id)}
                 />
               ))}
 
             <h2>Directors</h2>
             {favoriteRoles
-              .filter((role) => role.ROLE_TYPE === 'DIRECTOR')
+              .filter((role) => role.role_type === 'DIRECTOR')
               .map((role) => (
                 <RoleCard2
-                  key={role.NAME}
+                  key={role.name}
                   role={role}
-                  handleDeleteRole={() => handleDeleteRole(role.ROLE_ID)}
+                  handleDeleteRole={() => handleDeleteRole(role.role_id)}
                 />
               ))}
 
             <h2>Writers</h2>
             {favoriteRoles
-              .filter((role) => role.ROLE_TYPE === 'WRITER')
+              .filter((role) => role.role_type === 'WRITER')
               .map((role) => (
                 <RoleCard2
-                  key={role.NAME}
+                  key={role.name}
                   role={role}
-                  handleDeleteRole={() => handleDeleteRole(role.ROLE_ID)}
+                  handleDeleteRole={() => handleDeleteRole(role.role_id)}
                 />
               ))}
           </div>

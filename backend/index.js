@@ -6908,7 +6908,7 @@ app.post('/media/page', async (req, res) => {
             `SELECT * FROM MEDIA_ROLE_DETAILS WHERE MEDIA_ID = $1`,
             [id]
         );
-
+        console.log(`Role Result: `, roleResult.rows);
         // Fetch news related to the media using the MEDIA_NEWS_DETAILS view
         const newsResult = await client.query(
             `SELECT * FROM MEDIA_NEWS_DETAILS WHERE MEDIA_ID = $1`,
@@ -6937,8 +6937,10 @@ app.post('/media/page', async (req, res) => {
             trailer: mediaData.trailer,
             companyName: mediaData.company_name,
             role: roleResult.rows.map(role => ({
-                name: role.role_name || '',  // No transformation to lowercase
-                character: role.character_name || ''  // No transformation to lowercase
+                id: role.role_id,
+                name: role.name || '',  // No transformation to lowercase
+                img: role.img,
+                type: role.role_type || '',  // No transformation to lowercase
             })),
             news: newsResult.rows.map(row => ({
                 topic: row.headline || '',  // No transformation to lowercase
@@ -7071,8 +7073,761 @@ app.post('/media/page', async (req, res) => {
           }
         }
       });
-    
 
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // Login route for ADMIN
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+    app.post('/login/admin', async (req, res) => {
+        const { username, password } = req.body;
+        console.log('Received login request:', { username, password }); // Log the received request
+    
+        let client;
+        try {
+            client = await pool.connect(); // Get a connection from the pool
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            const query = `
+                SELECT USER_NAME, PASSWORD, ADMIN_ID as user_id
+                FROM LOGIN
+                JOIN ADMIN ON LOGIN.ID = ADMIN.ADMIN_ID
+                WHERE USER_NAME = $1 AND PASSWORD = $2
+            `;
+            const values = [username, password]; // Parameterized query to prevent SQL injection
+    
+            const result = await client.query(query, values); // Execute the query
+            console.log(`Query Result: ${JSON.stringify(result.rows)}`);
+    
+            if (result.rows.length) {
+                // Send the full user data to the client
+                res.status(200).send(result.rows[0]); // Respond to client
+            } else {
+                console.log("Invalid Credentials");
+                res.status(401).send("Invalid Credentials"); // Respond to client
+            }
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                client.release(); // Release the connection back to the pool
+            }
+        }
+    });
+
+
+    
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR STATS
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // User Stats
+    app.post('/user-stats', async (req, res) => {
+        console.log('Received user stats request');
+        let client;
+        try {
+            client = await pool.connect();
+
+            const userStatsQuery = `
+                SELECT 'User' AS name, COUNT(*) AS count FROM USERS
+                UNION ALL
+                SELECT 'Company' AS name, COUNT(*) AS count FROM COMPANY
+                UNION ALL
+                SELECT 'Merchandiser' AS name, COUNT(*) AS count FROM MERCHANDISER
+            `;
+
+            const userPieStatsQuery = `
+                SELECT 'Total Users' AS name,
+                    (SELECT COUNT(*) FROM USERS) +
+                    (SELECT COUNT(*) FROM COMPANY) +
+                    (SELECT COUNT(*) FROM MERCHANDISER) AS value
+                UNION ALL
+                SELECT 'Users' AS name, COUNT(*) AS value FROM USERS
+                UNION ALL
+                SELECT 'Companies' AS name, COUNT(*) AS value FROM COMPANY
+                UNION ALL
+                SELECT 'Merchandisers' AS name, COUNT(*) AS value FROM MERCHANDISER
+            `;
+
+            const userStats = await client.query(userStatsQuery);
+            const userPieStats = await client.query(userPieStatsQuery);
+
+            res.json({ bar: userStats.rows, pie: userPieStats.rows });
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) client.release();
+        }
+    });
+
+    // Media Stats
+    app.post('/media-stats', async (req, res) => {
+        console.log('Received media stats request');
+        let client;
+        try {
+            client = await pool.connect();
+
+            const mediaStatsQuery = `
+                SELECT 'Media' AS name, COUNT(*) AS count FROM MEDIA
+                UNION ALL
+                SELECT 'Products' AS name, COUNT(*) AS count FROM PRODUCTS
+                UNION ALL
+                SELECT 'Roles' AS name, COUNT(*) AS count FROM ROLE
+            `;
+
+            const mediaStats = await client.query(mediaStatsQuery);
+
+            res.json(mediaStats.rows);
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) client.release();
+        }
+    });
+
+    // Genre Stats
+    app.post('/genre-stats', async (req, res) => {
+        console.log('Received genre stats request');
+        let client;
+        try {
+            client = await pool.connect();
+
+            const genreQuery = `
+                SELECT GENRE
+                FROM MEDIA
+            `;
+
+            const result = await client.query(genreQuery);
+            const genreCounts = {};
+
+            result.rows.forEach(row => {
+                if (row.genre) {
+                    const genres = row.genre.split(',').map(genre => genre.trim());
+                    genres.forEach(genre => {
+                        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+                    });
+                }
+            });
+
+            const genreStats = Object.entries(genreCounts).map(([genre, count]) => ({
+                genre,
+                count
+            }));
+
+            res.json(genreStats);
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) client.release();
+        }
+    });
+
+    // Type Stats
+    app.post('/type-stats', async (req, res) => {
+        console.log('Received type stats request');
+        let client;
+        try {
+            client = await pool.connect();
+
+            const typeStatsQuery = `
+                SELECT TYPE AS type, COUNT(*) AS count
+                FROM MEDIA
+                GROUP BY TYPE
+            `;
+
+            const typeStats = await client.query(typeStatsQuery);
+
+            res.json(typeStats.rows);
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) client.release();
+        }
+    });
+
+    // Role Stats
+    app.post('/role-stats', async (req, res) => {
+        console.log('Received role stats request');
+        let client;
+        try {
+            client = await pool.connect();
+
+            const roleStatsQuery = `
+                SELECT ROLE_TYPE AS role, COUNT(*) AS count
+                FROM ROLE
+                GROUP BY ROLE_TYPE
+            `;
+
+            const roleStats = await client.query(roleStatsQuery);
+
+            res.json(roleStats.rows);
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) client.release();
+        }
+    });
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // route for add role
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.post('/admin/addrole', async (req, res) => {
+        const {
+            name,
+            roleType,
+            img,
+            imgUrl
+        } = req.body;
+    
+        console.log('Received add role request:', { name, roleType, img, imgUrl });
+    
+        let con;
+        try {
+            con = await pool.getConnection();
+            if (!con) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            // Insert role data into the ROLE table with auto-generated ROLE_ID from ROLE_SEQ
+            const roleResult = await con.execute(
+                `INSERT INTO ROLE (ROLE_ID, NAME, IMG, ROLE_TYPE)
+                 VALUES (ROLE_SEQ.NEXTVAL, :name, :imgUrl, :roleType)`,
+                {
+                    name,
+                    imgUrl,
+                    roleType
+                }
+            );
+            console.log(`Role Insert Result: ${JSON.stringify(roleResult)}`);
+    
+            // Commit the transaction
+            await con.commit();
+    
+            res.status(201).send("Role added successfully");
+            console.log("Role added successfully");
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (con) {
+                try {
+                    await con.close();
+                } catch (closeErr) {
+                    console.error("Error closing database connection: ", closeErr);
+                }
+            }
+        }
+    });
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR FEATURED MEDIA
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    app.post('/media/featured1', async (req, res) => {
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            const mediaIds = req.body.mediaIds; // Assuming mediaIds is an array of IDs sent in the request body
+    
+            if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
+                res.status(400).send("Invalid media IDs");
+                return;
+            }
+    
+            console.log('Received media IDs:', mediaIds);
+    
+            // Create a SQL query to fetch media details for the given IDs
+            const query = `
+                SELECT *
+                FROM MEDIA
+                WHERE MEDIA_ID = ANY($1)
+            `;
+            
+            const result = await client.query(query, [mediaIds]);
+    
+            const transformData = (data) => ({
+                id: data.media_id,
+                title: data.title,
+                description: data.description,
+                rating: data.rating,
+                ratingCount: data.rating_count,
+                type: data.type,
+                genre: data.genre,
+                trailer: data.trailer,
+                poster: data.poster, 
+                duration: data.duration,
+                releaseDate: new Date(data.release_date).toISOString().split('T')[0],
+                episodes: data.episode || 0,
+            });
+    
+            const transformedData = result.rows.map(transformData);
+    
+            res.send(transformedData);
+            console.log("Media Data sent");
+    
+        } catch (err) {
+            console.error("Error during database query:", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                try {
+                    client.release();  // Release connection back to the pool
+                } catch (err) {
+                    console.error("Error releasing database connection:", err);
+                }
+            }
+        }
+    });
+    
+    // Route for featured media (GET)
+    app.get('/media/featured', async (req, res) => {
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            console.log('Received media request');
+        
+            const query = `
+                SELECT media_id, title, img_src, description
+                FROM media_featured
+            `;
+            const result = await client.query(query);
+    
+            const transformData = (data) => ({
+                id: data.media_id,
+                title: data.title,
+                imgSrc: data.img_src,
+                description: data.description,
+            });
+    
+            const transformedData = result.rows.map(transformData);
+    
+            res.send(transformedData);
+            console.log("Media Data sent");
+    
+        } catch (err) {
+            console.error("Error during database query:", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                try {
+                    client.release();  // Release connection back to the pool
+                } catch (err) {
+                    console.error("Error releasing database connection:", err);
+                }
+            }
+        }
+    });
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR MEDIA REVIEW
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.post('/media/review', async (req, res) => {
+        const { id } = req.body;
+        console.log('Received media review request:', id);
+    
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            // SQL query to fetch reviews for the given media ID
+            const query = `
+                SELECT REVIEWRATING.r_id, REVIEWRATING.description, REVIEWRATING.rating, USERS.name
+                FROM reviewrating
+                JOIN usergivereview ON reviewrating.r_id = usergivereview.r_id
+                JOIN reviewaboutmedia ON reviewrating.r_id = reviewaboutmedia.r_id
+                JOIN users ON usergivereview.user_id = users.user_id
+                WHERE reviewaboutmedia.media_id = $1
+                ORDER BY reviewrating.review_date DESC
+            `;
+            
+            // Execute query
+            const result = await client.query(query, [id]);
+    
+            console.log(`Query Result: `, result.rows);
+    
+            // If no reviews are found
+            if (!result.rows.length) {
+                res.status(404).send("No reviews found for the given media");
+                return;
+            }
+    
+            // Transform the result data
+            const transformData = (data) => ({
+                id: data.r_id,
+                name: data.name,
+                description: data.description,
+                rating: data.rating
+            });
+    
+            const transformedData = result.rows.map(transformData);
+    
+            res.send(transformedData);
+            console.log("Review Data sent");
+    
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                try {
+                    client.release();  // Release connection back to the pool
+                } catch (err) {
+                    console.error("Error releasing database connection: ", err);
+                }
+            }
+        }
+    });
+
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR DISCUSSION FOR MOVIE PAGE
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+    app.post('/discussions/media', async (req, res) => {
+        const { id } = req.body;
+        console.log('Received discussion request:', { id });
+    
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+    
+            // SQL query to fetch discussions for the given media ID
+            const query = `
+                SELECT DISTINCT discussion.dis_id, title, topic, discussion.description, reply_count, 
+                       discussionaboutmedia.dis_date, media.poster
+                FROM discussion
+                JOIN discussionaboutmedia
+                    ON discussion.dis_id = discussionaboutmedia.dis_id
+                JOIN media
+                    ON discussionaboutmedia.media_id = media.media_id
+                WHERE parent_topic IS NULL AND discussionaboutmedia.media_id = $1
+                ORDER BY discussionaboutmedia.dis_date DESC, discussion.reply_count DESC
+            `;
+            
+            // Execute query
+            const result = await client.query(query, [id]);
+    
+            console.log(`Query Result: `, result.rows);
+    
+            // If no discussions are found
+            if (!result.rows.length) {
+                res.status(404).send("No discussions found for the given media");
+                return;
+            }
+    
+            res.send(result.rows);
+            console.log("Discussion Data sent");
+    
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                try {
+                    client.release();  // Release connection back to the pool
+                } catch (err) {
+                    console.error("Error releasing database connection: ", err);
+                }
+            }
+        }
+    });
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR COMPANY DETAILS PAGE MEDIA
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+    app.post('/companydetailspage/medias', async (req, res) => {
+        const { com_id } = req.body;
+        console.log('Received company details page media request:', { com_id });
+    
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                return res.status(500).send("Connection Error");
+            }
+    
+            // SQL query to fetch media for a specific company
+            const query = `
+                SELECT *
+                FROM media
+                JOIN companyhasmedia ON media.media_id = companyhasmedia.media_id
+                WHERE companyhasmedia.com_id = $1
+                ORDER BY media.release_date DESC
+            `;
+            
+            // Execute query
+            const result = await client.query(query, [com_id]);
+    
+            console.log(`Query Result: `, result.rows);
+    
+            if (result.rows.length === 0) {
+                return res.status(404).send("No media found for the specified company");
+            }
+    
+            // Transform data before sending response
+            const transformData = (data) => {
+                return {
+                    id: data.media_id,
+                    img: data.poster,
+                    title: data.title,
+                    description: data.description,
+                    rating: data.rating / 2, // Assuming the original rating is out of 10 and the new one is out of 5
+                    releaseDate: new Date(data.release_date).toISOString().split('T')[0],
+                    type: data.type.charAt(0).toUpperCase() + data.type.slice(1).toLowerCase(),
+                    episodes: data.episode || 0,
+                    duration: data.duration,
+                    genre: data.genre.split(',').map(g => g.trim()),
+                    companyName: 'Example Productions', // Static name, replace with actual data if necessary
+                    role: [],
+                    news: [],
+                    review: []
+                };
+            };
+    
+            // Map transformed data to a new list
+            const mediaList = result.rows.map(transformData);
+            
+            // Send the transformed media list as the response
+            res.send(mediaList);
+    
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                try {
+                    client.release();  // Release connection back to the pool
+                } catch (err) {
+                    console.error("Error releasing database connection: ", err);
+                }
+            }
+        }
+    });
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // route for fetch all Role
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.get('/roles', async (req, res) => {
+        let client;
+        try {
+            client = await pool.connect();
+            if (!client) {
+                res.status(500).send("Connection Error");
+                return;
+            }
+            console.log('Received Role request');
+            const result = await client.query(
+                `SELECT * FROM ROLE`
+            );
+            console.log(`Query Result: `, result.rows);
+    
+            res.send(result.rows);
+            console.log("ROLE Data sent");
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        } finally {
+            if (client) {
+                try {
+                    client.release();
+                } catch (err) {
+                    console.error("Error releasing database connection: ", err);
+                }
+            }
+        }
+    });
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// route for ADMIN PROFILE
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+app.post('/profile/admin', async (req, res) => {
+    const { user_id } = req.body;
+    console.log('Received user profile request:', { user_id });
+
+    try {
+        // Get a client connection from the pool
+        const client = await pool.connect();
+
+        try {
+            // Execute the query
+            const query = `
+                SELECT * 
+                FROM ADMIN 
+                WHERE ADMIN_ID = $1
+            `;
+            const result = await client.query(query, [user_id]);
+
+            console.log(`Query Result: ${JSON.stringify(result.rows)}`);
+
+            if (result.rows.length) {
+                res.send(result.rows[0]);
+                console.log("User Data sent");
+            } else {
+                res.status(404).send("User not found");
+            }
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR ADMIN'S USERLIST 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.get('/userlist', async (req, res) => {
+        console.log('Received userlist request');
+    
+        try {
+            // Get a client connection from the pool
+            const client = await pool.connect();
+    
+            try {
+                // Execute the query
+                const query = `
+                    SELECT 
+                        USER_ID, 
+                        USER_NAME, 
+                        NAME, 
+                        DOB, 
+                        EMAIL, 
+                        CITY, 
+                        STREET, 
+                        HOUSE, 
+                        PHONE 
+                    FROM USERS
+                `;
+                const result = await client.query(query);
+    
+                // Transform the data if necessary (not strictly required for PostgreSQL, but for consistency)
+                const transformData = (data) => ({
+                    USER_ID: data.user_id,
+                    USER_NAME: data.user_name,
+                    NAME: data.name,
+                    DOB: data.dob,
+                    EMAIL: data.email,
+                    CITY: data.city,
+                    STREET: data.street,
+                    HOUSE: data.house,
+                    PHONE: data.phone,
+                });
+    
+                const transformedData = result.rows.map(transformData);
+    
+                res.send(transformedData);
+                console.log("Userlist Data sent:", transformedData);
+            } finally {
+                // Release the client back to the pool
+                client.release();
+            }
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        }
+    });
+
+    
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ROUTE FOR ADMIN'S COMPANYLIST 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    app.get('/companylist', async (req, res) => {
+        console.log('Received companylist request');
+    
+        try {
+            // Get a client connection from the pool
+            const client = await pool.connect();
+    
+            try {
+                // Execute the query
+                const query = `
+                    SELECT 
+                        COM_ID, 
+                        USER_NAME, 
+                        NAME, 
+                        IMG, 
+                        DESCRIPTION, 
+                        EMAIL 
+                    FROM COMPANY
+                `;
+                const result = await client.query(query);
+    
+                // Transform the data if necessary (not strictly required for PostgreSQL, but for consistency)
+                const transformData = (data) => ({
+                    COM_ID: data.com_id,
+                    USER_NAME: data.user_name,
+                    NAME: data.name,
+                    IMG: data.img,
+                    DESCRIPTION: data.description,
+                    EMAIL: data.email,
+                });
+    
+                const transformedData = result.rows.map(transformData);
+    
+                res.send(transformedData);
+                console.log("Companylist Data sent:", transformedData);
+            } finally {
+                // Release the client back to the pool
+                client.release();
+            }
+        } catch (err) {
+            console.error("Error during database query: ", err);
+            res.status(500).send("Internal Server Error");
+        }
+    });
 
 
 

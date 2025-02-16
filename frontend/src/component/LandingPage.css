@@ -20,7 +20,7 @@
   }
   
   .admin-login {
-    color: orange;
+    color: #ff640a;
     text-decoration: none;
   }
   
@@ -29,7 +29,7 @@
   }
   
   .cta-section {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.6);
     margin: 20px auto;
     padding: 20px;
     max-width: 400px;
@@ -42,7 +42,7 @@
   }
   
   .cta-button {
-    background-color: orange;
+    background-color: #ff640a;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -52,11 +52,11 @@
   }
   
   .cta-button:hover {
-    background-color: darkorange;
+    background-color: black;
   }
   
   .signin-link {
-    color: orange;
+    color: #ff640a;
     text-decoration: none;
   }
   
@@ -74,25 +74,16 @@
   .social-button {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
     font-size: 18px;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: transparent;
+    border: 0px;
   }
   
-  .social-button.google {
-    background-color: red;
-  }
-  
-  .social-button.facebook {
-    background-color: blue;
-  }
-  
-  .social-button.twitter {
-    background-color: lightblue;
-  }
+
   
   .about-section {
     margin: 40px auto;
@@ -151,12 +142,103 @@
   }
   
   .landing-footer nav a {
-    color: orange;
+    color: #ff640a;
     text-decoration: none;
     margin: 0 10px;
   }
   
   .landing-footer nav a:hover {
     text-decoration: underline;
+  }
+  
+
+  .about-container {
+    width: 100%;
+    position: relative;
+    height: auto;
+    text-align: left;
+    font-size: 24px;
+    color: white;
+    font-family: 'Ubuntu', sans-serif;
+    padding: 16px;
+  }
+  
+  .about-section {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  @media (min-width: 768px) {
+    .about-section {
+      flex-direction: row;
+    }
+  }
+  
+  .about-left,
+  .about-right {
+    width: 100%;
+
+  }
+  
+  @media (min-width: 768px) {
+    .about-left {
+      width: 50%;
+    }
+  
+    .about-right {
+      width: 50%;
+      padding-left: 24px;
+    }
+  }
+  
+  .about-title {
+    font-weight: 500;
+    display: flex;
+    align-items: left;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  
+  .title-text {
+    width: 100%;
+  }
+  
+  .highlight {
+    color: orangered;
+  }
+  
+  .about-description {
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+  }
+  
+  .features-list {
+    margin-top: 24px;
+  }
+  
+  @media (min-width: 768px) {
+    .features-list {
+      margin-top: 0;
+    }
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: left;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  
+  .feature-icon {
+    color: orangered;
+    margin-right: 16px;
+    font-size: 20px;
+  }
+  
+  .feature-text {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
   }
   

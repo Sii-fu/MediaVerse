@@ -127,14 +127,14 @@ const CompanyDetailsPage = () => {
       </div>
       {/* Product & news section */}
       <div className="company-details-middle">
-        <div className="products-section">
+        {/* <div className="products-section">
           <h3 className="products-title">Advertisement</h3>
           <div className="product-list">
           {products.map(product => (
           <ProductCard key={product.pro_id} product={product} />
         ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="news-section1">
           <h3>News & Updates</h3>

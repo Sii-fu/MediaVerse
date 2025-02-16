@@ -29,7 +29,7 @@ const Registration = () => {
             >
               <option value="user">User</option>
               <option value="company">Company</option>
-              <option value="merchandiser">Merchandiser</option>
+              {/* <option value="merchandiser">Merchandiser</option> */}
             </select>
           </div>
         </div>

@@ -33,21 +33,20 @@ function Navbar() {
   }, []);
 
   return (
-    <div className={`navbar ${isScrolled ? "scrolled" : ""}`}>
       <div className="navbar-container2">
-        <div className="logo-container2">
+        {/* <div className="logo-container2">
           <h1 className="logo-title2">MMP</h1>
-        </div>
+        </div> */}
         <div className="menu-container2">
-          <ul className="menu-list2">
+          <div className="menu-list2">
             <Link to={`/${username}/home`}>
-              <li className="menu-list-item2">
+              <div className="menu-list-item2">
                 <i className="fa-solid fa-chart-line"></i> Statistic
-              </li>
+              </div>
             </Link>
 
             {/* Dropdown2 Button */}
-            <li className="menu-list-item2 dropdown2">
+            <div className="menu-list-item2 dropdown2">
               <span className="dropdown2-btn">
                 <i className="fa fa-users"></i> Users
               </span>
@@ -62,30 +61,23 @@ function Navbar() {
                     <i className="fa-solid fa-user-tie"></i> Company
                   </span>
                 </Link>
-                <Link to={`/${username}/merchandiserlist`}>
-                  <span className="dropdown2-item">
-                    <i className="fa-solid fa-store"></i> Merchandiser
-                  </span>
-                </Link>
               </div>
-            </li>
+            </div>
 
             <Link to={`/${username}/viewrole`}>
-              <li className="menu-list-item2">
+              <div className="menu-list-item2">
                 <i className="fa-solid fa-user-plus"></i> Roles
-              </li>
+              </div>
             </Link>
-          </ul>
-        </div>
 
-        <Link to={`/${username}/profile`} className="profile-text2">
-          <i className="fa fa-user"></i>
-        </Link>
-        <Link to="/" className="logout-btn2" onClick={handleLogout}>
-          Logout
-        </Link>
+            <Link to={`/${username}/report`}>
+              <div className="menu-list-item2">
+                <i className="fa-solid fa-user-plus"></i> Report
+              </div>
+            </Link>
+          </div>
+        </div>
       </div>
-    </div>
   );
 }
 

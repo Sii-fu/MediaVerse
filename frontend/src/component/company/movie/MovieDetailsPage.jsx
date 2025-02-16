@@ -326,7 +326,7 @@ const MovieDetailsPage = () => {
             </div>
           </div>
           {/* Reviews Section */}
-          <div className="reviews-section111">
+          {/* <div className="reviews-section111">
             <h3 className="review-rating-title111">Reviews & Rating</h3>
             <div className="review-rating-all111">
               {reviews.length > 0 ? (
@@ -339,7 +339,7 @@ const MovieDetailsPage = () => {
                 </p>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* News & Advertisement Section */}
@@ -382,7 +382,7 @@ const MovieDetailsPage = () => {
 
           {/*Advertisement Section */}
           <div className="company-details-middle111">
-            <div className="products-section1111">
+            {/* <div className="products-section1111">
               <h3 className="products-title1111">Advertisement</h3>
               <div className="product-list1111">
                 {products.length > 0 ? (
@@ -395,7 +395,7 @@ const MovieDetailsPage = () => {
                   </p>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

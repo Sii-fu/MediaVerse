@@ -44,7 +44,7 @@ const HomeNews = () => {
       <img className="home-news-img" src={orange} alt="Background" />
       <div className="news-container">
         <p className="news-container-title">
-          <i class="fa fa-bullhorn" aria-hidden="true"></i>MMP News
+          <i class="fa fa-bullhorn" aria-hidden="true"></i>News
         </p>
         <div className="news-container-lower">
           <div className="top-news">

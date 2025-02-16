@@ -425,3 +425,118 @@
   margin-bottom: 40px;
   border-left: 5px solid #ff640a;
 }
+
+/* General styling */
+.where-to-watch-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  background-color: black; /* Light background */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Online and Theater sections */
+.where-to-watch-online,
+.where-to-watch-theater {
+  flex: 1;
+  min-width: 300px; /* Ensures proper spacing on smaller screens */
+  background: #141519; /* White cards */
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.where-to-watch-online h3,
+.where-to-watch-theater h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ff640a;
+  margin-bottom: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* List styling */
+.where-to-watch-online ul,
+.where-to-watch-theater ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.where-to-watch-online li,
+.where-to-watch-theater li {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  background: #282a32;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.where-to-watch-online li:hover,
+.where-to-watch-theater li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hyperlinks */
+.where-to-watch-online a,
+.where-to-watch-theater a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.where-to-watch-online a:hover,
+.where-to-watch-theater a:hover {
+  text-decoration: underline;
+}
+
+/* Theater details */
+.where-to-watch-theater li div {
+  font-size: 14px;
+  color: #888787;
+}
+
+.where-to-watch-theater li strong {
+  font-size: 16px;
+  color: white;
+}
+
+.where-to-watch-theater li p {
+  margin: 5px 0;
+}
+
+/* Ticket booking button */
+.ticket-book-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 12px;
+  color: #fff;
+  background-color: #ff640a; /* Green color */
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.ticket-book-link:hover {
+  background-color: #ff640a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .where-to-watch-section {
+    flex-direction: column;
+  }
+
+  .where-to-watch-online,
+  .where-to-watch-theater {
+    min-width: unset;
+    width: 100%;
+  }
+}

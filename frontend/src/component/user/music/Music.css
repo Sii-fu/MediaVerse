@@ -1,7 +1,7 @@
 .music-container {
   padding: 20px;
-  background-color:#555;
-  min-height: calc(100vh - 70px); /* Adjust for the navbar height */
+  min-height: calc(100vh - 70px);
+  /* Adjust for the navbar height */
   color: white;
 
   margin: 59px auto 40px auto;
@@ -16,38 +16,37 @@
   text-align: center;
 }
 
-.music-container-title i{
+.music-container-title i {
   margin-right: 15px;
 }
 
 .music-lower-container {
   display: flex;
   flex-direction: row;
-  margin: 0 auto 40px auto; /* Center align horizontally */
+  margin: 0 auto 40px auto;
+  /* Center align horizontally */
   width: 76%;
-  background-color: #222;
 }
 
 .music-lower-container-left {
   display: flex;
   flex-direction: column;
-  
+  max-width: 667px;
 
 }
 
-.music-lower-container-left-upper-content{
-  background-color: #4a4e58;
+.music-lower-container-left-upper-content {
   display: flex;
   flex-direction: column;
   margin-bottom: 72px;
 }
 
-.music-lower-container-left-upper-content-img{
+.music-lower-container-left-upper-content-img {
   width: 667px;
   height: 375px;
   background-size: cover;
-  background-position: center;
-
+  background-position:top;
+  object-fit: cover;
   border-radius: 3.82px;
 }
 
@@ -64,18 +63,25 @@
 
 }
 
-.music-lower-container-left-lower-content{
+.music-lower-container-left-lower-content {
   display: flex;
   flex-direction: column;
 
-  background-color: #4a4e58;
+  width: 100%;
+}
+
+.music-lower-container-left-lower-content-title {
+  font-size: 23px;
+  font-weight: 500;
+  margin-bottom: 30px;
+
+  border-left: 4px solid #ff640a;
+  padding-left: 10px;
 }
 
 .music-lower-container-right {
   display: flex;
   flex-direction: column;
-
-  background-color: #4a4e58;
   margin-left: 30px;
 }
 
@@ -84,48 +90,211 @@
   margin: 10px 0;
 }
 
-.new-releases, .you-may-like {
-  width: 45%;
-}
 
-.card-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 
-.card {
-  background-color: #222;
-  border-radius: 10px;
-  overflow: hidden;
+.music-card2 {
+  max-width: 177px;
+  height: 305px;
+  margin-right: 2rem;
   text-align: center;
-  width: 100px;
+  font-family: arial;
+  position: relative;
+  background-color: black;
+  overflow: hidden;
+  /* Ensures the content stays within the card */
 }
 
-.card img {
+.music-card2-img {
   width: 100%;
-  height: 100px;
+  height: 177px;
   object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  /* Smooth scaling effect on hover */
 }
 
-.card h3 {
-  font-size: 14px;
-  margin: 5px 0;
+.music-card2-name {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 100;
+  text-align: left;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 8px;
 }
 
-.card p {
-  font-size: 12px;
-  margin: 0 0 5px;
+.music-card2-artist {
+  max-width: 100%;
+  font-size: 10px;
+  font-weight: 100;
+  text-align: left;
+  color: #8d979a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  margin-top: 12px;
 }
 
-.top-trending ul {
-  list-style: none;
-  padding: 0;
+
+
+
+.music-card3 {
+  max-width: 177px;
+  height: 305px;
+  margin-right: 2rem;
+  text-align: center;
+  font-family: arial;
+  position: relative;
+  background-color: black;
+  overflow: hidden;
+  /* Ensures the content stays within the card */
 }
 
-.top-trending li {
+.music-card3-img {
+  width: 100%;
+  height: 177px;
+  object-fit: cover;
+  border-radius: 100px;
+  transition: transform 0.3s ease-in-out;
+  /* Smooth scaling effect on hover */
+}
+
+.music-card3-circle{
+  width: 60px;
+  height: 60px;
+  border-radius: 100px;
+  position: absolute;
+  top: 60px;
+  right: 60px;
+  background-color: black;
+  
+}
+
+
+.music-card3-circl2{
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+  position: absolute;
+  top: 70px;
+  right: 70px;
+  background-color: black;
+  border: 10px solid #ff640a;
+  
+}
+
+.music-card3-name {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 100;
+  text-align: left;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 8px;
+}
+
+.music-card3-artist {
+  max-width: 100%;
+  font-size: 10px;
+  font-weight: 100;
+  text-align: left;
+  color: #8d979a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  margin-top: 12px;
+}
+
+
+
+.music-lower-container-right-title {
+  font-size: 23px;
+  font-weight: 500;
+  margin-bottom: 30px;
+  margin-top: 35px;
+}
+
+
+.music-card4 {
+  max-width: 177px;
+  height:57px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-family: arial;
+  position: relative;
+  background-color: black;
+  overflow: hidden;
+  
   display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-  border-bottom: 1px solid #555;
+  flex-direction: row;
+  border-bottom: 0.1px solid #434343;
+  padding-bottom: 8px;
+}
+
+.music-card4-img {
+  width: 57px;
+  height: 57px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  /* Smooth scaling effect on hover */
+}
+
+.music-card4-content{
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding-left: 10px;
+  width: 100%;
+  height: 57px;
+}
+.music-card4-name {
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: 100;
+  text-align: left;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 10px;
+}
+
+.music-card4-artist {
+  max-width: 100%;
+  font-size: 12px;
+  font-weight: 100;
+  text-align: left;
+  color: #8d979a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  margin-top: 5px;
+}
+
+
+
+
+.expand-button {
+  background-color: #213944;
+  width: 100%;
+  color: white;
+  border: none;
+  padding: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.expand-button:hover {
+  background-color: #777;
+}
+
+
+.slick-slide>div {
+  margin: 0 10px;
 }

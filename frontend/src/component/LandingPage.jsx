@@ -13,7 +13,7 @@ function LandingPage() {
       <header className="landing-header">
         <img className="logo" alt="MediaVerse Logo" src={logo} />
         {/* <a href="/admin-login" className="admin-login"> */}
-          Admin Login
+          {/* Admin Login */}
         {/* </a> */}
       </header>
 
@@ -29,33 +29,82 @@ function LandingPage() {
           </Link>
         </p>
         <div className="social-buttons">
-          <button className="social-button google">G</button>
-          <button className="social-button facebook">F</button>
-          <button className="social-button twitter">X</button>
+          <button className="social-button google">
+            <i className="fab fa-google"></i>
+          </button>
+          <button className="social-button facebook">
+            <i className="fab fa-facebook-f"></i>
+          </button>
+          <button className="social-button twitter">
+            <i className="fab fa-twitter"></i>
+          </button>
         </div>
       </section>
 
-      <section className="about-section">
-        <h3>About MediaVerse</h3>
-        <p>
-          With Watch2Gether you can watch YouTube together. Services like Vimeo,
-          Netflix, Amazon, Disney & Co are also supported. Create a room and
-          invite friends to your WatchParty.
-        </p>
-      </section>
+ {/* About MediaVerse Section */}
+ <div className="about-section">
+        {/* Left Content */}
+        <div className="about-left">
+          <div className="about-title">
+            <span className="title-text">
+              About <span className="highlight">MediaVerse</span>
+            </span>
+          </div>
+          <div className="about-description">
+          MediaVerse brings together movies, series, anime, and music into one cohesive platform, making it the ultimate destination for media enthusiasts. Whether you're discovering, organizing, or sharing your favorite media, MediaVerse has everything you need in one place
+          </div>
+        </div>
+
+        {/* Right Content */}
+        <div className="about-right">
+          {/* Features List */}
+          <div className="features-list">
+            <div className="feature-item">
+              <i className="fas fa-sync-alt feature-icon"></i>
+              <div className="feature-text">
+              MediaVerse is your ultimate hub for movies, series, anime, and music.
+              </div>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-headphones-alt feature-icon"></i>
+              <div className="feature-text">
+              Discover detailed information about your favorite media all in one place.
+              </div>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-video feature-icon"></i>
+              <div className="feature-text">
+              Organize and list your favorites effortlessly with personalized tools
+              </div>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-play-circle feature-icon"></i>
+              <p className="feature-text">
+              Engage in vibrant discussions and connect with like-minded enthusiasts.
+              </p>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-music feature-icon"></i>
+              <div className="feature-text">
+              Stay updated with the latest news, releases, and trends in entertainment!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <section className="features-section">
         <div className="feature">
           <i className="fas fa-sync-alt feature-icon"></i>
-          <p>Synchronized player for video and audio</p>
+          <p>Explore the Media World</p>
         </div>
         <div className="feature">
           <i className="fas fa-video feature-icon"></i>
-          <p>Enjoy content from YouTube, Vimeo, and more</p>
+          <p>List all your types</p>
         </div>
         <div className="feature">
           <i className="fas fa-music feature-icon"></i>
-          <p>Create and share your WatchParty room</p>
+          <p>Discuss with others</p>
         </div>
       </section>
 
@@ -63,9 +112,7 @@ function LandingPage() {
         {[...Array(4)].map((_, index) => (
           <div key={index} className="card">
             <p>
-              With Watch2Gether you can watch YouTube together. Services like
-              Vimeo, Netflix, Amazon, Disney & Co are also supported. Create a
-              room and invite friends to your WatchParty.
+            MediaVerse is your ultimate hub for movies, series, anime, and music. Discover detailed information about your favorite media all in one place. Organize and list your favorites effortlessly with personalized tools. Engage in vibrant discussions and connect with like-minded enthusiasts. Stay updated with the latest news, releases, and trends in entertainment!
             </p>
             <div className="card-footer">- Ted by Email</div>
           </div>

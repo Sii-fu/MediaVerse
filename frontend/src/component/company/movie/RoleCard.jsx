@@ -18,7 +18,7 @@ const RoleCard = ({ role }) => {
             },
             body: JSON.stringify({
               user_id: localStorage.getItem("user_id"),
-              role_id: role.ROLE_ID,
+              role_id: role.role_id,
             }),
           }
         );
@@ -44,7 +44,7 @@ const RoleCard = ({ role }) => {
         },
         body: JSON.stringify({
           user_id: localStorage.getItem("user_id"),
-          role_id: role.ROLE_ID,
+          role_id: role.dole_id,
           is_favorite: !isFavorite,
         }),
       });
@@ -55,10 +55,10 @@ const RoleCard = ({ role }) => {
 
   return (
     <div className="role-card111">
-      <img src={role.IMG} alt={role.NAME} className="role-img111" />
+      <img src={role.img} alt={role.name} className="role-img111" />
       <div className="role-info111">
-        <h4>{role.NAME}</h4>
-        <p>{role.ROLE_TYPE}</p>
+        <h4>{role.name}</h4>
+        <p>{role.role_type}</p>
       </div>
     </div>
   );

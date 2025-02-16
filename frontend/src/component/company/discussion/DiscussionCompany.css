@@ -1,0 +1,89 @@
+.discussion-company {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #ffffff;
+    background-color: #181818;
+  }
+  
+  h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .discussion-company-card {
+    background-color: #252525;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    position: relative;
+    color: #ffffff;
+  }
+  
+  .pinned-badge {
+    position: absolute;
+    top: 20px;
+    left: 120px;
+    background-color: #ff640a;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .post-date {
+    font-size: 12px;
+    color: #aaaaaa;
+    margin-left: 8px;
+  }
+  
+  .post-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .post-description {
+    font-size: 14px;
+    color: #cccccc;
+  }
+  
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #aaaaaa;
+  }
+  
+  .user-info i {
+    font-size: 20px;
+    margin-right: 8px;
+  }
+  
+  .interactions {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .votes,
+  .comments {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #aaaaaa;
+  }
+  
+  .votes svg,
+  .comments svg {
+    margin-right: 5px;
+    color: #ff640a;
+  }
+  

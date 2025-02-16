@@ -1,0 +1,106 @@
+.discussion-company-details {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #181818;
+    color: #ffffff;
+  }
+  
+  .post-container {
+    margin-bottom: 20px;
+  }
+  
+  .post-header {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #aaaaaa;
+  }
+  
+  .username {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .post-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .post-description {
+    font-size: 16px;
+    color: #cccccc;
+    margin-bottom: 20px;
+  }
+  
+  .post-interactions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .votes svg {
+    margin-right: 4px;
+    color: #ff640a;
+  }
+  
+  .comments-section {
+    margin-top: 40px;
+  }
+  
+  .comment-box {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #333333;
+    background-color: #252525;
+    color: #ffffff;
+    resize: none;
+  }
+  
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .comment-card {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #252525;
+  }
+  
+  .comment-header {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #aaaaaa;
+    margin-bottom: 5px;
+  }
+  
+  .comment-username {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .comment-content {
+    font-size: 14px;
+    color: #cccccc;
+    margin-bottom: 10px;
+  }
+  
+  .comment-interactions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #aaaaaa;
+  }
+  
+  .comment-interactions svg {
+    margin-right: 4px;
+    color: #ff640a;
+  }
+  

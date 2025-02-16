@@ -36,3 +36,55 @@
     padding: 9px;
     border-radius: 15px;
   }
+
+  .reply-card-btn {
+    color: #9e9ea0;
+    font-size: 9px;
+    background-color: transparent;
+    border: none;
+    text-align: right;
+    cursor: pointer;
+    margin-left: 20px;
+  }
+
+  
+  .report-dropdown {
+    background-color: #222327;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    position: absolute;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .report-dropdown label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: white;
+  }
+  
+  .report-dropdown input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  
+  .report-dropdown-ok{
+    background-color: #ff640a;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 10px;
+  }
+
+  .close-dropdown-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 10px;
+    text-align: right;
+    width: 100%;
+  }

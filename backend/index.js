@@ -76,23 +76,6 @@ app.listen(5000, () => {
 
 
 
-function generateMediaId(title) {
-    //will generate a media id based on the title and time
-    return Math.abs(title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
-}
-
-function generateProductId(title) {
-    //will generate a media id based on the title and time
-    return Math.abs(title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
-}
-
-
-function generateDiscussionId(topic) {
-    //will generate a discussion id based on the topic and time
-    return Math.abs(topic.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
-}
-
-
 
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //     // ROUTE FOR ADD MEDIA
@@ -341,46 +324,4 @@ function generateDiscussionId(topic) {
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //     // route for fetch medias
 //     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//     app.get('/medias', async (req, res) => {
-//         let con;
-//         try {
-//             con = await pool.getConnection();
-//             if (!con) {
-//                 res.status(500).send("Connection Error");
-//                 return;
-//             }
-//             console.log('Received Media request');
-//             const result = await con.execute(
-//                 `SELECT * FROM MEDIA`
-//             );
-//             console.log(`Query Result: `,result.rows);
-
-            
-
-//             res.send(result.rows);
-//             console.log("MEDIA Data sent");
-//         } catch (err) {
-//             console.error("Error during database query: ", err);
-//             res.status(500).send("Internal Server Error");
-//         } finally {
-//             if (con) {
-//                 try {
-//                     await con.close();
-//                 } catch (err) {
-//                     console.error("Error closing database connection: ", err);
-//                 }
-//             }
-//         }
-//     });
-    
-
-
-
-
-
-
-
-
 

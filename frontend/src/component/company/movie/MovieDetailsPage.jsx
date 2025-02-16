@@ -121,28 +121,28 @@ const MovieDetailsPage = () => {
     fetchReview();
   }, [mediaID]);
 
-  useEffect(() => {
-    const fetchproducts = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/media/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ media_id: mediaID }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        } else {
-          console.error("Failed to fetch company data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchproducts();
-  }, [mediaID]);
+  // useEffect(() => {
+  //   const fetchproducts = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:5000/media/products", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ media_id: mediaID }),
+  //       });
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setProducts(data);
+  //       } else {
+  //         console.error("Failed to fetch company data");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   };
+  //   fetchproducts();
+  // }, [mediaID]);
 
 
   
@@ -380,7 +380,7 @@ const MovieDetailsPage = () => {
             </div>
           </div>
 
-          {/*Advertisement Section */}
+          {/* Advertisement Section
           <div className="company-details-middle111">
             <div className="products-section1111">
               <h3 className="products-title1111">Advertisement</h3>
@@ -396,7 +396,7 @@ const MovieDetailsPage = () => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -21,6 +21,7 @@ router.get('/', async (req, res) => {
 
         const result = await client.query('SELECT * FROM MEDIA_VIEW ORDER BY RATING DESC LIMIT 30');
         console.log('Query executed successfully:', result.rows);
+        
 
         const transformData = (data) => ({
             id: data.media_id,

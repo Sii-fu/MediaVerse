@@ -74,11 +74,17 @@ const DiscussionCard = ({ discussion }) => {
   console.log(discussion);
   return (
     <div className="discussion-card111">
+<<<<<<< HEAD
       <h4 className="discussion-topic">{discussion.topic}</h4>
       <p style={{ color: "#ff640a", fontSize: "10px" }}>
         {formatDate(discussion.dis_date)}
       </p>
       <p className="discussion-desc">{discussion.description}</p>
+=======
+        <h4 className="discussion-topic">{discussion.topic}</h4>
+        <p style={{ color: '#ff640a', fontSize: '10px' }}>{formatDate(discussion.dis_date)}</p>
+        <p className="discussion-desc">{discussion.description}</p>
+>>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
     </div>
   );
 };
@@ -162,7 +168,7 @@ const MovieDetailsPage = () => {
     const fetchMovieDis = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/discussions/media",
+          "http://localhost:5000/user/discussions/media",
           {
             method: "POST",
             headers: {
@@ -344,7 +350,7 @@ const MovieDetailsPage = () => {
     }
 
     try {
-      await fetch("http://localhost:5000/discussions/add", {
+      await fetch("http://localhost:5000/user/discussions/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -362,7 +368,7 @@ const MovieDetailsPage = () => {
     const fetchMovieDis = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/discussions/media",
+          "http://localhost:5000/user/discussions/media",
           {
             method: "POST",
             headers: {

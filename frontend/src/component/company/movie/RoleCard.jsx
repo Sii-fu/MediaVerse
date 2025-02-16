@@ -8,7 +8,7 @@ const RoleCard = ({ role }) => {
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
-        console.log("role id:", role.NAME);
+        console.log("role id:", role.name);
         const response = await fetch(
           "http://localhost:5000/media/favorite/role/status",
           {
@@ -32,7 +32,7 @@ const RoleCard = ({ role }) => {
       }
     };
     fetchFavorite();
-  }, [role.ROLE_ID]);
+  }, [role.role_id]);
 
   const toggleFavorite = async () => {
     setIsFavorite(!isFavorite);
@@ -44,7 +44,11 @@ const RoleCard = ({ role }) => {
         },
         body: JSON.stringify({
           user_id: localStorage.getItem("user_id"),
+<<<<<<< HEAD
           role_id: role.dole_id,
+=======
+          role_id: role.id,
+>>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
           is_favorite: !isFavorite,
         }),
       });
@@ -60,6 +64,17 @@ const RoleCard = ({ role }) => {
         <h4>{role.name}</h4>
         <p>{role.role_type}</p>
       </div>
+      <button
+        className="role-action111"
+        onClick={() => toggleFavorite(role.id)}
+      >
+        <i
+          className={`fa-regular fa-heart heart-icon ${
+            isFavorite ? "favorite" : ""
+          }`}
+        ></i>
+        {/* <FontAwesomeIcon icon={faHeart} className={`heart-icon ${isFavorite ? 'favorite' : ''}`} /> */}
+      </button>
     </div>
   );
 };

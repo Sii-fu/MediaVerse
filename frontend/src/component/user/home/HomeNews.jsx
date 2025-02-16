@@ -18,7 +18,7 @@ const HomeNews = () => {
   // Fetch the latest news
   const fetchLatestNews = async () => {
     try {
-      const response = await fetch("http://localhost:5000/home/news"); // GET request
+      const response = await fetch("http://localhost:5000/user/common/home/news"); // GET request
 
       if (!response.ok) {
         throw new Error("Failed to fetch latest news");

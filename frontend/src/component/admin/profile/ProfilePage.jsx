@@ -4,20 +4,20 @@ import pro1 from "./pro.jpeg";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
-    NAME: "",
-    DOB: "",
-    EMAIL: "",
-    CITY: "",
-    STREET: "",
-    HOUSE: "",
-    PHONE: "",
+    name: "",
+    dob: "",
+    email: "",
+    city: "",
+    street: "",
+    house: "",
+    phone: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:5000/profile/admin", {
+        const response = await fetch("http://localhost:5000/admin/profile", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const ProfilePage = () => {
       };
 
       const response = await fetch(
-        "http://localhost:5000/profile/admin/update",
+        "http://localhost:5000/admin/profile/update",
         {
           method: "POST",
           headers: {
@@ -112,7 +112,11 @@ const ProfilePage = () => {
               onChange={handleChange}
             />
           ) : (
+<<<<<<< HEAD
             <span>{profile.dob}</span>
+=======
+            <span>{profile.dob.split("T")[0]}</span>
+>>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
           )}
         </div>
         <div className="profile-info2">

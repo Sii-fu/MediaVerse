@@ -35,7 +35,7 @@ function ViewRole() {
   useEffect(() => {
     const fetchRolelist = async () => {
       try {
-        const response = await fetch("http://localhost:5000/roles", {
+        const response = await fetch("http://localhost:5000/admin/list/roles", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -64,11 +64,15 @@ function ViewRole() {
 
   // Function to filter roles by both search query and selected role types
   const filteredRoles = roles.filter((role) => {
+<<<<<<< HEAD
     const matchesSearchQuery = role.name.toLowerCase().includes(
+=======
+    const matchesSearchQuery = role.name?.toLowerCase().includes(
+>>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
       searchQuery.toLowerCase()
     );
     const matchesRoleType = selectedRoleTypes.length
-      ? selectedRoleTypes.includes(role.ROLE_TYPE)
+      ? selectedRoleTypes.includes(role.role_type)
       : true;
     return matchesSearchQuery && matchesRoleType;
   });
@@ -110,7 +114,7 @@ function ViewRole() {
       {/* Display Filtered Roles */}
       <div className="rolelist-list">
         {filteredRoles.map((role) => (
-          <AdminRoleCard key={role.ROLE_ID} role={role} />
+          <AdminRoleCard key={role.role_id} role={role} />
         ))}
       </div>
 

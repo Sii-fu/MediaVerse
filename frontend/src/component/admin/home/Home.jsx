@@ -10,12 +10,12 @@ const Home = () => {
   const [genreStats, setGenreStats] = useState([]);
   const [typeStats, setTypeStats] = useState([]);
   const [roleStats, setRoleStats] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [TotalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userResponse = await fetch("http://localhost:5000/user-stats", {
+        const userResponse = await fetch("http://localhost:5000/admin/user-stats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -25,10 +25,14 @@ const Home = () => {
         setUserStats(userData.bar);
         setUserPieStats(userData.pie);
 
+<<<<<<< HEAD
         const total = userData.bar.reduce((sum, stat) => sum + stat.count, 0);
         setTotalUsers(total);
+=======
+        const total = userData.bar.reduce((sum, stat) => sum + Number(stat.count), 0);        setTotalUsers(total);
+>>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
 
-        const mediaResponse = await fetch("http://localhost:5000/media-stats", {
+        const mediaResponse = await fetch("http://localhost:5000/admin/media-stats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -37,7 +41,7 @@ const Home = () => {
         const mediaData = await mediaResponse.json();
         setMediaStats(mediaData);
 
-        const genreResponse = await fetch("http://localhost:5000/genre-stats", {
+        const genreResponse = await fetch("http://localhost:5000/admin/genre-stats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -46,7 +50,7 @@ const Home = () => {
         const genreData = await genreResponse.json();
         setGenreStats(genreData);
 
-        const typeResponse = await fetch("http://localhost:5000/type-stats", {
+        const typeResponse = await fetch("http://localhost:5000/admin/type-stats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +59,7 @@ const Home = () => {
         const typeData = await typeResponse.json();
         setTypeStats(typeData);
 
-        const roleResponse = await fetch("http://localhost:5000/role-stats", {
+        const roleResponse = await fetch("http://localhost:5000/admin/role-stats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -176,7 +180,7 @@ const Home = () => {
           <div className="chart1">
             <div className="chart-total">
               <p>Total Users</p>
-              <h1>{totalUsers}</h1>
+              <h1>{TotalUsers}</h1>
             </div>
           </div>
 

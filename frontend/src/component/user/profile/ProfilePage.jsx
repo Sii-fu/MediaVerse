@@ -5,20 +5,20 @@ import pro1 from './pro1.jpeg';
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
-    NAME: '',
-    DOB: '',
-    EMAIL: '',
-    CITY: '',
-    STREET: '',
-    HOUSE: '',
-    PHONE: '',
+    name: '',
+    dob: '',
+    email: '',
+    city: '',
+    street: '',
+    house: '',
+    phone: '',
   });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('http://localhost:5000/profile/user', {
+        const response = await fetch('http://localhost:5000/user/profile', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ const ProfilePage = () => {
     try {
       const updatedProfile = { ...profile, user_id: localStorage.getItem('user_id') };
   
-      const response = await fetch('http://localhost:5000/profile/user/update', {
+      const response = await fetch('http://localhost:5000/user/profile/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

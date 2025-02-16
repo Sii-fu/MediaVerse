@@ -33,14 +33,14 @@ const Discussion = () => {
   };
 
   useEffect(() => {
-    fetchDiscussions('http://localhost:5000/discussions');
+    fetchDiscussions('http://localhost:5000/user/discussions');
   }, []);
 
   useEffect(() => {
     const fetchReplies = async () => {
       if (!selectedDiscussion) return;
       try {
-        const response = await fetch(`http://localhost:5000/discussions/replies`, {
+        const response = await fetch(`http://localhost:5000/user/discussions/replies`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const Discussion = () => {
     if (!selectedDiscussion || !replyText) return;
 
     try {
-      const response = await fetch('http://localhost:5000/discussions/add/reply', {
+      const response = await fetch('http://localhost:5000/user/discussions/add/reply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ const Discussion = () => {
 
       if (response.status === 201) {
         // Fetch the updated replies after adding a new reply
-        const updatedRepliesResponse = await fetch(`http://localhost:5000/discussions/replies`, {
+        const updatedRepliesResponse = await fetch(`http://localhost:5000/user/discussions/replies`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const Discussion = () => {
     setView(selectedView);
     if (selectedView === 'my') {
       try {
-        const response = await fetch('http://localhost:5000/discussions/my', {
+        const response = await fetch('http://localhost:5000/user/discussions/my', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ const Discussion = () => {
         console.error('Error:', error);
       }
     } else {
-      fetchDiscussions('http://localhost:5000/discussions');
+      fetchDiscussions('http://localhost:5000/user/discussions');
     }
   };
   

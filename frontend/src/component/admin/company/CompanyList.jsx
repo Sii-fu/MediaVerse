@@ -19,7 +19,7 @@ function CompanyList() {
   useEffect(() => {
     const fetchUserlist = async () => {
       try {
-        const response = await fetch("http://localhost:5000/companylist", {
+        const response = await fetch("http://localhost:5000/admin/list/companylist", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });

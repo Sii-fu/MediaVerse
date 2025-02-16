@@ -11,7 +11,7 @@ const RoleCard = ({ role }) => {
       try {
         console.log("role id:", role.name);
         const response = await fetch(
-          "http://localhost:5000/media/favorite/role/status",
+          "http://localhost:5000/user/list/media/favorite/role/status",
           {
             method: "POST",
             headers: {
@@ -38,7 +38,7 @@ const RoleCard = ({ role }) => {
   const toggleFavorite = async () => {
     setIsFavorite(!isFavorite);
     try {
-      await fetch("http://localhost:5000/media/favorite/role", {
+      await fetch("http://localhost:5000/user/list/media/favorite/role", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

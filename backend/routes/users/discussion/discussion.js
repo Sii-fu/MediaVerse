@@ -3,11 +3,6 @@ const router = express.Router();
 
 const pool = require('../../db');
 
-function generateDiscussionId(topic) {
-    //will generate a discussion id based on the topic and time
-    return Math.abs(topic.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
-}
-
 
 router.get('/', async (req, res) => {
     let client;

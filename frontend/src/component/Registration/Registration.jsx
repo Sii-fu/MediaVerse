@@ -29,10 +29,7 @@ const Registration = () => {
             >
               <option value="user">User</option>
               <option value="company">Company</option>
-<<<<<<< HEAD
-              {/* <option value="merchandiser">Merchandiser</option> */}
-=======
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
+              <option value="merchandiser">Merchandiser</option>
             </select>
           </div>
         </div>

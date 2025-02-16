@@ -12,15 +12,9 @@ function LandingPage() {
     >
       <header className="landing-header">
         <img className="logo" alt="MediaVerse Logo" src={logo} />
-<<<<<<< HEAD
         {/* <a href="/admin-login" className="admin-login"> */}
-          {/* Admin Login */}
+          Admin Login
         {/* </a> */}
-=======
-        <a href="/admin-login" className="admin-login">
-          {/* Admin Login */}
-        </a>
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
       </header>
 
       <section className="cta-section">
@@ -35,15 +29,9 @@ function LandingPage() {
           </Link>
         </p>
         <div className="social-buttons">
-          <button className="social-button google">
-            <i className="fab fa-google"></i>
-          </button>
-          <button className="social-button facebook">
-            <i className="fab fa-facebook-f"></i>
-          </button>
-          <button className="social-button twitter">
-            <i className="fab fa-twitter"></i>
-          </button>
+          <button className="social-button google">G</button>
+          <button className="social-button facebook">F</button>
+          <button className="social-button twitter">X</button>
         </div>
       </section>
 

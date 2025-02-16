@@ -206,25 +206,25 @@ const Mylist = () => {
         {activeList === 'planToWatch' &&
           planToWatchMovies.map((movie) => (
             <MovieCard2
-              key={movie.MEDIA_ID}
+              key={movie.media_id}
               movie={movie}
-              handleDeleteMovie={() => handleDeleteMovie(movie.MEDIA_ID, 'planToWatch')}
+              handleDeleteMovie={() => handleDeleteMovie(movie.media_id, 'planToWatch')}
             />
           ))}
         {activeList === 'watched' &&
           watchedMovies.map((movie) => (
             <MovieCard2
-              key={movie.MEDIA_ID}
+              key={movie.media_id}
               movie={movie}
-              handleDeleteMovie={() => handleDeleteMovie(movie.MEDIA_ID, 'watched')}
+              handleDeleteMovie={() => handleDeleteMovie(movie.media_id, 'watched')}
             />
           ))}
         {activeList === 'favorite' &&
           favoriteMovies.map((movie) => (
             <MovieCard2
-              key={movie.MEDIA_ID}
+              key={movie.media_id}
               movie={movie}
-              handleDeleteMovie={() => handleDeleteMovie(movie.MEDIA_ID, 'favorite')}
+              handleDeleteMovie={() => handleDeleteMovie(movie.media_id, 'favorite')}
             />
           ))}
         {activeList === 'favoriteRoles' && (

@@ -135,6 +135,162 @@ router.post('/page', async (req, res) => {
 });
 
 
+router.post('/favorite/status', async (req, res) => {
+    const { user_id, media_id } = req.body;
+    console.log('Received favorite status request:', { user_id, media_id });
+    let client;
+    try {
+        client = await pool.connect();
+        if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+        const result = await client.query(
+            `SELECT FAVORITE FROM USERWATCHANDFAVORITE
+            WHERE USER_ID = $1
+            AND MEDIA_ID = $2`,
+            [user_id, media_id]
+        );
+        if (result.rows.length === 0) {
+            res.status(404).send("Not found");
+        } else {
+            if(result.rows[0].favorite === 'Y'){
+                res.status(200).send("Favorite");
+            }
+            else{
+                res.status(404).send("Not favorite");
+            }
+        }
+        console.log("Favorite Status Data sent");
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection:", err);
+            }
+        }
+    }
+});
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ROUTE FOR DELETE FROM FAVORITE
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+router.post('/favorite/delete', async (req, res) => {
+    const { user_id, media_id } = req.body;
+    console.log('Received delete request for favorite:', { user_id, media_id });
+    let client;
+    try {
+        client = await pool.connect();
+        if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+
+        const checkResult = await client.query(
+            `SELECT * FROM USERWATCHANDFAVORITE 
+            WHERE USER_ID = $1
+            AND MEDIA_ID = $2`,
+            [user_id, media_id]
+        );
+
+        console.log(`Query Result: `, checkResult.rows);
+
+        if(checkResult.rows.length === 0){
+            res.status(404).send("Record not found or already deleted");
+        }
+        else {
+            if(checkResult.rows[0].status === 'WATCHED' || checkResult.rows[0].status === 'PLAN_TO_WATCH'){
+                await client.query(
+                    `UPDATE USERWATCHANDFAVORITE
+                    SET FAVORITE = NULL
+                    WHERE USER_ID = $1
+                    AND MEDIA_ID = $2`,
+                    [user_id, media_id]
+                );
+            } else{
+                await client.query(
+                    `DELETE FROM USERWATCHANDFAVORITE
+                    WHERE USER_ID = $1
+                    AND MEDIA_ID = $2`,
+                    [user_id, media_id]
+                );
+            }
+
+            res.send("Deleted successfully");
+            console.log("Deleted successfully");
+        }
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection:", err);
+            }
+        }
+    }
+});
+
+
+router.post('/favorite', async (req, res) => {
+    const { user_id, media_id, is_favorite } = req.body;
+    console.log('Received favorite request:', { user_id, media_id, is_favorite });
+    let client;
+    try {
+        client = await pool.connect();
+        if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+        let status = is_favorite ? 'Y' : 'N';
+
+        const checkResult = await client.query(
+            `SELECT * FROM USERWATCHANDFAVORITE 
+            WHERE USER_ID = $1
+            AND MEDIA_ID = $2`,
+            [user_id, media_id]
+        );
+        if (checkResult.rows.length === 0) {
+            const result = await client.query(
+                `INSERT INTO USERWATCHANDFAVORITE (USER_ID, MEDIA_ID, FAVORITE)
+                VALUES ($1, $2, $3)`,
+                [user_id, media_id, status]
+            );
+            console.log(`Query Result: `, result);
+            res.send("Favorite status updated successfully");
+        } else {
+            const result = await client.query(
+                `UPDATE USERWATCHANDFAVORITE 
+                SET FAVORITE = $1
+                WHERE USER_ID = $2
+                AND MEDIA_ID = $3`,
+                [status, user_id, media_id]
+            );
+            console.log(`Query Result: `, result);
+            res.send("Favorite status updated successfully");
+        }
+        console.log("Favorite status updated successfully");
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection:", err);
+            }
+        }
+    }
+});
+
 
 
 

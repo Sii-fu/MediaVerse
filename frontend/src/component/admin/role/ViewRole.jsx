@@ -64,11 +64,7 @@ function ViewRole() {
 
   // Function to filter roles by both search query and selected role types
   const filteredRoles = roles.filter((role) => {
-<<<<<<< HEAD
     const matchesSearchQuery = role.name.toLowerCase().includes(
-=======
-    const matchesSearchQuery = role.name?.toLowerCase().includes(
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
       searchQuery.toLowerCase()
     );
     const matchesRoleType = selectedRoleTypes.length

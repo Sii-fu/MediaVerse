@@ -74,17 +74,11 @@ const DiscussionCard = ({ discussion }) => {
   console.log(discussion);
   return (
     <div className="discussion-card111">
-<<<<<<< HEAD
       <h4 className="discussion-topic">{discussion.topic}</h4>
       <p style={{ color: "#ff640a", fontSize: "10px" }}>
         {formatDate(discussion.dis_date)}
       </p>
       <p className="discussion-desc">{discussion.description}</p>
-=======
-        <h4 className="discussion-topic">{discussion.topic}</h4>
-        <p style={{ color: '#ff640a', fontSize: '10px' }}>{formatDate(discussion.dis_date)}</p>
-        <p className="discussion-desc">{discussion.description}</p>
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
     </div>
   );
 };

@@ -112,11 +112,7 @@ const ProfilePage = () => {
               onChange={handleChange}
             />
           ) : (
-<<<<<<< HEAD
-            <span>{profile.dob}</span>
-=======
             <span>{profile.dob.split("T")[0]}</span>
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
           )}
         </div>
         <div className="profile-info2">

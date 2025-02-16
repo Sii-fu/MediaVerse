@@ -44,11 +44,7 @@ const RoleCard = ({ role }) => {
         },
         body: JSON.stringify({
           user_id: localStorage.getItem("user_id"),
-<<<<<<< HEAD
-          role_id: role.dole_id,
-=======
           role_id: role.id,
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
           is_favorite: !isFavorite,
         }),
       });

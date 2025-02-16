@@ -25,12 +25,8 @@ const Home = () => {
         setUserStats(userData.bar);
         setUserPieStats(userData.pie);
 
-<<<<<<< HEAD
-        const total = userData.bar.reduce((sum, stat) => sum + stat.count, 0);
-        setTotalUsers(total);
-=======
         const total = userData.bar.reduce((sum, stat) => sum + Number(stat.count), 0);        setTotalUsers(total);
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
+
 
         const mediaResponse = await fetch("http://localhost:5000/admin/media-stats", {
           method: "POST",

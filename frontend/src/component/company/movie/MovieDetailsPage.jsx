@@ -395,17 +395,12 @@ const MovieDetailsPage = () => {
                   </p>
                 )}
               </div>
-<<<<<<< HEAD
             </div> */}
           </div>
-=======
-            </div>
-          </div> */}
->>>>>>> f0173401034900767f78fe183a46cd72e8b56ac1
           </div>
         </div>
       </div>
-    </div>
+    
   );
 };
 

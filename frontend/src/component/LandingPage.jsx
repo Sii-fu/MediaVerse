@@ -15,27 +15,33 @@ function LandingPage() {
         {/* <a href="/admin-login" className="admin-login"> */}
           Admin Login
         {/* </a> */}
-      </header>
+        </header>
 
-      <section className="cta-section">
-        <h2>Explore • List • Discuss</h2>
-        <Link to="/registration">
-          <button className="cta-button">Sign Up</button>
-        </Link>
-        <p>
-          Already have an account?{" "}
-          <Link to="/Login" className="signin-link">
-            Sign in
+        <section className="cta-section">
+          <h2>Explore • List • Discuss</h2>
+          <Link to="/registration">
+            <button className="cta-button">Sign Up</button>
           </Link>
-        </p>
-        <div className="social-buttons">
-          <button className="social-button google">G</button>
-          <button className="social-button facebook">F</button>
-          <button className="social-button twitter">X</button>
-        </div>
-      </section>
+          <p>
+            Already have an account?{" "}
+            <Link to="/Login" className="signin-link">
+              Sign in
+            </Link>
+          </p>
+          <div className="social-buttons">
+            <button className="social-button google">
+              <i className="fab fa-google"></i>
+            </button>
+            <button className="social-button facebook">
+              <i className="fab fa-facebook-f"></i>
+            </button>
+            <button className="social-button twitter">
+              <i className="fab fa-twitter"></i>
+            </button>
+          </div>
+        </section>
 
- {/* About MediaVerse Section */}
+        {/* About MediaVerse Section */}
  <div className="about-section">
         {/* Left Content */}
         <div className="about-left">

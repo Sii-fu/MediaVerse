@@ -52,9 +52,9 @@ const Login = ({ setUserType }) => {
   return (
     <div className="login-background">
       {/* Floating cloud images */}
-      {/* <img src={cloud1} alt="Cloud 1" className="cloud cloud1" />
+      <img src={cloud1} alt="Cloud 1" className="cloud cloud1" />
       <img src={cloud2} alt="Cloud 2" className="cloud cloud2" />
-      <img src={cloud3} alt="Cloud 3" className="cloud cloud3" /> */}
+      <img src={cloud3} alt="Cloud 3" className="cloud cloud3" />
 
       <div className="login-container0">
         <h1 className="login-title">Welcome to <br /> Media & Merchandising <br /> Platform</h1>

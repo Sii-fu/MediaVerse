@@ -21,7 +21,7 @@ app.use("/user/profile", require("./routes/users/profile"));
 app.use("/user/companies", require("./routes/users/companies"));
 app.use("/user/list/media", require("./routes/users/list/list"));
 app.use("/user/discussions", require("./routes/users/discussion/discussion"));
-
+app.use("/user/music", require("./routes/users/music/music"));
 
 
 

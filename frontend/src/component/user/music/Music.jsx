@@ -137,8 +137,9 @@ const Music = () => {
     arrows: true,
   };
 
+
   return (
-    <div className="music-container">
+    <div className="music-container" style={{ textAlign: "center" }}>
       <h1 className="music-container-title">
         <i className="fa fa-music"></i>Music
       </h1>
@@ -170,18 +171,27 @@ const Music = () => {
                       alt={release.title}
                       className="music-card3-img"
                     />
-                    <div className="music-card3-circle"> </div>
-                    <div className="music-card3-circl2"> </div>
+                    <div className="music-card3-circle"></div>
+                    <div className="music-card3-circl2"></div>
                     <h4 className="music-card3-name">{release.title}</h4>
                     <p className="music-card3-artist">{release.artist}</p>
                   </div>
                 ))}
               </Slider>
             </div>
+            <iframe
+              style={{ borderRadius: "12px" }}
+              src="https://open.spotify.com/embed/track/2LwsunYgfRoqyIsNtgOCQx?utm_source=generator"
+              width="100%"
+              height="352"
+              frameBorder="0"
+              allowFullScreen=""
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+            ></iframe>
 
             <div className="you-may-like">
               <p className="music-lower-container-left-lower-content-title">
-                {" "}
                 You May Like
               </p>
               <Slider {...sliderSettings}>
@@ -202,13 +212,9 @@ const Music = () => {
         </div>
         <div className="music-lower-container-right">
           <div className="top-trending">
-            <p className="music-lower-container-right-title">
-              Top Trending Songs
-            </p>
-              {(showAllTrending
-                ? trendingSongs
-                : trendingSongs.slice(0, 5)
-              ).map((song) => (
+            <p className="music-lower-container-right-title">Top Trending Songs</p>
+            {(showAllTrending ? trendingSongs : trendingSongs.slice(0, 5)).map(
+              (song) => (
                 <div className="music-card4" key={song.id}>
                   <img
                     src={song.image}
@@ -220,7 +226,8 @@ const Music = () => {
                     <span className="music-card4-artist">{song.artist}</span>
                   </div>
                 </div>
-              ))}
+              )
+            )}
             <button
               className="expand-button"
               onClick={() => setShowAllTrending(!showAllTrending)}

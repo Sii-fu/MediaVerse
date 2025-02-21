@@ -141,11 +141,27 @@
 }
 
 .browse-option-container-genres0 {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(4, auto); /* 4 rows */
+  gap: 10px;
 }
+
+.browse-option-container-genres-button {
+  color: #8b99a0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+}
+
+.browse-option-container-genres-button:hover {
+  color: #ff640a;
+}
+
 
 .browse-option-container-genres1 {
   display: flex;

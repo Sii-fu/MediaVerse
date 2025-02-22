@@ -143,9 +143,44 @@ const Discussion = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+
+  const mediaTypes = ['Medias','Music'];
+
+  const [selectedMediaType, setSelectedMediaType] = useState('');
+
+  const handleMediaTypeClick = async (params) => {
+    setSelectedMediaType(params);
+    if (params === 'Music') {
+      try {
+        const response = await fetch('http://localhost:5000/user/discussions/music', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          setDiscussions(data);
+        } else {
+          alert('Failed to fetch discussions');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    } else {
+      fetchDiscussions('http://localhost:5000/user/discussions');
+    }
+    
+  };
+  
+
+
+
+
   return (
     <div className="discussion-page">
       <div className="discussion-list">
+
       <div className="discussion-list-header">
       <button
           className={`list-button ${view === 'my' ? 'active' : ''}`}
@@ -160,6 +195,19 @@ const Discussion = () => {
           ALL DISCUSSION
         </button>
         </div>
+        <div className="genres1">
+        {mediaTypes.map((type) => (
+          <button
+            key={type}
+            className={`genre-button1 ${
+              selectedMediaType === type ? "selected" : ""
+            }`}
+            onClick={() => handleMediaTypeClick(type)}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
         <div className="discussion-cards">
           {discussions.map(discussion => (
             <DiscussionCard

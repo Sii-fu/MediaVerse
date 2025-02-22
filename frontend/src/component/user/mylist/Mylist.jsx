@@ -10,6 +10,29 @@ const Mylist = () => {
   const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [favoriteRoles, setFavoriteRoles] = useState([]);  // New state for favorite roles
 
+
+  const logActivity = async (actionType) => {
+    try {
+      await fetch("http://localhost:5000/activity", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: localStorage.getItem("user_id"),
+          media_id: movieDetails.id,
+          com_id: movieDetails.company_id, 
+          action_type: actionType,
+          meta_data: {},
+        }),
+      });
+      console.log("Activity logged:", actionType);
+    } catch (error) {
+      console.error("Error logging activity:", error);
+    }
+  };
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {

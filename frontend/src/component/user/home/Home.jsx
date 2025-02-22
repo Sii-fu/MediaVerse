@@ -92,64 +92,36 @@ function Home() {
     fetchMoviesByGenre("COMEDY", setComedyMovies);
   }, []);
 
-  const newReleases = [
-    {
-      id: 1,
-      title: "Perfect",
-      artist: "Ed Sheeran",
-      image:
-        "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 2,
-      title: "Choo lo",
-      artist: "The Local Train",
-      image:
-        "https://th.bing.com/th/id/OIP.ln12u9qvM39TZNEFNUzZgAHaFB?w=257&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      title: "The night",
-      artist: "Oner Direction",
-      image:
-        "https://th.bing.com/th/id/OIP.UfyvMBjZLwaDIcyGo0FTNAHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 1,
-      title: "Perfect",
-      artist: "Ed Sheeran",
-      image:
-        "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 2,
-      title: "Choo lo",
-      artist: "The Local Train",
-      image:
-        "https://th.bing.com/th/id/OIP.ln12u9qvM39TZNEFNUzZgAHaFB?w=257&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      title: "The night",
-      artist: "Oner Direction",
-      image:
-        "https://th.bing.com/th/id/OIP.UfyvMBjZLwaDIcyGo0FTNAHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-  ];
+  // const newReleases = [
+  //   {
+  //     id: 1,
+  //     title: "Perfect",
+  //     artist: "Ed Sheeran",
+  //     image:
+  //       "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+  //   }
+  // ];
+  const [newReleases, setNewReleases] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchNewReleases = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/music/trending/songs", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        setNewReleases(data);
+      } catch (error) {
+        console.error("Error fetching new releases:", error);
+      }
+    };
+
+    fetchNewReleases();
+  }, []);
 
   const sliderSettings = {
     dots: true,
@@ -167,20 +139,20 @@ function Home() {
       <div className="content-container">
         <MovieList movies={foryouMovies} title="Top Picks for You" />
         <div className="movie-list-container">
-          <p className="movie-list-title">Top Songs Picks for You </p>
+          <p className="movie-list-title">Top Trending Songs </p>
           <p className="movie-list-title2">Listen and Feel the every bit...</p>
           <Slider {...sliderSettings}>
             {newReleases.map((release) => (
               <div key={release.id} className="music-card3">
                 <img
-                  src={release.image}
+                  src={release.cover_image}
                   alt={release.title}
                   className="music-card3-img"
                 />
-                <div className="music-card3-circle"> </div>
-                <div className="music-card3-circl2"> </div>
                 <h4 className="music-card3-name">{release.title}</h4>
-                <p className="music-card3-artist">{release.artist}</p>
+                <p className="music-card3-artist">
+                  {release.artists?.join(", ")}
+                </p>
               </div>
             ))}
           </Slider>

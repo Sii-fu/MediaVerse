@@ -58,7 +58,28 @@ pool.connect()
   .catch(err => console.error('Error connecting to the PostgreSQL database:', err)
 );
 
-  
+
+app.post('/activity', async (req, res) => {
+    const { user_id,com_id,action_type,media_id,meta_data } = req.body;
+    console.log('Received activity request:', { user_id,com_id,action_type,media_id,meta_data });
+    let client;
+    try {
+      await pool.query(
+        `INSERT INTO activity_log (user_id, com_id, action_type, media_id, metadata)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [user_id, com_id, action_type, media_id, meta_data]
+    );
+    res.status(201).send("Activity logged successfully");
+    console.log("Activity logged successfully");
+  } catch (err) {
+    console.error("Error during database query: ", err);
+    res.status(500).send("Internal Server Error");
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+});
 
 // Start the server
 app.listen(5000, () => {

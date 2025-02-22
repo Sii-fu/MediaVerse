@@ -51,6 +51,7 @@ def main():
             "id": song["track"]["id"],
             "title": song["track"]["name"],
             "album": song["track"]["album"]["name"],
+            "artists": [artist["name"] for artist in song["track"]["artists"]],
             "duration": song["track"]["duration_ms"] / 1000,
             "popularity": song["track"]["popularity"],
             "cover_image": song["track"]["album"]["images"][0]["url"] if song["track"]["album"]["images"] else None

@@ -29,6 +29,27 @@ router.get("/trending/songs", (req, res) => {
 });
 
 
+router.get("/newrelease", (req, res) => {
+    exec("python c:/Users/ACER/Documents/Media-and-Merchandising-Platform/backend/DB/spotify_api/newrelease.py", async (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return res.status(500).send("Error running Python script");
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+        }
+        try {
+            const pythonData = JSON.parse(stdout);
+            res.json(pythonData);
+            console.log("Trending songs fetched successfully");
+            console.log(pythonData.top_songs_from_artist);
+        } catch (err) {
+            console.log(`error: ${err.message}`);
+            res.status(500).send("Failed to parse data");
+        }
+    });
+});
+
 // get music details
 
 router.post("/page", async (req, res) => {
@@ -82,5 +103,7 @@ router.post("/artist/page", async (req, res) => {
         }
     });
 });
+
+
 
 module.exports = router;

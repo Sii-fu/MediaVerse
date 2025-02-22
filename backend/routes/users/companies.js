@@ -112,6 +112,19 @@ router.post('/medias', async (req, res) => {
         }
 
         const transformData = (data) => {
+            let releasedate = "unknown";
+            if (data.release_date) {
+                const date = new Date(data.release_date);
+                if (!isNaN(date.getTime())) {
+                    releasedate = date.toISOString().split('T')[0];
+                }
+            }
+
+            let type = "unknown";
+            if (data.type) {
+                type = data.type.charAt(0).toUpperCase() + data.type.slice(1).toLowerCase();
+            }
+
             return {
                 id: data.media_id,
                 img: data.poster || 'No Image',

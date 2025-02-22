@@ -14,11 +14,14 @@ const MovieCard = ({ movie }) => {
       setUsername(storedUsername);
     }
   }, []);
+  
+  
 
   return (
     <Link
       to={`/company/${username}/media/${movie.media_id}`}
       className="link-product-card"
+      
     >
       <div className="movie-card-long">
         <div className="movie-card-long-1st">

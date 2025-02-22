@@ -14,8 +14,9 @@ router.post('/planToWatch', async (req, res) => {
     try {
         client = await pool.connect();
         const result = await client.query(
-            `SELECT * FROM MEDIA 
-            WHERE MEDIA_ID IN (
+            `SELECT * FROM MEDIA , companyhasmedia
+            WHERE companyhasmedia.media_id=media.media_id and
+             media.MEDIA_ID IN (
                 SELECT MEDIA_ID FROM USERWATCHANDFAVORITE 
                 WHERE USER_ID = $1
                 AND STATUS = 'PLAN_TO_WATCH'
@@ -78,8 +79,9 @@ router.post('/watched', async (req, res) => {
     try {
         client = await pool.connect();
         const result = await client.query(
-            `SELECT * FROM MEDIA 
-            WHERE MEDIA_ID IN (
+            `SELECT * FROM MEDIA , companyhasmedia
+            WHERE companyhasmedia.media_id=media.media_id and
+             media.MEDIA_ID IN (
                 SELECT MEDIA_ID FROM USERWATCHANDFAVORITE 
                 WHERE USER_ID = $1
                 AND STATUS = 'WATCHED'
@@ -130,6 +132,54 @@ router.post('/watched/delete', async (req, res) => {
         }
     }
 });
+
+router.post('/mylist/add', async (req, res) => {
+    let { user_id, media_id, status } = req.body;
+    console.log('Received add to plan to watch request:', { user_id, media_id, status });
+    let client;
+    try {
+        client = await pool.connect();
+        if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+
+        const checkResult = await client.query(
+            `SELECT * FROM USERWATCHANDFAVORITE 
+            WHERE USER_ID = $1
+            AND MEDIA_ID = $2`,
+            [user_id, media_id]
+        );
+
+        if (checkResult.rows.length === 0) {
+            const result = await client.query(
+                `INSERT INTO USERWATCHANDFAVORITE (USER_ID, MEDIA_ID, STATUS)
+                VALUES ($1, $2, $3)`,
+                [user_id, media_id, status]
+            );
+            console.log(`Query Result: `, result);
+            res.send("Media added to list successfully");
+        } else {
+            const result = await client.query(
+                `UPDATE USERWATCHANDFAVORITE 
+                SET STATUS = $3
+                WHERE USER_ID = $1
+                AND MEDIA_ID = $2`,
+                [user_id, media_id, status]
+            );
+            console.log(`Query Result: `, result);
+            res.send("Media added to list successfully");
+        }
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            client.release();
+        }
+    }
+});
+    
 
 
 
@@ -182,8 +232,9 @@ router.post('/favorite/mylist', async (req, res) => {
     try {
         client = await pool.connect();
         const result = await client.query(
-            `SELECT * FROM MEDIA
-            WHERE MEDIA_ID IN (
+            `SELECT * FROM MEDIA, companyhasmedia
+            WHERE companyhasmedia.media_id=media.media_id and
+             media.MEDIA_ID IN (    
                 SELECT MEDIA_ID FROM USERWATCHANDFAVORITE
                 WHERE USER_ID = $1
                 AND FAVORITE = 'Y'

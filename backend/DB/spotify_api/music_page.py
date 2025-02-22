@@ -75,13 +75,14 @@ def main(music_id):
         print(json.dumps({"error": "Failed to fetch song details"}))
         return    
     refined_data = {
+        "id": songs_data.get("id"),
         "title": songs_data.get("name"),
         "artist": songs_data["artists"][0]["name"] if songs_data.get("artists") else None,
         "album": songs_data["album"]["name"] if songs_data.get("album") else None,
         "release_date": songs_data["album"]["release_date"] if songs_data.get("album") else None,
-        "duration": songs_data.get("duration_ms", 0) / 1000,
-        "popularity": songs_data.get("popularity"),
-        "cover_image": songs_data["album"]["images"][0]["url"]
+        "duration": int(songs_data.get("duration_ms", 0) / 1000),
+        "rating": songs_data.get("popularity") / 10 if songs_data.get("popularity") else None,
+        "coverImage": songs_data["album"]["images"][0]["url"]
             if songs_data.get("album") and songs_data["album"].get("images") else None,
         "spotify_url": songs_data["external_urls"]["spotify"] if songs_data.get("external_urls") else None,
         "songs_from_same_artist": [

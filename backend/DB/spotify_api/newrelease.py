@@ -30,7 +30,7 @@ def fetch_new_release_song_ids(token):
     response = requests.get(url, headers=headers, params=params)
     
     if response.status_code == 200:
-        return response.json().get("albums", {}).get("items", [])
+        return response.json().get("albums", {}).get("items", [])[:10]
     else:
         print(f"Error fetching new release songs: {response.status_code} - {response.json().get('error', {}).get('message', '')}")
         return None
@@ -51,7 +51,7 @@ def main():
             "title": album["name"],
             "artists": [artist["name"] for artist in album["artists"]],
             "release_date": album["release_date"],
-            "cover_image": album["images"][0]["url"] if album["images"] else None
+            "image": album["images"][0]["url"] if album["images"] else None
         }
         for album in tracks
     ]

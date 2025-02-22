@@ -18,36 +18,38 @@ const Music = () => {
     }, []);
 
 
-  const newReleases = [
-    {
-      id: 1,
-      title: "Perfect",
-      artist: "Ed Sheeran",
-      image:
-        "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 2,
-      title: "Choo lo",
-      artist: "The Local Train",
-      image:
-        "https://th.bing.com/th/id/OIP.ln12u9qvM39TZNEFNUzZgAHaFB?w=257&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      title: "The night",
-      artist: "Oner Direction",
-      image:
-        "https://th.bing.com/th/id/OIP.UfyvMBjZLwaDIcyGo0FTNAHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-  ];
+  // const newReleases = [
+  //   {
+  //     id: 1,
+  //     title: "Perfect",
+  //     artist: "Ed Sheeran",
+  //     image:
+  //       "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+  //   }
+  // ];
+
+  const [newReleases, setNewReleases] = React.useState([]);
+
+  useEffect(() => {
+      const fetchNewReleases = async () => {
+        try {
+          const response = await fetch("http://localhost:5000/user/music/newrelease", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to fetch new releases");
+          }
+          const data = await response.json();
+          setNewReleases(data);
+        } catch (err) {
+          console.error("Failed to fetch new releases:", err);
+        }
+      };
+      fetchNewReleases();
+    }, []);
 
   const youMayLike = [
     {
@@ -80,117 +82,73 @@ const Music = () => {
     },
   ];
 
-  const trendingSongs = [
-    {
-      id: 1,
-      title: "Perfect",
-      artist: "Ed Sheeran",
-      image:
-        "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 2,
-      title: "Choo lo",
-      artist: "The Local Train",
-      image:
-        "https://th.bing.com/th/id/OIP.ln12u9qvM39TZNEFNUzZgAHaFB?w=257&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      title: "The night",
-      artist: "Oner Direction",
-      image:
-        "https://th.bing.com/th/id/OIP.UfyvMBjZLwaDIcyGo0FTNAHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    
-  ];
+  // const trendingSongs = [
+  //   {
+  //     id: 1,
+  //     title: "Perfect",
+  //     artist: "Ed Sheeran",
+  //     image:
+  //       "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+  //   }
+  // ];
 
-  const trendingSongs2 = [
-    {
-      id: 1,
-      title: "Perfect",
-      artist: "Ed Sheeran",
-      image:
-        "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 2,
-      title: "Choo lo",
-      artist: "The Local Train",
-      image:
-        "https://th.bing.com/th/id/OIP.ln12u9qvM39TZNEFNUzZgAHaFB?w=257&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      title: "The night",
-      artist: "Oner Direction",
-      image:
-        "https://th.bing.com/th/id/OIP.UfyvMBjZLwaDIcyGo0FTNAHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 1,
-      title: "Perfect",
-      artist: "Ed Sheeran",
-      image:
-        "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 2,
-      title: "Choo lo",
-      artist: "The Local Train",
-      image:
-        "https://th.bing.com/th/id/OIP.ln12u9qvM39TZNEFNUzZgAHaFB?w=257&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      title: "The night",
-      artist: "Oner Direction",
-      image:
-        "https://th.bing.com/th/id/OIP.UfyvMBjZLwaDIcyGo0FTNAHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 4,
-      title: "Fire Esho",
-      artist: "Tahsan",
-      image:
-        "https://th.bing.com/th/id/OIP.qU9L61uvePwvrm1hspGMxwHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-  ];
+  const [trendingSongs, setTrendingSongs] = React.useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+      const fetchtrending= async () => {
+        try {
+          const response = await fetch("http://localhost:5000/user/music/trending/songs", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to fetch trending songs");
+          }
+          const data = await response.json();
+          setTrendingSongs(data);
+        } catch (err) {
+          console.error("Failed to fetch trending songs:", err);
+        }
+      };
+      fetchtrending();
+    }, []);
+
+  // const trendingSongs2 = [
+  //   {
+  //     id: 1,
+  //     title: "Perfect",
+  //     artist: "Ed Sheeran",
+  //     image:
+  //       "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+  //   }
+  // ];
+
+  const [trendingSongs2, setTrendingSongs2] = React.useState([]);
+
+  useEffect(() => {
+      const fetchtrending2 = async () => {
+        try {
+          const response = await fetch("http://localhost:5000/user/music/moststm", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to fetch trending songs");
+          }
+          const data = await response.json();
+          setTrendingSongs2(data);
+        } catch (err) {
+          console.error("Failed to fetch trending songs:", err);
+        }
+      };
+      fetchtrending2();
+    }, []);
+
 
   const sliderSettings = {
     dots: true,
@@ -201,15 +159,13 @@ const Music = () => {
     arrows: true,
   };
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % trendingSongs.length);
     }, 4000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [trendingSongs.length]);
 
  
   return (
@@ -230,6 +186,7 @@ const Music = () => {
               exit={{ x: -100, opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
+            {trendingSongs[currentIndex] && (
               <Link to={`/${username}/music/${trendingSongs[currentIndex].id}`} className="link-music-card">
                 <img
                   src={trendingSongs[currentIndex].image}
@@ -237,11 +194,14 @@ const Music = () => {
                   className="music-lower-container-upper-trending-image"
                 />
               </Link>
+            )}
             </motion.div>
-            <div className="music-lower-container-upper-trending-info">
-              <h2>{trendingSongs[currentIndex].title}</h2>
-              <p>{trendingSongs[currentIndex].artist}</p>
-            </div>
+            {trendingSongs[currentIndex] && (
+              <div className="music-lower-container-upper-trending-info">
+                <h2>{trendingSongs[currentIndex].title}</h2>
+                <p>{trendingSongs[currentIndex].artists.join(', ')}</p>              
+              </div>
+            )}
           </div>
 
           {/* Right Side - Trending Songs List */}
@@ -275,7 +235,7 @@ const Music = () => {
                     />
                     <div className="music-lower-container-upper-trending-text">
                       <h4>{song.title}</h4>
-                      <p>{song.artist}</p>
+                      <p>{song.artists.join(', ')}</p>
                     </div>
                   
                 </motion.li>
@@ -291,7 +251,7 @@ const Music = () => {
             <div className="music-lower-container-lower-left-lower-content">
               <div className="new-releases">
                 <p className="music-lower-container-lower-left-lower-content-title">
-                  New Releases
+                  New Released Albums
                 </p>
                 <Slider {...sliderSettings}>
                   {newReleases.map((release) => (
@@ -305,23 +265,22 @@ const Music = () => {
                         <div className="music-card3-circle"></div>
                         <div className="music-card3-circl2"></div>
                         <h4 className="music-card3-name">{release.title}</h4>
-                        <p className="music-card3-artist">{release.artist}</p>
+                        <p className="music-card3-artist">{release.artists && release.artists.join(', ')}</p>
                       </div>
                     </Link>
                   ))}
                 </Slider>
               </div>
               <iframe
-                style={{ borderRadius: "12px" }}
-                src="https://open.spotify.com/embed/track/2LwsunYgfRoqyIsNtgOCQx?utm_source=generator"
+                style={{ borderRadius: '12px' }}
+                src="https://open.spotify.com/embed/playlist/37i9dQZEVXbMDoHDwVN2tF?utm_source=generator"
                 width="100%"
-                height="352"
+                height="500"
                 frameBorder="0"
                 allowFullScreen=""
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
               ></iframe>
-
               <div className="you-may-like">
                 <p className="music-lower-container-lower-left-lower-content-title">
                   You May Like
@@ -347,7 +306,7 @@ const Music = () => {
           <div className="music-lower-container-lower-right">
             <div className="top-trending">
               <p className="music-lower-container-lower-right-title">
-                Top Listen Song
+                Top Most Streamed Song
               </p>
               {(showAllTrending
                 ? trendingSongs2
@@ -356,13 +315,13 @@ const Music = () => {
                 <Link to={`/${username}/music/${song.id}`} className="link-music-card" key={song.id}>
                   <div className="music-card4">
                     <img
-                      src={song.image}
+                      src={song.coverImage}
                       alt={song.title}
                       className="music-card4-img"
                     />
                     <div className="music-card4-content">
                       <span className="music-card4-name">{song.title}</span>
-                      <span className="music-card4-artist">{song.artist}</span>
+                      <span className="music-card4-artist">{song.artists && song.artists.join(', ')}</span>
                     </div>
                   </div>
                 </Link>

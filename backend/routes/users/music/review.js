@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        console.log('Received media review request:', id);
+        console.log('Received music review request:', id);
 
         const result = await client.query(
             `SELECT REVIEWRATING.R_ID, REVIEWRATING.DESCRIPTION, REVIEWRATING.RATING, USERS.NAME

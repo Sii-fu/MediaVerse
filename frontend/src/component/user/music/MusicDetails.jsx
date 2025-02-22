@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./MusicDetails.css";
 import ReactPlayer from "react-player";
@@ -33,33 +33,76 @@ const ReviewCard = ({ review }) => {
 
 const MusicDetails = () => {
   const { musicID } = useParams();
-  const [musicDetails, setMusicDetails] = useState({
-    id: 1,
-    title: "Perfect",
-    artist: "Ed Sheeran",
-    album: "Divide",
-    releaseDate: "2017-03-03",
-    duration: "4:23",
-    rating: 4.5,
-    playCount: "1.2B",
-    coverImage:
-      "https://th.bing.com/th/id/OIP.mcXkQH330Hn-uLJ3hSCpkgHaHa?w=200&h=200&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    streamUrl: "https://www.youtube.com/watch?v=2Vv-BfVoq4g",
-  });
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      description: "Amazing song! Loved it.",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      description: "Great melody and lyrics.",
-      rating: 4,
-    },
-  ]);
+  const [musicDetails, setMusicDetails] = useState({});
+
+  useEffect(() => {
+    const fetchMusicDetails = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/music/page", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ music_id: musicID }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch music details");
+        }
+        const music = await response.json();
+        setMusicDetails(music);
+        console.log(music.id);
+      } catch (err) {
+        console.error("Failed to fetch music details:", err);
+      }
+    };
+
+    fetchMusicDetails();
+  }, [musicID]);
+
+  // const [reviews, setReviews] = useState([
+  //   {
+  //     id: 1,
+  //     name: "John Doe",
+  //     description: "Amazing song! Loved it.",
+  //     rating: 5,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Jane Smith",
+  //     description: "Great melody and lyrics.",
+  //     rating: 4,
+  //   },
+  // ]);
+
+  const [reviews, setReviews] = useState([]);
+
+  useEffect (() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/music/review", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: musicID }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch reviews");
+        }
+
+        const data = await response.json();
+        setReviews(data);
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+      }
+    };
+  
+    fetchReviews();
+  }, [musicID]);
+
+
   const [newReview, setNewReview] = useState({
     name: "",
     description: "",
@@ -71,6 +114,55 @@ const MusicDetails = () => {
       setReviews([...reviews, { ...newReview, id: reviews.length + 1 }]);
       setNewReview({ name: "", description: "", rating: 0 });
     }
+
+    fetch("http://localhost:5000/user/music/review/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: localStorage.getItem("user_id"),
+        music_id: musicID,
+        rating: newReview.rating,
+        description: newReview.description,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to add review");
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to add review:", err);
+      }
+    );
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/music/review", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: musicID }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch reviews");
+        }
+
+        const data = await response.json();
+        setReviews(data);
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+      }
+    }
+    fetchReviews();
+  };
+
+  const formatDuration = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
   return (
@@ -91,38 +183,39 @@ const MusicDetails = () => {
           <h1>{musicDetails.title}</h1>
           <h2>{musicDetails.artist}</h2>
           <p>
-            {musicDetails.album} • {musicDetails.releaseDate}
+            {musicDetails.album} • {musicDetails.release_date}
           </p>
         </div>
       </div>
       {/* Content Section */}
       <div className="music-details-content">
         <div className="music-details-stats">
-        <p className="music-details-stats-epi">
+          <p className="music-details-stats-epi">
             <div>Album:</div>
             <div>{musicDetails.album} </div>
           </p>
           <p className="music-details-stats-epi">
             <div>Duration:</div>
-            <div>{musicDetails.duration}</div>
-          </p>
-          <p className="music-details-stats-epi">
-            <div>Play Count:</div>
-            <div>{musicDetails.playCount}</div>
+            <div>{formatDuration(musicDetails.duration)}</div>
           </p>
           <p className="music-details-stats-epi">
             <div>Rating:</div>
-            <div>{musicDetails.rating}/5</div>
+            <div>{musicDetails.rating}/10</div>
           </p>
         </div>
 
         <div className="music-details-player">
-          <ReactPlayer
-            url={musicDetails.streamUrl}
-            controls
+        <iframe
+            style={{ borderRadius: "12px" }}
+            src={`https://open.spotify.com/embed/track/${musicDetails.id}`}
             width="100%"
-            height="350px"
-          />
+            height="152"
+            frameBorder="0"
+            allowFullScreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+
         </div>
 
         <div className="music-details-reviews">
@@ -132,14 +225,6 @@ const MusicDetails = () => {
           ))}
           <div className="music-details-add-review">
             <h4>Add a Review</h4>
-            {/* <input
-              type="text"
-              placeholder="Your Name"
-              value={newReview.name}
-              onChange={(e) =>
-                setNewReview({ ...newReview, name: e.target.value })
-              }
-            /> */}
             <textarea
               placeholder="Your Review"
               value={newReview.description}
@@ -154,7 +239,7 @@ const MusicDetails = () => {
               }
             >
               <option value={0}>Select Rating</option>
-              {[1, 2, 3, 4, 5].map((num) => (
+              {[1, 2, 3, 4, 5, 6,7,8,9,10].map((num) => (
                 <option key={num} value={num}>
                   {num}
                 </option>

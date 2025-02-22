@@ -20,13 +20,37 @@ router.get("/trending/songs", (req, res) => {
             // const result = await pool.query("SELECT * FROM songs ORDER BY id DESC LIMIT 10");
             res.json(pythonData);
             console.log("Trending songs fetched successfully");
-            console.log(pythonData.top_songs_from_artist);
+            console.log(pythonData.json);
         } catch (err) {
             console.log(`error: ${err.message}`);
             res.status(500).send("Failed to parse data");
         }
     });
 });
+
+router.get("/moststm", (req, res) => {
+    exec("python c:/Users/ACER/Documents/Media-and-Merchandising-Platform/backend/DB/spotify_api/mostStreamed.py", async (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return res.status(500).send("Error running Python script");
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+        }
+        try {
+            const pythonData = JSON.parse(stdout);
+            // const result = await pool.query("SELECT * FROM songs ORDER BY id DESC LIMIT 10");
+            res.json(pythonData);
+            console.log("Trending songs fetched successfully");
+            console.log(pythonData.json);
+        } catch (err) {
+            console.log(`error: ${err.message}`);
+            res.status(500).send("Failed to parse data");
+        }
+    });
+});
+
+
 
 
 router.get("/newrelease", (req, res) => {
@@ -69,7 +93,7 @@ router.post("/page", async (req, res) => {
         try {
             const pythonData = JSON.parse(stdout);
             res.json(pythonData);
-            console.log("Trending songs fetched successfully");
+            console.log("Music songs fetched successfully");
             console.log(pythonData.top_songs_from_artist);
         } catch (err) {
             console.log(`error: ${err.message}`);

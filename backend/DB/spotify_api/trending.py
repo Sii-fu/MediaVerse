@@ -30,7 +30,7 @@ def fetch_trending_song_ids(token):
     response = requests.get(url, headers=get_auth_header(token))
     
     if response.status_code == 200:
-        return response.json().get("tracks", {}).get("items", [])
+        return response.json().get("tracks", {}).get("items", [])[:5]
     else:
         print(f"Error fetching trending songs: {response.status_code} - {response.json().get('error', {}).get('message', '')}")
         return None
@@ -54,7 +54,7 @@ def main():
             "artists": [artist["name"] for artist in song["track"]["artists"]],
             "duration": song["track"]["duration_ms"] / 1000,
             "popularity": song["track"]["popularity"],
-            "cover_image": song["track"]["album"]["images"][0]["url"] if song["track"]["album"]["images"] else None
+            "image": song["track"]["album"]["images"][0]["url"] if song["track"]["album"]["images"] else None
         }
         for song in trending_songs if song.get("track")
     ]

@@ -4,6 +4,9 @@ import RoleCard from "./RoleCard";
 import NewsCard from "./NewsCard";
 import "./MovieDetailsPage.css";
 import ReactPlayer from "react-player";
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ProductCard from "../merch/ProductCard";
 import StarRatings from "react-star-ratings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -233,42 +236,20 @@ const MovieDetailsPage = () => {
     fetchReview();
   }, [mediaID]);
 
-  useEffect(() => {
-    const fetchproducts = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/media/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ media_id: mediaID }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        } else {
-          console.error("Failed to fetch company data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchproducts();
-  }, [mediaID]);
 
   if (!movieDetails) {
     return <div className="error">Loading...</div>;
   }
 
-  const handleWatched = async () => {
-    alert("Movie added to Watched List");
+    const handleWatched = async () => {
+    toast.success("Movie successfully added to your watched list!");
     setWatchedList([...watchedList, movieDetails]);
     setPlanToWatchList(
       planToWatchList.filter((item) => item.title !== movieDetails.title)
     );
-
+  
     try {
-      await fetch("http://localhost:5000/media/mylist/add", {
+      await fetch("http://localhost:5000/user/list/media/mylist/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -281,19 +262,19 @@ const MovieDetailsPage = () => {
       });
       await logActivity("add_to_watchlist");
     } catch (error) {
-      console.error("Error updating eatched list:", error);
+      console.error("Error updating watched list:", error);
     }
   };
-
+  
   const handlePlanToWatch = async () => {
-    alert("Movie added to Plan to Watch List");
+    toast.success("Movie added to Plan to Watch List");
     setPlanToWatchList([...planToWatchList, movieDetails]);
     setWatchedList(
       watchedList.filter((item) => item.title !== movieDetails.title)
     );
-
+  
     try {
-      await fetch("http://localhost:5000/media/mylist/add", {
+      await fetch("http://localhost:5000/user/list/media/mylist/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -476,15 +457,16 @@ const MovieDetailsPage = () => {
 
   return (
     <div className="movie-details-page1">
-      <div className="movie-details" style={coverImgStyle}>
-        <div className="top-section">
-          <img
-            src={movieDetails.img}
-            alt={movieDetails.title}
-            className="movie-img"
-          />
-        </div>
+      <ToastContainer />
+    <div className="movie-details" style={coverImgStyle}>
+      <div className="top-section">
+        <img
+          src={movieDetails.img}
+          alt={movieDetails.title}
+          className="movie-img"
+        />
       </div>
+    </div>
 
       <div className="allsection1">
         <div className="allsection1-section1">

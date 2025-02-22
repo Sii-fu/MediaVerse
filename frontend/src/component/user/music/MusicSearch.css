@@ -1,0 +1,162 @@
+/* General Styles */
+.music-search-section {
+    margin-top: 60px;
+  }
+  
+  /* Header Section */
+  .music-search-header {
+    display: flex;
+    flex-direction: column;
+    background-color: #141519;
+    align-content: center;
+    padding-top: 28px;
+    padding-bottom: 35px;
+    margin-bottom: 50px;
+  }
+  
+  .music-search-header-search-bar {
+    background-color: transparent;
+    color: white;
+    border-bottom: 2px solid #4d5059;
+    border-right: 0px;
+    border-left: 0px;
+    border-top: 0px;
+    padding: 6px;
+    font-size: 25px;
+    font-weight: 200;
+    margin: 0px 350px;
+    outline: none;
+  }
+  
+  .music-search-header-search-bar:focus {
+    border-bottom: 2px solid #ff640a;
+  }
+  
+  /* Music List Section */
+  .music-search-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 20px;
+    column-gap: 0px;
+    justify-content: center;
+    margin: 25px 240px 80px 270px;
+  }
+  
+  /* Music Card Styles */
+  /* Music Card Styles */
+.music-search-card {
+    width: 295px;
+    height: 250px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ensure content doesn't overflow */
+  }
+  
+  .music-search-card-content-upper {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: #141519;
+    height: 100%; /* Half height */
+    width: 50%; /* Half width */
+    padding: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    z-index: 2; /* Ensure it's above the image */
+    transform: translateY(-100%); /* Start off-screen */
+  }
+  
+  .music-search-card:hover .music-search-card-content-upper {
+    opacity: 1;
+    transform: translateY(0); /* Slide into view */
+  }
+  
+  .music-search-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Below the upper content */
+  }
+  
+  .music-search-card:hover .music-search-card-img {
+    transform: scale(1.1); /* Scale up the image */
+  }
+  
+  .music-search-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    z-index: 2; /* Above the image */
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .music-search-card:hover .music-search-card-content {
+    opacity: 0; /* Hide artist and album name on hover */
+  }
+  
+  .music-search-card-title1 {
+    max-width: 100%;
+    font-size: 15px;
+    font-weight: 200;
+    text-align: left;
+    color: white;
+    margin-top: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .music-search-card-artist1 {
+    max-width: 100%;
+    font-size: 12px;
+    font-weight: 200;
+    text-align: left;
+    color: #a0a1a1;
+    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .music-search-card-desc1 {
+    max-height: 180px;
+    overflow: hidden;
+    color: white;
+    font-size: 13px;
+    text-align: left;
+    margin-top: 30px;
+  }
+  
+  .music-search-card-title {
+    max-width: 100%;
+    font-size: 14px;
+    font-weight: 200;
+    text-align: left;
+    color: white;
+    margin-top: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .music-search-card-artist {
+    max-width: 100%;
+    font-size: 12px;
+    font-weight: 200;
+    text-align: left;
+    color: #a0a1a1;
+    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

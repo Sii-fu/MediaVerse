@@ -25,6 +25,8 @@ import CompanySection from "./component/user/company/CompanySection.jsx";
 import CompanyDetailsPage from "./component/user/company/CompanyDetailsPage.jsx";
 import Music from "./component/user/music/Music.jsx";
 import BrowsePage from "./component/user/search/BrowsePage.jsx";
+import MusicDetailsPage from "./component/user/music/MusicDetails.jsx";
+import MusicSearch from "./component/user/music/MusicSearch.jsx";
 
 import LayoutUser from "./component/Layout/LayoutUser.jsx";
 import LayoutAdmin from "./component/Layout/LayoutAdmin.jsx";
@@ -144,6 +146,11 @@ export default function App() {
               <Route path="/:username/music" element={<Music />} />
               <Route path="/:username/browse/:genre" element={<BrowsePage />} />
               {/* /:movieId */}
+              <Route
+                path="/:username/music/:musicID"
+                element={<MusicDetailsPage />}
+              />
+              <Route path="/:username/musicsearch" element={<MusicSearch />} />
             </Route>
           )}
 

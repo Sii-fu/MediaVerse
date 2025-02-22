@@ -21,27 +21,170 @@
 }
 
 .music-lower-container {
-  display: flex;
-  flex-direction: row;
   margin: 0 auto 40px auto;
   /* Center align horizontally */
   width: 76%;
 }
 
-.music-lower-container-left {
+/* Layout */
+.music-lower-container-upper {
+  display: flex;
+  gap: 20px;
+}
+
+/* Left Side - Featured Song */
+.music-lower-container-upper-left {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 10px;
+}
+
+.music-lower-container-upper-trending-now {
+  text-align: center;
+}
+
+.music-lower-container-upper-trending-image {
+  width: 680px;
+  height: 435px;
+  background-size: cover;
+  background-position: center;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.music-lower-container-upper-trending-info h2 {
+  margin-top: 10px;
+  font-size: 2.5rem;
+  
+  position: absolute;
+  top: 62%;
+  left: 15%;
+  color: #ff640a;
+  
+}
+
+.music-lower-container-upper-trending-info p {
+  font-size: 1.5rem;
+  color: #35c4a9;
+
+  position: absolute;
+  top: 70%;
+  left: 15%;
+}
+
+/* Right Side - Trending List */
+.music-lower-container-upper-right {
+  flex: 1;
+  background: #111;
+  padding: 20px;
+  border-radius: 10px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.music-lower-container-upper-trending-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  text-align: left;
+
+  color:#ff640a;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.music-lower-container-upper-trending-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Trending Item */
+.music-lower-container-upper-trending-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.5s ease-in-out;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.music-lower-container-upper-trending-thumbnail {
+  width: 50px;
+  height: 50px;
+  border-radius: 2px;
+  margin-right: 10px;
+}
+
+.music-lower-container-upper-trending-text h4 {
+  margin: 0;
+  font-size: 1rem;
+
+  text-align: left;
+}
+
+.music-lower-container-upper-trending-text p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #aaa;
+
+  text-align: left;
+}
+
+.music-lower-container-upper-trending-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease-in-out;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)) no-repeat;
+  background-size: 0% 100%;
+}
+
+.music-lower-container-upper-trending-item.active {
+  color: white; /* Text stays readable */
+  background-color: #1e1d1d;
+  animation: bgFill 4s forwards ease-in-out;
+}
+
+@keyframes bgFill {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+
+/* Lower Section */
+.music-lower-container-lower{
+  display: flex;
+  gap: 20px;
+
+  margin-top: 60px;
+}
+
+.music-lower-container-lower-left {
   display: flex;
   flex-direction: column;
   max-width: 667px;
 
 }
 
-.music-lower-container-left-upper-content {
+.music-lower-container-lower-left-upper-content {
   display: flex;
   flex-direction: column;
   margin-bottom: 72px;
 }
 
-.music-lower-container-left-upper-content-img {
+.music-lower-container-lower-left-upper-content-img {
   width: 667px;
   height: 375px;
   background-size: cover;
@@ -50,39 +193,29 @@
   border-radius: 3.82px;
 }
 
-.search-bar {
-  width: 40%;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 30px;
-
-  position: absolute;
-
-}
-
-.music-lower-container-left-lower-content {
+.music-lower-container-lower-left-lower-content {
   display: flex;
   flex-direction: column;
 
   width: 100%;
 }
 
-.music-lower-container-left-lower-content-title {
+.music-lower-container-lower-left-lower-content-title {
   font-size: 23px;
   font-weight: 500;
   margin-bottom: 30px;
 
   border-left: 4px solid #ff640a;
   padding-left: 10px;
+  text-align: left;
 }
 
-.music-lower-container-right {
+.music-lower-container-lower-right {
   display: flex;
   flex-direction: column;
   margin-left: 30px;
+
+  width: 100%;
 }
 
 .featured-song {
@@ -101,7 +234,14 @@
   position: relative;
   background-color: black;
   overflow: hidden;
-  /* Ensures the content stays within the card */
+  
+  transition: transform 0.3s ease-in-out;
+  transform-origin: top;
+}
+
+.music-card2:hover {
+  transform:scaleY(1.05);
+  cursor: pointer;
 }
 
 .music-card2-img {
@@ -149,7 +289,27 @@
   position: relative;
   background-color: black;
   overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+  transform-origin: top;
   /* Ensures the content stays within the card */
+}
+
+.music-card3:hover {
+  transform:scaleX(1.05);
+  cursor: pointer;
+}
+
+.music-card3:hover .music-card3-img{
+  animation: rotateCircle 8s linear infinite;
+}
+
+@keyframes rotateCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .music-card3-img {
@@ -161,6 +321,7 @@
   /* Smooth scaling effect on hover */
 }
 
+
 .music-card3-circle{
   width: 60px;
   height: 60px;
@@ -171,7 +332,6 @@
   background-color: black;
   
 }
-
 
 .music-card3-circl2{
   width: 20px;
@@ -212,16 +372,19 @@
 
 
 
-.music-lower-container-right-title {
+.music-lower-container-lower-right-title {
   font-size: 23px;
   font-weight: 500;
   margin-bottom: 30px;
-  margin-top: 35px;
+
+  text-align: left;
+  border-left: 4px solid #ff640a;
+  padding-left: 10px;
 }
 
 
 .music-card4 {
-  max-width: 177px;
+  max-width: 1200px;
   height:57px;
   margin-bottom: 1rem;
   text-align: center;
@@ -234,6 +397,7 @@
   flex-direction: row;
   border-bottom: 0.1px solid #434343;
   padding-bottom: 8px;
+
 }
 
 .music-card4-img {
@@ -241,7 +405,7 @@
   height: 57px;
   object-fit: cover;
   transition: transform 0.3s ease-in-out;
-  /* Smooth scaling effect on hover */
+  padding: 5px;
 }
 
 .music-card4-content{
@@ -277,7 +441,11 @@
   margin-top: 5px;
 }
 
-
+.music-card4:hover {
+  transform: translateY(-2px);
+  background-color: #434343;
+  cursor: pointer;
+}
 
 
 .expand-button {
@@ -297,4 +465,8 @@
 
 .slick-slide>div {
   margin: 0 10px;
+}
+
+.you-may-like {
+  margin-top: 45px;
 }

@@ -1,0 +1,213 @@
+.music-details-page {
+    max-width: 100%;
+
+    width: 940px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+
+    /* background-color: #888;  */
+
+}
+
+/* Header Section */
+.music-details-header {
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    height: 250px;
+    width: 100%;
+
+    margin-top: 60px;
+    padding-bottom: 50px;
+    margin-bottom: 200px;
+
+}
+
+.music-details-header::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    /* Gradient covers the bottom half */
+    background: linear-gradient(to top, rgba(0, 0, 0, 1.1), rgba(0, 0, 0, 0));
+    z-index: 1;
+}
+
+.music-details-header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    position: absolute;
+    z-index: 2;
+    /* Ensure content is above the gradient */
+
+    top: 190px;
+}
+
+.music-details-cover {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.music-details-info {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.music-details-info h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+.music-details-info h2 {
+    margin: 5px 0;
+    font-size: 1.5rem;
+    color: #bbb;
+}
+
+.music-details-info p {
+    margin: 0;
+    font-size: 1rem;
+    color: #888;
+}
+
+
+.music-details-content {
+    padding: 20px;
+    width: 100%;
+}
+
+
+/* Music Stats */
+.music-details-stats {
+    display: flex;
+    flex-direction: column;
+
+    width: 80%;
+    margin: 0 auto;
+}
+
+.music-details-stats-epi {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: white;
+    border-bottom: 1px solid #61616d;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+
+/* Music Player */
+.music-details-player {
+    margin: 50px auto;
+    width: 60%;
+}
+
+/* Reviews Section */
+.music-details-reviews {
+    background-color: #111;
+    padding: 20px;
+    border-radius: 10px;
+
+    width: 80%;
+    margin: 0 auto;
+}
+
+.music-details-reviews h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.music-details-review-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.music-details-review-card i {
+    font-size: 30px;
+    color: #fff;
+}
+
+.music-details-review-name {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.music-details-review-desc {
+    margin: 5px 0;
+    font-size: 0.7rem;
+    color: #bbb;
+}
+
+.music-details-review-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.music-details-star {
+    color: #888;
+}
+
+.music-details-star-filled {
+    color: #ff640a;
+}
+
+/* Add Review Section */
+.music-details-add-review {
+    margin-top: 20px;
+}
+
+.music-details-add-review h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #fff;
+}
+
+.music-details-add-review input,
+.music-details-add-review textarea,
+.music-details-add-review select {
+    width: 97%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #222;
+    color: #fff;
+}
+
+.music-details-add-review button {
+    padding: 10px 20px;
+    background-color: #ff640a;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.music-details-add-review button:hover {
+    background-color: #e55b00;
+}

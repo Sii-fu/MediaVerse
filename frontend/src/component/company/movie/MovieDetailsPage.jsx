@@ -150,7 +150,7 @@ const MovieDetailsPage = () => {
   const handleAddNews = async () => {
     if (newNews.topic && newNews.description) {
         try {
-            const response = await fetch('http://localhost:5000/addNews', {
+            const response = await fetch('http://localhost:5000/company/addNews', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

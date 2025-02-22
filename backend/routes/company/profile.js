@@ -47,6 +47,27 @@ router.post('/', async (req, res) => {
     }
     });
 
+    router.post('/update', async (req, res) => {
+        const { name, email, description, img, com_id } = req.body;
+      
+        try {
+          // Update company profile data in the database
+          const result = await pool.query(
+            `UPDATE company SET name = $1, email = $2, description = $3, img = $4 WHERE com_id = $5`,
+            [name, email, description, img, com_id]
+          );
+      
+          if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Profile updated successfully' });
+          } else {
+            res.status(404).json({ message: 'Company not found' });
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          res.status(500).json({ message: 'Internal server error' });
+        }
+      });
+      
 
 
 module.exports = router;

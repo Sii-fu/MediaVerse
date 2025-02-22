@@ -1,38 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import './ProfilePage.css';
+import React, { useState, useEffect } from "react";
+import "./ProfilePage.css";
 
-import pro1 from './pro1.jpeg';
+import pro1 from "./pro1.jpeg";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
-    name: '',
-    dob: '',
-    email: '',
-    city: '',
-    street: '',
-    house: '',
-    phone: '',
+    name: "",
+    dob: "",
+    email: "",
+    city: "",
+    street: "",
+    house: "",
+    phone: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('http://localhost:5000/user/profile', {
-          method: 'POST',
+        const response = await fetch("http://localhost:5000/user/profile", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: localStorage.getItem('user_id') }),
+          body: JSON.stringify({ user_id: localStorage.getItem("user_id") }),
         });
         if (response.status === 200) {
           const data = await response.json();
           setProfile(data);
         } else {
-          alert('Failed to fetch profile');
+          alert("Failed to fetch profile");
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
       }
     };
 
@@ -52,33 +52,37 @@ const ProfilePage = () => {
     // Handle the update logic (e.g., save the updated profile to a server)
     console.log("Updated Profile:", profile);
     setIsEditing(false);
-  
+
     try {
-      const updatedProfile = { ...profile, user_id: localStorage.getItem('user_id') };
-  
-      const response = await fetch('http://localhost:5000/user/profile/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedProfile),
-      });
-  
+      const updatedProfile = {
+        ...profile,
+        user_id: localStorage.getItem("user_id"),
+      };
+
+      const response = await fetch(
+        "http://localhost:5000/user/profile/update",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProfile),
+        }
+      );
+
       const data = await response.json();
-  
+
       if (response.status === 200) {
         setProfile(data);
-        alert('Profile updated successfully!');
+        alert("Profile updated successfully!");
       } else {
-        alert(data.message || 'Failed to update profile');
+        alert(data.message || "Failed to update profile");
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred while updating the profile');
+      console.error("Error:", error);
+      alert("An error occurred while updating the profile");
     }
   };
-  
-  
 
   return (
     <div className="profile-page1">
@@ -86,67 +90,93 @@ const ProfilePage = () => {
       <img src={pro1} className="profile-page1-Profile" />
       <i class="fa fa-user-circle"></i>
       <div className="profile-info1-container">
-      <div className="profile-info1">
-        <label>Name: </label>
-        {isEditing ? (
-          <input type="text" name="NAME" value={profile.name} onChange={handleChange} />
-        ) : (
-          <span>{profile.name}</span>
-        )}
-      </div>
-      <div className="profile-info1">
-        <label>Date of Birth: </label>
-        {isEditing ? (
-  <input
-    type="date"
-    name="DOB"
-    value={profile.dob ? profile.dob.split('T')[0] : ''} // Check if DOB exists before splitting
-    onChange={handleChange}
-  />
-) : (
-  <span>{profile.dob ? profile.dob.split('T')[0] : 'Not available'}</span> // Check if DOB exists for display
-)}
-
-      </div>
-      <div className="profile-info1">
-        <label>Email: </label>
-        {isEditing ? (
-          <input type="email" name="EMAIL" value={profile.email} onChange={handleChange} />
-        ) : (
-          <span>{profile.email}</span>
-        )}
-      </div>
-      <div className="profile-info1">
-        <label>City: </label>
-        {isEditing ? (
-          <input type="text" name="CITY" value={profile.city} onChange={handleChange} />
-        ) : (
-          <span>{profile.city}</span>
-        )}
-      </div>
-      <div className="profile-info1">
-        <label>Street: </label>
-        {isEditing ? (
-          <input type="text" name="STREET" value={profile.street} onChange={handleChange} />
-        ) : (
-          <span>{profile.street}</span>
-        )}
-      </div>
-      <div className="profile-info1">
-        <label>House: </label>
-        {isEditing ? (
-          <input type="text" name="HOUSE" value={profile.house} onChange={handleChange} />
-        ) : (
-          <span>{profile.house}</span>
-        )}
-      </div>
-      <div className="profile-buttons1">
-        {isEditing ? (
-          <button onClick={handleUpdate}>Update</button>
-        ) : (
-          <button onClick={toggleEdit}>Edit</button>
-        )}
-      </div>
+        <div className="profile-info1">
+          <label>Name: </label>
+          {isEditing ? (
+            <input
+              type="text"
+              name="name"
+              value={profile.name}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{profile.name}</span>
+          )}
+        </div>
+        <div className="profile-info1">
+          <label>Date of Birth: </label>
+          {isEditing ? (
+            <input
+              type="date"
+              name="dob"
+              value={profile.dob ? profile.dob.split("T")[0] : ""} // Check if DOB exists before splitting
+              onChange={handleChange}
+            />
+          ) : (
+            <span>
+              {profile.dob ? profile.dob.split("T")[0] : "Not available"}
+            </span> // Check if DOB exists for display
+          )}
+        </div>
+        <div className="profile-info1">
+          <label>Email: </label>
+          {isEditing ? (
+            <input
+              type="email"
+              name="email"
+              value={profile.email}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{profile.email}</span>
+          )}
+        </div>
+        <div className="profile-info1">
+          <label>City: </label>
+          {isEditing ? (
+            <input
+              type="text"
+              name="city"
+              value={profile.city}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{profile.city}</span>
+          )}
+        </div>
+        <div className="profile-info1">
+          <label>Street: </label>
+          {isEditing ? (
+            <input
+              type="text"
+              name="street"
+              value={profile.street}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{profile.street}</span>
+          )}
+        </div>
+        <div className="profile-info1">
+          <label>House: </label>
+          {isEditing ? (
+            <input
+              type="text"
+              name="house"
+              value={profile.house}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{profile.house}</span>
+          )}
+        </div>
+        <div className="profile-buttons1">
+          {isEditing ? (
+            <button onClick={handleUpdate}>Update</button>
+          ) : (
+            <button onClick={toggleEdit}>Edit</button>
+          )}
+        </div>
       </div>
     </div>
   );

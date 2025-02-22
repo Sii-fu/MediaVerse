@@ -758,7 +758,7 @@ const MovieDetailsPage = () => {
           </div>
 
           {/*Advertisement Section */}
-          <div className="company-details-middle111">
+          {/* <div className="company-details-middle111">
             <div className="products-section1111">
               <h3 className="products-title1111">Advertisement</h3>
               <div className="product-list1111">
@@ -773,7 +773,7 @@ const MovieDetailsPage = () => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

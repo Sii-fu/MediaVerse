@@ -21,9 +21,9 @@ function Topper() {
             </li>
           </Link>
           {/* <Link to={`/${username}/company/collaborate`}> */}
-            <li className="topper-content-list-item3">
+            {/* <li className="topper-content-list-item3">
               <i class="fa-solid fa-bell"></i>
-            </li>
+            </li> */}
           {/* </Link> */}
         </ul>
       </div>

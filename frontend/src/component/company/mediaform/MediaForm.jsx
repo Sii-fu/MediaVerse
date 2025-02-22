@@ -48,7 +48,7 @@ const MediaForm = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/roles", {
+        const response = await fetch("http://localhost:5000/company/mediaform/roles", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -224,7 +224,7 @@ const MediaForm = () => {
       console.log("Roles:", rolesArray);
 
       // Send the form data to the backend
-      const response = await fetch("http://localhost:5000/addmedia", {
+      const response = await fetch("http://localhost:5000/company/mediaform/addmedia", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

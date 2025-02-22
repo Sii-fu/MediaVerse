@@ -134,7 +134,7 @@
   opacity: 1;
 }
 
-.company-card:hover .company-card-desc {}
+/* .company-card:hover .company-card-desc {} */
 
 .company-card-img {
   width: 100%;

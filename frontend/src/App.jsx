@@ -27,7 +27,6 @@ import Music from "./component/user/music/Music.jsx";
 import LayoutUser from "./component/Layout/LayoutUser.jsx";
 import LayoutAdmin from "./component/Layout/LayoutAdmin.jsx";
 import LayoutCompany from "./component/Layout/LayoutCompany.jsx";
-import LayoutMerch from "./component/Layout/LayoutMerch.jsx";
 
 import HomeAdmin from "./component/admin/home/Home.jsx";
 import UserList from "./component/admin/user/UserList.jsx";
@@ -50,13 +49,6 @@ import ProfileCompany from "./component/company/profile/ProfilePage.jsx";
 import DiscussionCompanyDetails from "./component/company/discussion/DiscussionCompanyDetails.jsx";
 
 
-import HomeMerch from "./component/merch/home/Home.jsx";
-import ProfileMerch from "./component/merch/profile/ProfilePage.jsx";
-import ProductForm from "./component/merch/addproductform/ProductForm.jsx";
-import MerchandiserCollaborate from "./component/merch/collaborate/MerchandiserCollaborate.jsx";
-import CollabDetailsMerch from "./component/merch/collaborate/CollabDetails.jsx";
-import MerchProductDetailsPage from "./component/merch/product/ProductDetails.jsx";
-import MerchOrder from "./component/merch/order/MerchOrder.jsx";
 
 import Login from "./component/Login.jsx";
 import Registration from "./component/Registration/Registration.jsx";

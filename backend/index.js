@@ -22,11 +22,13 @@ app.use("/user/companies", require("./routes/users/companies"));
 app.use("/user/list/media", require("./routes/users/list/list"));
 app.use("/user/discussions", require("./routes/users/discussion/discussion"));
 app.use("/user/music", require("./routes/users/music/music"));
+app.use("/user/music/review", require("./routes/users/music/review"));
 
 
 
 app.use("/company", require("./routes/company/media/media"));
 app.use("/company/profile", require("./routes/company/profile"));
+app.use("/company/review", require("./routes/company/review/review"));
 
 
 

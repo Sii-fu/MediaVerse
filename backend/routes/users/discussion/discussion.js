@@ -3,6 +3,11 @@ const router = express.Router();
 
 const pool = require('../../db');
 
+const { exec } = require("child_process");
+function generateDiscussionId(topic) {
+    //will generate a discussion id based on the topic and time
+    return Math.abs(topic.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
+}
 
 router.get('/', async (req, res) => {
     let client;
@@ -256,8 +261,126 @@ router.post('/add/reply', async (req, res) => {
     }
 });
 
+router.get('/music', async (req, res) => {
+    let client;
+    try {
+        client = await pool.connect();
+        console.log('Received discussion request');
 
+        const query = `
+            SELECT DISTINCT 
+                DISCUSSION.DIS_ID, 
+                MUSIC_ID,
+                TOPIC, 
+                DISCUSSION.DESCRIPTION, 
+                REPLY_COUNT, 
+                DISCUSSIONABOUTMUSIC.DIS_DATE
+            FROM DISCUSSION 
+            JOIN DISCUSSIONABOUTMUSIC
+                ON DISCUSSION.DIS_ID = DISCUSSIONABOUTMUSIC.DIS_ID 
+            WHERE PARENT_TOPIC IS NULL
+            ORDER BY DISCUSSIONABOUTMUSIC.DIS_DATE DESC, DISCUSSION.REPLY_COUNT DESC
+        `;
 
+        const result = await client.query(query);
+
+        const fetchMusicDetails = (musicId) => {
+            return new Promise((resolve, reject) => {
+                exec(`python c:/Users/ACER/Documents/Media-and-Merchandising-Platform/backend/DB/spotify_api/music_details.py ${musicId}`, (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(`error: ${error.message}`);
+                        return reject("Error running Python script");
+                    }
+                    if (stderr) {
+                        console.log(`stderr: ${stderr}`);
+                    }
+                    try {
+                        const pythonData = JSON.parse(stdout);
+                        if (pythonData.error) {
+                            console.log(`Python script error: ${pythonData.error}`);
+                            return reject(pythonData.error);
+                        }
+                        resolve(pythonData);
+                    } catch (err) {
+                        console.log(`Parsing error: ${err.message}, received: ${stdout}`);
+                        reject("Failed to parse data");
+                    }
+                });
+            });
+        };
+
+        const musicDetailsPromises = result.rows.map(row => fetchMusicDetails(row.music_id));
+
+        const musicDetails = await Promise.all(musicDetailsPromises);
+
+        const transformedData = result.rows.map((data, index) => ({
+            dis_id: data.dis_id,
+            title: musicDetails[index].title || "Unknown",
+            topic: data.topic,
+            description: data.description,
+            reply_count: data.reply_count,
+            dis_date: data.dis_date,
+            poster: musicDetails[index].cover_image || null
+        }));
+
+        res.send(transformedData);
+        console.log("Music Discussion Data sent");
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection: ", err);
+            }
+        }
+    }
+});
+
+router.post('/music/add', async (req, res) => { 
+    const { user_id, music_id, topic, description } = req.body;
+    console.log('Received add discussion request:', { user_id, music_id, topic, description });
+    const dis_id = generateDiscussionId(topic);
+    console.log('Generated Discussion ID:', dis_id);
+    const dis_date = new Date().toISOString().split('T')[0]; 
+    let client;
+    try {
+        client = await pool.connect();
+        await client.query('BEGIN');
+        await client.query(
+            `INSERT INTO DISCUSSION (DIS_ID, DESCRIPTION, TOPIC, REPLY_COUNT, PARENT_TOPIC)
+            VALUES ($1, $2, $3, 0, NULL)`,
+            [dis_id, description, topic]
+        );
+        await client.query(
+            `INSERT INTO USERSTARTDISCUSSION (DIS_ID, USER_ID)
+            VALUES ($1, $2)`,
+            [dis_id, user_id]
+        );
+        await client.query(
+            `INSERT INTO DISCUSSIONABOUTMUSIC (DIS_ID, MUSIC_ID, DIS_DATE, LIKE)
+            VALUES ($1, $2, $3, 0)`,
+            [dis_id, music_id, dis_date]
+        );
+        await client.query('COMMIT');
+        res.status(201).send("Discussion added successfully");
+        console.log("Discussion added successfully");
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (client) {
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection: ", err);
+            }
+        }
+    }
+});
 
 
 

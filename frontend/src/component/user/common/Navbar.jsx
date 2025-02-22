@@ -111,9 +111,30 @@ function Navbar() {
               </div>
             </li>
 
-            <Link to={`/${username}/music`}>
+            <li className="menu-list-item1 browse-dropdown">
+              Music
+              <i className="fa fa-caret-down" aria-hidden="true"></i>
+              <div className="browse-option">
+                <div className="browse-option-container-popular">
+                    <Link
+                      to={`/${username}/music`}
+                      className="browse-option-container-button"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      to={`/${username}/musicsearch`}
+                      className="browse-option-container-button"
+                    >
+                      Search
+                    </Link>
+                </div>
+              </div>
+            </li>
+
+            {/* <Link to={`/${username}/music`}>
               <li className="menu-list-item1">Music</li>
-            </Link>
+            </Link> */}
             <Link to={`/${username}/discussion`}>
               <li className="menu-list-item1">Community</li>
             </Link>

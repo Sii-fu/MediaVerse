@@ -195,6 +195,8 @@ router.post('/media/foryou', async (req, res) => {
         const query = `
             SELECT DISTINCT
                 M.media_id, 
+                company.com_id,
+                company.name,
                 M.title, 
                 M.description, 
                 M.rating, 
@@ -210,6 +212,10 @@ router.post('/media/foryou', async (req, res) => {
                 media M
             JOIN 
                 preferredgenre P ON REGEXP_LIKE(M.genre, REPLACE(P.genres, ',', '|'))
+            join 
+                companyhasmedia on companyhasmedia.media_id=M.media_id
+            join
+                company on company.com_id=companyhasmedia.com_id
             WHERE 
                 P.user_id = $1
                 AND NOT EXISTS (
@@ -241,6 +247,7 @@ router.post('/media/foryou', async (req, res) => {
                 duration: data.duration,
                 genre: data.genre ? data.genre.split(',').map(g => g.trim()) : [], // Safely handle undefined GENRE
                 companyName: 'Example Productions',
+                com_id: data.com_id,
                 role: [],
                 news: [],
                 review: []

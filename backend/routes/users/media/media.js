@@ -69,7 +69,9 @@ router.post('/page', async (req, res) => {
         console.log('Received media request:', req.body);
         const { id } = req.body;
         const mediaResult = await client.query(
-            `SELECT * FROM MEDIA_COMPANY_DETAILS WHERE MEDIA_ID = $1`, 
+            `SELECT * FROM MEDIA_COMPANY_DETAILS
+            join companyhasmedia on media_company_details.media_id = companyhasmedia.media_id
+            WHERE companyhasmedia.MEDIA_ID = $1`, 
             [id]
         );
 
@@ -93,6 +95,7 @@ router.post('/page', async (req, res) => {
         const transformedData = {
             id: mediaData.media_id,
             img: mediaData.poster,
+            com_id: mediaData.com_id,
             title: mediaData.title,
             description: mediaData.description,
             rating: mediaData.rating,

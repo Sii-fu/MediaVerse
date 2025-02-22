@@ -112,18 +112,31 @@ router.post('/medias', async (req, res) => {
         }
 
         const transformData = (data) => {
+            let releasedate = "unknown";
+            if (data.release_date) {
+                const date = new Date(data.release_date);
+                if (!isNaN(date.getTime())) {
+                    releasedate = date.toISOString().split('T')[0];
+                }
+            }
+
+            let type = "unknown";
+            if (data.type) {
+                type = data.type.charAt(0).toUpperCase() + data.type.slice(1).toLowerCase();
+            }
+
             return {
-                id: data.MEDIA_ID,
-                img: data.POSTER,
-                title: data.TITLE,
-                description: data.DESCRIPTION,
-                rating: data.RATING / 2, // Assuming the original rating is out of 10 and the new one is out of 5
-                releaseDate: new Date(data.RELEASE_DATE).toISOString().split('T')[0],
-                type: data.TYPE.charAt(0).toUpperCase() + data.TYPE.slice(1).toLowerCase(),
-                episodes: data.EPISODE || 0,
-                duration: data.DURATION,
-                genre: data.GENRE.split(',').map(g => g.trim()),
-                companyName: 'Example Productions',
+                id: data.media_id,
+                img: data.poster,
+                title: data.title,
+                description: data.description,
+                rating: data.rating / 2,
+                releasedate,
+                type,
+                episodes: data.episode || 0,
+                duration: data.duration,
+                genre: data.genre ? data.genre.split(',').map(g => g.trim()) : [],
+                companyname: 'example productions',
                 role: [],
                 news: [],
                 review: []

@@ -36,6 +36,8 @@ const StarIcon = ({
   </svg>
 );
 
+
+
 const ReviewCard = ({ review }) => {
   return (
     <div className="review-card111">
@@ -65,6 +67,8 @@ const ReviewCard = ({ review }) => {
     </div>
   );
 };
+
+
 
 const DiscussionCard = ({ discussion }) => {
   const formatDate = (dateString) => {
@@ -131,6 +135,30 @@ const MovieDetailsPage = () => {
     };
     fetchFavorite();
   }, [userId, mediaID]);
+
+
+
+    const logActivity = async (actionType, metaData = {}) => {
+    try {
+      await fetch("http://localhost:5000/activity", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: localStorage.getItem("user_id"),
+          media_id: movieDetails.id,
+          com_id: movieDetails.com_id,
+          action_type: actionType,
+          meta_data: metaData,
+        }),
+      });
+      console.log("Activity logged:", actionType);
+    } catch (error) {
+      console.error("Error logging activity:", error);
+    }
+  };
+
 
   //movie details--------------------------------------------------------------------------
   useEffect(() => {
@@ -251,6 +279,7 @@ const MovieDetailsPage = () => {
           status: "WATCHED",
         }),
       });
+      await logActivity("add_to_watchlist");
     } catch (error) {
       console.error("Error updating eatched list:", error);
     }
@@ -275,6 +304,7 @@ const MovieDetailsPage = () => {
           status: "PLAN_TO_WATCH",
         }),
       });
+      await logActivity("add_to_watchlist");
     } catch (error) {
       console.error("Error updating plan to watch list:", error);
     }
@@ -299,12 +329,12 @@ const MovieDetailsPage = () => {
     }
   };
 
-  const handleAddReview = async () => {
+    const handleAddReview = async () => {
     if (!newReview.description || newReview.rating <= 0) {
       alert("Please fill out all fields and provide a rating.");
       return;
     }
-
+  
     try {
       const addResponse = await fetch(
         "http://localhost:5000/media/review/add",
@@ -321,28 +351,29 @@ const MovieDetailsPage = () => {
           }),
         }
       );
-
+  
       if (!addResponse.ok) {
         throw new Error("Failed to add review");
       }
-
+  
       setNewReview({ name: "", description: "", rating: 0 });
-
+  
       await updateReview();
+      await logActivity("review", { description: newReview.description, rating: newReview.rating });
     } catch (error) {
       console.error("Error adding review:", error);
     }
   };
-  ``;
 
-  const handleAddDiscussion = async () => {
+    const handleAddDiscussion = async () => {
     if (newDiscussion.topic && newDiscussion.description) {
       setDiscussions([...discussions, newDiscussion]);
       setNewDiscussion({ topic: "", description: "" });
     } else {
       alert("Please fill out both topic and description.");
+      return;
     }
-
+  
     try {
       await fetch("http://localhost:5000/user/discussions/add", {
         method: "POST",
@@ -356,6 +387,7 @@ const MovieDetailsPage = () => {
           description: newDiscussion.description,
         }),
       });
+      await logActivity("start discussion", { topic: newDiscussion.topic, description: newDiscussion.description });
     } catch (error) {
       console.error("Error adding discussion:", error);
     }
@@ -397,6 +429,11 @@ const MovieDetailsPage = () => {
           is_favorite: !isFavorite,
         }),
       });
+      if (!isFavorite) {
+        await logActivity("add_to_favorites");
+      } else {
+        await logActivity("remove_from_favorites");
+      }
     } catch (error) {
       console.error("Error updating favorite status:", error);
     }
@@ -579,10 +616,12 @@ const MovieDetailsPage = () => {
         { name: "Hulu", url: "https://www.hulu.com" },
         { name: "Disney+", url: "https://www.disneyplus.com" },
       ].map((platform, index) => (
-        <li key={index}>
-          <a href={platform.url} target="_blank" rel="noopener noreferrer">
-            {platform.name}
-          </a>
+        <li
+          key={index}
+          onClick={() => window.open(platform.url, "_blank")}
+          style={{ cursor: "pointer" }}
+        >
+          {platform.name}
         </li>
       ))}
     </ul>
@@ -758,7 +797,7 @@ const MovieDetailsPage = () => {
           </div>
 
           {/*Advertisement Section */}
-          <div className="company-details-middle111">
+          {/* <div className="company-details-middle111">
             <div className="products-section1111">
               <h3 className="products-title1111">Advertisement</h3>
               <div className="product-list1111">
@@ -773,7 +812,7 @@ const MovieDetailsPage = () => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

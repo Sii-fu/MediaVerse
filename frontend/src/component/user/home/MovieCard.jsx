@@ -14,6 +14,27 @@ const MovieCard = ({ movie }) => {
     }
   }, []);
 
+  const logActivity = async () => {
+    try {
+      await fetch("http://localhost:5000/activity", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: localStorage.getItem("user_id"),
+          com_id: movie.com_id,
+          action_type: "view",
+          media_id: movie.id, // Use the movie's ID
+          meta_data: {},
+        }),
+      });
+      console.log("Activity logged successfully");
+    } catch (error) {
+      console.error("Error logging activity:", error);
+    }
+  };
+
   // Convert to async function to handle the fetch call
   async function handleAddToWatchList() {
     const userId = localStorage.getItem('user_id'); // Get userId from localStorage
@@ -46,8 +67,8 @@ const MovieCard = ({ movie }) => {
   }
 
   return (
-    <Link to={`/${username}/media/${movie.id}`} className="link-product-card">
-      <div className="movie-card">
+    <div className="movie-card" onClick={logActivity}>
+      <Link to={`/${username}/media/${movie.id}`} className="link-product-card">
         <img className="movie-card-img" src={movie.img} alt={movie.title} />
         <div className="movie-card-content">
           <p className="movie-card-content-title">{movie.title}</p>
@@ -84,8 +105,8 @@ const MovieCard = ({ movie }) => {
         </div>
         <h3 className="movie-card-title">{movie.title}</h3>
         <h3 className="movie-card-type">{movie.type}</h3>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 };
 

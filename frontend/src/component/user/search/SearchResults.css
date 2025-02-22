@@ -6,9 +6,33 @@
 
 .search-results {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, 1fr); /* Ensures 6 items per row */
   row-gap: 40px;
   column-gap: 0px;
   justify-content: center;
   margin: 25px 240px 80px 240px;
+}
+
+@media (max-width: 1200px) {
+  .search-results {
+    grid-template-columns: repeat(4, 1fr); /* 4 items per row on medium screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .search-results {
+    grid-template-columns: repeat(3, 1fr); /* 3 items per row on smaller screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .search-results {
+    grid-template-columns: repeat(2, 1fr); /* 2 items per row on very small screens */
+  }
+}
+
+@media (max-width: 400px) {
+  .search-results {
+    grid-template-columns: 1fr; /* 1 item per row on very small mobile screens */
+  }
 }

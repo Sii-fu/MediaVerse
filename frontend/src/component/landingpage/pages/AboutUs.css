@@ -1,0 +1,146 @@
+.about {
+    margin-top: 50px;
+}
+
+.about-top {
+    width: 100%;
+    padding: 40px 0;
+    background-color: #111;
+    /* Dark background */
+    display: flex;
+    justify-content: center;
+}
+
+.about-container {
+    width: 90%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.about-content-left {
+    flex: 1;
+    min-width: 300px;
+    max-width: 50%;
+}
+
+.about-title {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.about-text {
+    color: #ccc;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.about-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.about-button:hover {
+    background-color: #0056b3;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Two columns */
+    grid-template-rows: auto;
+    /* Auto adjust rows */
+    gap: 10px;
+    /* Spacing between images */
+    width: 100%;
+    max-width: 500px;
+    /* Adjust based on your layout */
+}
+
+.image-item {
+    overflow: hidden;
+}
+
+.image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-item.large {
+    grid-column: span 1;
+    grid-row: span 2;
+    height: 210px;
+}
+
+.image-item.small {
+    grid-column: span 1;
+    height: 100px;
+}
+
+.about-bottom {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+
+    margin-top: 70px;
+    margin-bottom: 70px;
+}
+
+
+.about-bottom-title {
+    font-size: 50px;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+
+.mobile-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 80px;
+    margin-top: 50px;
+}
+
+.stat-item {
+    display: flex;
+    gap: 20px;
+    background: transparent;
+    padding: 15px;
+
+    width: 320PX;
+    text-align: left;
+}
+
+.stat-icon {
+    font-size: 60px;
+    color: #ff640a;
+    /* Yellow/gold color for contrast */
+}
+
+.stat-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-text h5 {
+    padding-top: 8px;
+    font-size: 28px;
+    color: white;
+}
+
+.stat-text span {
+    font-size: 14px;
+    color: #ccc;
+}

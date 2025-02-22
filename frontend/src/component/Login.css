@@ -1,9 +1,9 @@
-
 .login-background {
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden; /* Ensures no scrollbars appear */
+  overflow: hidden;
+  /* Ensures no scrollbars appear */
   background: linear-gradient(to bottom, black, #203843);
 }
 
@@ -11,16 +11,19 @@
 .cloud {
   position: absolute;
   opacity: 0.8;
-  z-index: 1; /* Keep clouds behind the login form */
+  z-index: 1;
+  /* Keep clouds behind the login form */
 }
 
 /* Left to right clouds */
 .cloud1 {
   top: 10%;
-  left: -150px; /* Start off-screen */
+  left: -150px;
+  /* Start off-screen */
   animation: floatLeftToRight 15s linear infinite;
 
-  width: 340px; /* Adjust the size of clouds */
+  width: 340px;
+  /* Adjust the size of clouds */
 }
 
 .cloud2 {
@@ -29,99 +32,106 @@
   animation: floatLeftToRight 25s linear infinite;
 
   filter: blur(5px);
-  width: 150px; /* Adjust the size of clouds */
+  width: 150px;
+  /* Adjust the size of clouds */
 }
 
 /* Right to left cloud */
 .cloud3 {
   top: 50%;
-  right: -150px; /* Start off-screen from the right */
+  right: -150px;
+  /* Start off-screen from the right */
   animation: floatRightToLeft 20s linear infinite;
 
-  width: 220px; /* Adjust the size of clouds */
+  width: 220px;
+  /* Adjust the size of clouds */
   /*blur*/
   filter: blur(2px);
 
 }
 
-/* Ensure login form styling matches your theme */
+/* Login container should have a higher z-index */
 .login-container {
+  position: relative;
+  z-index: 2;
+  /* Ensures it's above the clouds */
+
+  display: flex;
+  flex-direction: row;
+  gap: 60px;
+  justify-content: center;
+
+  margin-top: 120px;
+
+  padding: 0px 100px;
+}
+
+.login-container-left {
+  padding-top: 50px;
+}
+
+/* Ensure login form styling matches your theme */
+.login-container-right {
   padding: 30px;
   color: white;
   width: 100%;
   max-width: 400px;
-  margin-left: 900px;
-  margin-top: 120px;
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-.login-container h2 {
+.login-container-right h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.form-group-login1, .form-group-login {
+.form-group-login1,
+.form-group-login {
   margin-bottom: 20px;
 }
 
-/* Login container should have a higher z-index */
-.login-container0 {
-  position: relative;
-  z-index: 2; /* Ensures it's above the clouds */
-}
-
-.login-title{
-  font-size: 23px;
-  font-weight: 500;
-  margin-bottom: 30px;
-  margin-top: 35px;
+.login-title {
   justify-content: center;
   text-align: center;
   color: white;
-  position: absolute;
 
   text-align: left;
 
-  font-size: 45px;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 25px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 600;
-
-  margin-left: 130px;
 }
 
-/* Login container should have a higher z-index */
-.login-container0 {
-  position: relative;
-  z-index: 2; /* Ensures it's above the clouds */
+.login-logo {
+  height: 100px;
+  filter: drop-shadow(0 4px 6px rgba(255, 100, 10, 0.5));
 }
 
-.login-title1{
+.login-title1 {
   font-size: 23px;
   font-weight: 500;
   margin-bottom: 30px;
   margin-top: 35px;
   justify-content: center;
   text-align: center;
-  color:#ff640a;
-  position: absolute;
+  color: #ff640a;
 
   text-align: left;
 
   font-size: 17px;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 600;
-
-  margin-left: 130px;
-  margin-top: 220px;
 }
 
 /* Keyframes for left-to-right animation */
 @keyframes floatLeftToRight {
   0% {
-    transform: translateX(0); /* Start off-screen */
+    transform: translateX(0);
+    /* Start off-screen */
   }
+
   100% {
-    transform: translateX(150vw); /* End far to the right */
+    transform: translateX(150vw);
+    /* End far to the right */
   }
 }
 
@@ -130,7 +140,9 @@
   0% {
     transform: translateX(0);
   }
+
   100% {
-    transform: translateX(-150vw); /* End far to the left */
+    transform: translateX(-150vw);
+    /* End far to the left */
   }
 }

@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
+import LandingPage2 from "./component/landingpage/LandingPage.jsx";
 import LandingPage from "./component/LandingPage.jsx";
 import Navbar from "./component/user/common/Navbar.jsx";
 import ScrollToTop from "./component/user/common/ScrollToTop.jsx";
@@ -23,6 +24,7 @@ import MovieDetailsPage from "./component/user/movie/MovieDetailsPage.jsx";
 import CompanySection from "./component/user/company/CompanySection.jsx";
 import CompanyDetailsPage from "./component/user/company/CompanyDetailsPage.jsx";
 import Music from "./component/user/music/Music.jsx";
+import BrowsePage from "./component/user/search/BrowsePage.jsx";
 
 import LayoutUser from "./component/Layout/LayoutUser.jsx";
 import LayoutAdmin from "./component/Layout/LayoutAdmin.jsx";
@@ -53,7 +55,6 @@ import DiscussionCompanyDetails from "./component/company/discussion/DiscussionC
 import Login from "./component/Login.jsx";
 import Registration from "./component/Registration/Registration.jsx";
 import CompanyRegistration from "./component/Registration/CompanyRegistration.jsx";
-import MerchandiserRegistration from "./component/Registration/MerchandiserRegistration.jsx";
 import UserRegistration from "./component/Registration/UserRegistration.jsx";
 
 import "./App.css";
@@ -97,17 +98,13 @@ export default function App() {
       <div className="container">
         {/* <Navbar /> */}
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage2/>} />
           <Route path="/Login" element={<Login setUserType={setUserType} />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/registration/user" element={<UserRegistration />} />
           <Route
             path="/registration/company"
             element={<CompanyRegistration />}
-          />
-          <Route
-            path="/registration/merchandiser"
-            element={<MerchandiserRegistration />}
           />
 
           {/* Protected routes based on user type */}
@@ -137,6 +134,7 @@ export default function App() {
                 element={<CompanyDetailsPage />}
               />
               <Route path="/:username/music" element={<Music />} />
+              <Route path="/:username/browse/:genre" element={<BrowsePage />} />
               {/* /:movieId */}
             </Route>
           )}

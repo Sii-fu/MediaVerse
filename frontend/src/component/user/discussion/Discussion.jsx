@@ -195,7 +195,7 @@ const Discussion = () => {
           ALL DISCUSSION
         </button>
         </div>
-        <div className="genres1">
+        {/* <div className="genres1">
         {mediaTypes.map((type) => (
           <button
             key={type}
@@ -207,7 +207,7 @@ const Discussion = () => {
             {type}
           </button>
         ))}
-      </div>
+      </div> */}
         <div className="discussion-cards">
           {discussions.map(discussion => (
             <DiscussionCard

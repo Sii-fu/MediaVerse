@@ -125,16 +125,26 @@ const Review = () => {
         {movies.map((movie) => (
           <div key={movie.id}>
             <MovieCard movie={movie} onShowReviews={handleShowReviews} />
-            {selectedMovieId === movie.id && (
-              <div className="reviews2-container">
-                {movie.reviews.map((review, i) => (
-                  <ReviewCard key={i} review={review} />
-                ))}
-                <button className="close-reviews-btn" onClick={() => setSelectedMovieId(null)}>
-                  Close Reviews
-                </button>
-              </div>
-            )}
+            {selectedMovieId && (
+  <>
+    {/* Background overlay effect */}
+    <div className="reviews2-overlay-backdrop" onClick={() => setSelectedMovieId(null)}></div>
+
+    {/* Review container in the center */}
+    <div className="reviews2-overlay">
+      <h2>Reviews</h2>
+      {movies
+        .find((movie) => movie.id === selectedMovieId)
+        ?.reviews.map((review, i) => (
+          <ReviewCard key={i} review={review} />
+        ))}
+      <button className="close-reviews-btn" onClick={() => setSelectedMovieId(null)}>
+        Close Reviews
+      </button>
+    </div>
+  </>
+)}
+
           </div>
         ))}
       </div>

@@ -136,5 +136,52 @@ router.get('/roles', async (req, res) => {
 });
 
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// route for fetch add Role
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+router.post('/addrole', async (req, res) => {
+    const { name, roleType, imgUrl } = req.body;
+
+    console.log('Received add role request:', { name, roleType, imgUrl });
+
+    let con;
+    try {
+        con = await pool.connect();
+        if (!con) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+
+        // Generate a random integer ID between 100000 and 999999
+        const randomRoleId = Math.floor(100000 + Math.random() * 900000);
+
+        // Insert role data into the ROLE table
+        const roleResult = await con.query(
+            `INSERT INTO ROLE (ROLE_ID, NAME, IMG, ROLE_TYPE)
+             VALUES ($1, $2, $3, $4)`,
+            [randomRoleId, name, imgUrl, roleType]
+        );
+
+        console.log(`Role Insert Result: ${JSON.stringify(roleResult)}`);
+
+        // Commit the transaction
+        await con.query('COMMIT');
+
+        res.status(201).send("Role added successfully");
+        console.log("Role added successfully");
+    } catch (err) {
+        console.error("Error during database query: ", err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        if (con) {
+            con.release(); // Release the connection back to the pool
+        }
+    }
+});
+
+
+
 
 module.exports = router;

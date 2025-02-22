@@ -295,6 +295,39 @@ router.post('/favorite', async (req, res) => {
 });
 
 
+router.post('/mylist/add', async (req, res) => {
+    let { user_id, media_id, status } = req.body;
+    console.log('Received add to plan to watch request:', { user_id, media_id, status });
+
+    try {
+        // Check if the user has already added this media
+        const checkResult = await pool.query(
+            'SELECT * FROM USERWATCHANDFAVORITE WHERE USER_ID = $1 AND MEDIA_ID = $2',
+            [user_id, media_id]
+        );
+
+        if (checkResult.rows.length === 0) {
+            // Media not found in the list, so insert it
+            const result = await pool.query(
+                'INSERT INTO USERWATCHANDFAVORITE (USER_ID, MEDIA_ID, STATUS) VALUES ($1, $2, $3)',
+                [user_id, media_id, status]
+            );
+            console.log("Query Result:", result);
+            res.send("Media added to list successfully");
+        } else {
+            // Media already exists, update the status
+            const result = await pool.query(
+                'UPDATE USERWATCHANDFAVORITE SET STATUS = $1 WHERE USER_ID = $2 AND MEDIA_ID = $3',
+                [status, user_id, media_id]
+            );
+            console.log("Query Result:", result);
+            res.send("Media list updated successfully");
+        }
+    } catch (err) {
+        console.error("Error during database query:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 
 module.exports = router;

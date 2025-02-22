@@ -60,17 +60,6 @@ const RoleCard = ({ role }) => {
         <h4>{role.name}</h4>
         <p>{role.role_type}</p>
       </div>
-      <button
-        className="role-action111"
-        onClick={() => toggleFavorite(role.id)}
-      >
-        <i
-          className={`fa-regular fa-heart heart-icon ${
-            isFavorite ? "favorite" : ""
-          }`}
-        ></i>
-        {/* <FontAwesomeIcon icon={faHeart} className={`heart-icon ${isFavorite ? 'favorite' : ''}`} /> */}
-      </button>
     </div>
   );
 };

@@ -32,7 +32,7 @@ function Topper() {
             to={`/${username}/company/collaborate`}
             className="admin-topper-content-list2-item"
           > */}
-            <i class="fa-solid fa-bell"></i>
+            {/* <i class="fa-solid fa-bell"></i> */}
           {/* </Link> */}
 
           <Link to="/" className="logout-btn2" onClick={handleLogout}>

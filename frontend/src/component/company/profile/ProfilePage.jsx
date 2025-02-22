@@ -25,7 +25,7 @@ const ProfilePage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userid: localStorage.getItem("user_id") }),
+          body: JSON.stringify({ userid: localStorage.getItem("user_id") }), // Get user ID from local storage or session
         });
         if (response.status === 200) {
           const data = await response.json();
@@ -64,10 +64,7 @@ const ProfilePage = () => {
 
     // Only upload the image if a new file has been selected
     if (imageUpload) {
-      const imageRef = ref(
-        storage,
-        `company/profile/${imageUpload.name + v4()}`
-      );
+      const imageRef = ref(storage, `company/profile/${imageUpload.name + v4()}`);
       await uploadBytes(imageRef, imageUpload);
       const url = await getDownloadURL(imageRef);
       updatedProfile.IMG = url;
@@ -75,10 +72,27 @@ const ProfilePage = () => {
       setImageUpload(null);
     }
 
-    // Handle the update logic (e.g., save the updated profile to a server)
-    console.log("Updated Profile:", updatedProfile);
-    setProfile(updatedProfile);
-    setIsEditing(false);
+    // Send the updated profile data to the backend
+    try {
+      const response = await fetch("http://localhost:5000/company/profile/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProfile),
+      });
+
+      if (response.status === 200) {
+        setProfile(updatedProfile);
+        setIsEditing(false);
+        alert("Profile updated successfully");
+      } else {
+        alert("Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Error updating profile");
+    }
   };
 
   return (

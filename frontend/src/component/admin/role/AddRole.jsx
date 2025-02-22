@@ -63,7 +63,7 @@ const AddRole = ({ onClose }) => {
         imgUrl: url,
       };
 
-      const response = await fetch("http://localhost:5000/admin/addrole", {
+      const response = await fetch("http://localhost:5000/admin/list/addrole", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

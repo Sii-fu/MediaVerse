@@ -165,7 +165,7 @@
   border-color: #f8782f; */
   background-color: #ff640a;
   color: white;
-  
+
 }
 
 .allsection1-section1-watchlist-button2 {
@@ -315,8 +315,8 @@
 }
 
 .add-news input[type="text"]:focus,
-.add-news textarea:focus{
-  border-color:#ff640a;
+.add-news textarea:focus {
+  border-color: #ff640a;
 }
 
 .add-news button {
@@ -412,7 +412,7 @@
   margin-top: 100px;
 }
 
-.product-list1111{
+.product-list1111 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
@@ -432,7 +432,8 @@
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
-  background-color: black; /* Light background */
+  background-color: black;
+  /* Light background */
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -441,8 +442,10 @@
 .where-to-watch-online,
 .where-to-watch-theater {
   flex: 1;
-  min-width: 300px; /* Ensures proper spacing on smaller screens */
-  background: #141519; /* White cards */
+  min-width: 300px;
+  /* Ensures proper spacing on smaller screens */
+  background: #141519;
+  /* White cards */
   border-radius: 8px;
   padding: 15px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -516,7 +519,8 @@
   margin-top: 10px;
   padding: 8px 12px;
   color: #fff;
-  background-color: #ff640a; /* Green color */
+  background-color: #ff640a;
+  /* Green color */
   border-radius: 5px;
   text-decoration: none;
   font-size: 14px;

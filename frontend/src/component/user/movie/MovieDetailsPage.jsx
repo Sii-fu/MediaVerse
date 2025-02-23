@@ -5,8 +5,8 @@ import NewsCard from "./NewsCard";
 import "./MovieDetailsPage.css";
 import ReactPlayer from "react-player";
 
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ProductCard from "../merch/ProductCard";
 import StarRatings from "react-star-ratings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -39,8 +39,6 @@ const StarIcon = ({
   </svg>
 );
 
-
-
 const ReviewCard = ({ review }) => {
   return (
     <div className="review-card111">
@@ -70,8 +68,6 @@ const ReviewCard = ({ review }) => {
     </div>
   );
 };
-
-
 
 const DiscussionCard = ({ discussion }) => {
   const formatDate = (dateString) => {
@@ -139,9 +135,7 @@ const MovieDetailsPage = () => {
     fetchFavorite();
   }, [userId, mediaID]);
 
-
-
-    const logActivity = async (actionType, metaData = {}) => {
+  const logActivity = async (actionType, metaData = {}) => {
     try {
       await fetch("http://localhost:5000/activity", {
         method: "POST",
@@ -161,7 +155,6 @@ const MovieDetailsPage = () => {
       console.error("Error logging activity:", error);
     }
   };
-
 
   //movie details--------------------------------------------------------------------------
   useEffect(() => {
@@ -259,18 +252,17 @@ const MovieDetailsPage = () => {
     fetchproducts();
   }, [mediaID]);
 
-
   if (!movieDetails) {
     return <div className="error">Loading...</div>;
   }
 
-    const handleWatched = async () => {
+  const handleWatched = async () => {
     toast.success("Movie successfully added to your watched list!");
     setWatchedList([...watchedList, movieDetails]);
     setPlanToWatchList(
       planToWatchList.filter((item) => item.title !== movieDetails.title)
     );
-  
+
     try {
       await fetch("http://localhost:5000/user/list/media/mylist/add", {
         method: "POST",
@@ -288,14 +280,14 @@ const MovieDetailsPage = () => {
       console.error("Error updating watched list:", error);
     }
   };
-  
+
   const handlePlanToWatch = async () => {
     toast.success("Movie added to Plan to Watch List");
     setPlanToWatchList([...planToWatchList, movieDetails]);
     setWatchedList(
       watchedList.filter((item) => item.title !== movieDetails.title)
     );
-  
+
     try {
       await fetch("http://localhost:5000/user/list/media/mylist/add", {
         method: "POST",
@@ -333,12 +325,12 @@ const MovieDetailsPage = () => {
     }
   };
 
-    const handleAddReview = async () => {
+  const handleAddReview = async () => {
     if (!newReview.description || newReview.rating <= 0) {
       alert("Please fill out all fields and provide a rating.");
       return;
     }
-  
+
     try {
       const addResponse = await fetch(
         "http://localhost:5000/media/review/add",
@@ -355,21 +347,24 @@ const MovieDetailsPage = () => {
           }),
         }
       );
-  
+
       if (!addResponse.ok) {
         throw new Error("Failed to add review");
       }
-  
+
       setNewReview({ name: "", description: "", rating: 0 });
-  
+
       await updateReview();
-      await logActivity("review", { description: newReview.description, rating: newReview.rating });
+      await logActivity("review", {
+        description: newReview.description,
+        rating: newReview.rating,
+      });
     } catch (error) {
       console.error("Error adding review:", error);
     }
   };
 
-    const handleAddDiscussion = async () => {
+  const handleAddDiscussion = async () => {
     if (newDiscussion.topic && newDiscussion.description) {
       setDiscussions([...discussions, newDiscussion]);
       setNewDiscussion({ topic: "", description: "" });
@@ -377,7 +372,7 @@ const MovieDetailsPage = () => {
       alert("Please fill out both topic and description.");
       return;
     }
-  
+
     try {
       await fetch("http://localhost:5000/user/discussions/add", {
         method: "POST",
@@ -391,7 +386,10 @@ const MovieDetailsPage = () => {
           description: newDiscussion.description,
         }),
       });
-      await logActivity("start discussion", { topic: newDiscussion.topic, description: newDiscussion.description });
+      await logActivity("start discussion", {
+        topic: newDiscussion.topic,
+        description: newDiscussion.description,
+      });
     } catch (error) {
       console.error("Error adding discussion:", error);
     }
@@ -481,15 +479,15 @@ const MovieDetailsPage = () => {
   return (
     <div className="movie-details-page1">
       <ToastContainer />
-    <div className="movie-details" style={coverImgStyle}>
-      <div className="top-section">
-        <img
-          src={movieDetails.img}
-          alt={movieDetails.title}
-          className="movie-img"
-        />
+      <div className="movie-details" style={coverImgStyle}>
+        <div className="top-section">
+          <img
+            src={movieDetails.img}
+            alt={movieDetails.title}
+            className="movie-img"
+          />
+        </div>
       </div>
-    </div>
 
       <div className="allsection1">
         <div className="allsection1-section1">
@@ -611,80 +609,79 @@ const MovieDetailsPage = () => {
             </div>
           </div>
           <div className="where-to-watch-section-container">
-          <div className="where-to-watch-section">
-  <div className="where-to-watch-online">
-    <h3>Where to Watch Online</h3>
-    <ul>
-      {[
-        { name: "Netflix", url: "https://www.netflix.com" },
-        { name: "Amazon Prime", url: "https://www.primevideo.com" },
-        { name: "Hulu", url: "https://www.hulu.com" },
-        { name: "Disney+", url: "https://www.disneyplus.com" },
-      ].map((platform, index) => (
-        <li
-          key={index}
-          onClick={() => window.open(platform.url, "_blank")}
-          style={{ cursor: "pointer" }}
-        >
-          {platform.name}
-        </li>
-      ))}
-    </ul>
-  </div>
-  <div className="where-to-watch-theater">
-    <h3>Where to Watch in Theater</h3>
-    <ul>
-      {[
-        {
-          name: "AMC",
-          date: "2025-01-10",
-          time: "7:30 PM",
-          location: "123 AMC Theater, Main Street, City",
-          ticketUrl: "https://www.amctheatres.com",
-        },
-        {
-          name: "Regal Cinemas",
-          date: "2025-01-11",
-          time: "6:00 PM",
-          location: "456 Regal Blvd, Downtown, City",
-          ticketUrl: "https://www.regmovies.com",
-        },
-        {
-          name: "Cinemark",
-          date: "2025-01-12",
-          time: "8:00 PM",
-          location: "789 Cinemark Avenue, Suburb, City",
-          ticketUrl: "https://www.cinemark.com",
-        },
-        {
-          name: "Local Indie Theater",
-          date: "2025-01-13",
-          time: "5:00 PM",
-          location: "101 Indie Lane, Arts District, City",
-          ticketUrl: "https://www.localindietheater.com",
-        },
-      ].map((theater, index) => (
-        <li key={index}>
-          <div>
-            <strong>{theater.name}</strong>
-            <p>Date: {theater.date}</p>
-            <p>Time: {theater.time}</p>
-            <p>Location: {theater.location}</p>
-            <a
-              href={theater.ticketUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ticket-book-link"
-            >
-              Book Tickets
-            </a>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
-
+            <div className="where-to-watch-section">
+              <div className="where-to-watch-online">
+                <h3>Where to Watch Online</h3>
+                <ul>
+                  {[
+                    { name: "Netflix", url: "https://www.netflix.com" },
+                    { name: "Amazon Prime", url: "https://www.primevideo.com" },
+                    { name: "Hulu", url: "https://www.hulu.com" },
+                    { name: "Disney+", url: "https://www.disneyplus.com" },
+                  ].map((platform, index) => (
+                    <li
+                      key={index}
+                      onClick={() => window.open(platform.url, "_blank")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {platform.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="where-to-watch-theater">
+                <h3>Where to Watch in Theater</h3>
+                <ul>
+                  {[
+                    {
+                      name: "AMC",
+                      date: "2025-01-10",
+                      time: "7:30 PM",
+                      location: "123 AMC Theater, Main Street, City",
+                      ticketUrl: "https://www.amctheatres.com",
+                    },
+                    {
+                      name: "Regal Cinemas",
+                      date: "2025-01-11",
+                      time: "6:00 PM",
+                      location: "456 Regal Blvd, Downtown, City",
+                      ticketUrl: "https://www.regmovies.com",
+                    },
+                    {
+                      name: "Cinemark",
+                      date: "2025-01-12",
+                      time: "8:00 PM",
+                      location: "789 Cinemark Avenue, Suburb, City",
+                      ticketUrl: "https://www.cinemark.com",
+                    },
+                    {
+                      name: "Local Indie Theater",
+                      date: "2025-01-13",
+                      time: "5:00 PM",
+                      location: "101 Indie Lane, Arts District, City",
+                      ticketUrl: "https://www.localindietheater.com",
+                    },
+                  ].map((theater, index) => (
+                    <li key={index}>
+                      <div>
+                        <strong>{theater.name}</strong>
+                        <p>Date: {theater.date}</p>
+                        <p>Time: {theater.time}</p>
+                        <p>Location: {theater.location}</p>
+                        <a
+                          href={theater.ticketUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ticket-book-link"
+                        >
+                          Book Tickets
+                        </a>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
           {/* Reviews Section */}
           <div className="reviews-section111">

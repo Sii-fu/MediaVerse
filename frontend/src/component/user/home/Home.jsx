@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../common/Navbar";
 import FeaturedContent from "./FeaturedContent";
 import MovieList from "./MovieList";
@@ -7,6 +7,7 @@ import HomeNews from "./HomeNews";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Link } from "react-router-dom";
 
 function Home() {
   const [foryouMovies, setForYouMovies] = React.useState([]);
@@ -16,6 +17,14 @@ function Home() {
   const [comedyMovies, setComedyMovies] = React.useState([]);
   const [roleData, setRoleData] = React.useState([]);
   const [empData, setEmpData] = React.useState([]);
+
+      const [username, setUsername] = useState('');
+      useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+        }
+      }, []);
 
   const fetchMoviesByGenre = async (genre, setMovies) => {
     try {
@@ -142,20 +151,22 @@ function Home() {
           <p className="movie-list-title">Top Trending Songs </p>
           <p className="movie-list-title2">Listen and Feel the every bit...</p>
           <Slider {...sliderSettings}>
-            {newReleases.map((release) => (
-              <div key={release.id} className="music-card3">
-                <img
-                  src={release.cover_image}
-                  alt={release.title}
-                  className="music-card3-img"
-                />
-                <h4 className="music-card3-name">{release.title}</h4>
-                <p className="music-card3-artist">
-                  {release.artists?.join(", ")}
-                </p>
-              </div>
-            ))}
-          </Slider>
+                  {newReleases.map((release) => (
+                    <Link to={`/${username}/music/${release.id}`} className="link-music-card" key={release.id}>
+                      <div className="music-card3">
+                        <img
+                          src={release.image}
+                          alt={release.title}
+                          className="music-card3-img"
+                        />
+                        <div className="music-card3-circle"></div>
+                        <div className="music-card3-circl2"></div>
+                        <h4 className="music-card3-name">{release.title}</h4>
+                        <p className="music-card3-artist">{release.artists && release.artists.join(', ')}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </Slider>
         </div>
         {roleData.length > 0 && (
           <>

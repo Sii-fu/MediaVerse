@@ -94,7 +94,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <input
               type="text"
-              name="NAME"
+              name="name"
               value={profile.name}
               onChange={handleChange}
             />
@@ -107,7 +107,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <input
               type="date"
-              name="DOB"
+              name="dob"
               value={profile.dob.split("T")[0]}
               onChange={handleChange}
             />
@@ -120,7 +120,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <input
               type="email"
-              name="EMAIL"
+              name="email"
               value={profile.email}
               onChange={handleChange}
             />
@@ -133,7 +133,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <input
               type="text"
-              name="CITY"
+              name="city"
               value={profile.city}
               onChange={handleChange}
             />
@@ -146,7 +146,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <input
               type="text"
-              name="STREET"
+              name="street"
               value={profile.street}
               onChange={handleChange}
             />
@@ -159,7 +159,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <input
               type="text"
-              name="HOUSE"
+              name="house"
               value={profile.house}
               onChange={handleChange}
             />

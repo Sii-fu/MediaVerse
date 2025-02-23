@@ -30,7 +30,7 @@ app.use("/company", require("./routes/company/media/media"));
 app.use("/company/profile", require("./routes/company/profile"));
 app.use("/company/review", require("./routes/company/review/review"));
 app.use("/company/mediaform", require("./routes/company/addmedia/mediaform"));
-
+app.use("/company/discussion", require("./routes/company/discussion"));
 
 
 

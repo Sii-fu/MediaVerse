@@ -4,6 +4,7 @@ import RoleCard from "./RoleCard";
 import NewsCard from "./NewsCard";
 import "./MovieDetailsPage.css";
 import ReactPlayer from "react-player";
+import WhereToWatchSection from "./WhereToWatchSection";
 import ProductCard from "./ProductCard";
 import StarRatings from "react-star-ratings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -71,7 +72,7 @@ const MovieDetailsPage = () => {
   const [reviews, setReviews] = useState([]);
   const [products, setProducts] = useState([]);
   const [newNews, setNewNews] = useState({ topic: '', description: '' });
-
+  
 
   const userId = localStorage.getItem("user_id");
 
@@ -325,6 +326,11 @@ const MovieDetailsPage = () => {
               )}
             </div>
           </div>
+
+          {/* Where to Watch Section */}
+          <WhereToWatchSection/>
+
+
           {/* Reviews Section */}
           {/* <div className="reviews-section111">
             <h3 className="review-rating-title111">Reviews & Rating</h3>

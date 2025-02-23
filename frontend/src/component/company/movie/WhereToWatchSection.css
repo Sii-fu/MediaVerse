@@ -1,0 +1,31 @@
+.add-platform-form,
+.add-theater-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-platform-form input,
+.add-theater-form input {
+  padding: 8px;
+  border: 1px solid #111;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.add-platform-form button,
+.add-theater-form button {
+  padding: 10px 15px;
+  background-color: #ff640a;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.add-platform-form button:hover,
+.add-theater-form button:hover {
+  background-color: #e55b0a;
+}

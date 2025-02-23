@@ -1,17 +1,31 @@
 // Report.jsx
-import React, { useState } from 'react';
-import './Report.css';
+import React, { useState } from "react";
+import "./Report.css";
 
 const dummyData = [
-  { reporter: 'Steve Nate', reportId: 'AB123', reportType: 'Spam', userType: 'General', status: 'Pending', date: '12.01.2013' },
+  {
+    reporter: "Steve Nate",
+    reportId: "AB123",
+    reportType: "Spam",
+    userType: "General",
+    status: "Pending",
+    date: "12.01.2013",
+  },
   // Add more dummy rows as needed
-  ...Array(9).fill({ reporter: 'Steve Nate', reportId: 'AB123', reportType: 'Spam', userType: 'General', status: 'Pending', date: '12.01.2013' }),
+  ...Array(9).fill({
+    reporter: "Steve Nate",
+    reportId: "AB123",
+    reportType: "Spam",
+    userType: "General",
+    status: "Pending",
+    date: "12.01.2013",
+  }),
 ];
 
 const Report = () => {
   const [filter, setFilter] = useState({
-    regions: ['User'],
-    categories: ['Spam'],
+    regions: ["User"],
+    categories: ["Spam"],
   });
 
   const handleFilterChange = (type, value) => {
@@ -26,56 +40,53 @@ const Report = () => {
     });
   };
 
+  const downloadExcel = () => {
+    const header = ["Reporter", "Report ID", "Report Type", "User Type", "Status", "Date"];
+    const rows = dummyData.map(row => [row.reporter, row.reportId, row.reportType, row.userType, row.status, row.date]);
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + [header, ...rows].map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "report_data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="report-container">
       <div className="filter-panel">
-        <h3>Filter</h3>
-        <div>
-          <h4>Regions</h4>
-          <label>
-            <input
-              type="checkbox"
-              checked={filter.regions.includes('User')}
-              onChange={() => handleFilterChange('regions', 'User')}
-            />
-            User
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filter.regions.includes('Company')}
-              onChange={() => handleFilterChange('regions', 'Company')}
-            />
-            Company
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={filter.regions.includes('Medias')}
-              onChange={() => handleFilterChange('regions', 'Medias')}
-            />
-            Medias
-          </label>
-        </div>
         <div>
           <h4>General</h4>
           <label>
             <input
               type="checkbox"
-              checked={filter.categories.includes('Spam')}
-              onChange={() => handleFilterChange('categories', 'Spam')}
+              checked={filter.categories.includes("Spam")}
+              onChange={() => handleFilterChange("categories", "Spam")}
             />
             Spam
           </label>
-          {/* Add more filter options as needed */}
+          <label>
+            <input
+              type="checkbox"
+              checked={filter.categories.includes("Harresment")}
+              onChange={() => handleFilterChange("categories", "Harresment")}
+            />
+            Harresment
+          </label>
         </div>
-        <button onClick={() => setFilter({ regions: [], categories: [] })}>Clear</button>
+        <button onClick={() => setFilter({ regions: [], categories: [] })}>
+          Clear
+        </button>
       </div>
 
       <div className="report-list">
         <div className="summary">
           <h2>List of active reports</h2>
-          <button>Export to Excel</button>
+          <button onClick={downloadExcel}>Export to Excel</button>
         </div>
         <table>
           <thead>
@@ -84,7 +95,7 @@ const Report = () => {
               <th>Report ID</th>
               <th>Report Type</th>
               <th>User Type</th>
-              <th>Status</th>
+              {/* <th>Status</th> */}
               <th>Date</th>
               <th>Action</th>
             </tr>
@@ -96,7 +107,7 @@ const Report = () => {
                 <td>{row.reportId}</td>
                 <td>{row.reportType}</td>
                 <td>{row.userType}</td>
-                <td>{row.status}</td>
+                {/* <td>{row.status}</td> */}
                 <td>{row.date}</td>
                 <td>-</td>
               </tr>

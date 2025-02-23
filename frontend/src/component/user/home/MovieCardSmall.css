@@ -131,7 +131,7 @@
   transition: all 0.3s ease-in-out; /* Smooth transition for opacity */
 }
 
-.movie-cardo-small:hover .movie-card-small-content-buttons {
+.movie-card-small:hover .movie-card-small-content-buttons {
   opacity: 1; 
   transition: all 0.3s ease-in-out; /* Smooth transition for opacity */
 }

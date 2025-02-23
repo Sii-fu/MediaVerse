@@ -71,14 +71,14 @@ const DiscussionCompanyDetails = () => {
         </div>
         <h1 className="post-title">{post.title}</h1>
         <p className="post-description">{post.description}</p>
-        <div className="post-interactions">
+        {/* <div className="post-interactions">
           <div className="votes">
             <FaThumbsUp /> {post.upvotes}
           </div>
           <div className="votes">
             <FaThumbsDown /> {post.downvotes}
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="comments-section">
         <h2>{post.comments.length} Comments</h2>
@@ -91,10 +91,10 @@ const DiscussionCompanyDetails = () => {
                 <span className="comment-date">• {comment.date}</span>
               </div>
               <p className="comment-content">{comment.content}</p>
-              <div className="comment-interactions">
+              {/* <div className="comment-interactions">
                 <FaThumbsUp /> {comment.upvotes}
                 <FaThumbsDown /> {comment.downvotes}
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

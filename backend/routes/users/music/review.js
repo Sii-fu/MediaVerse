@@ -1,24 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../../db");
 
-// Function to generate a review ID based on the title and timestamp
+const pool = require('../../db');
+const axios = require('axios');
+const { exec } = require("child_process");
+
+
 function generateReviewId(title) {
-    return Math.abs(title.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
+    //will generate a review id based on the title and time
+    return Math.abs(title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + Date.now()) % 10000;
 }
 
-// Fetch reviews for a specific music ID
-router.post("/", async (req, res) => {
-    const { id } = req.body;
-    console.log("Received music review request:", id);
 
-    if (!id) {
-        return res.status(400).send("Music ID is required");
-    }
+router.post('/', async (req, res) => {
+    const { id } = req.body;
+    console.log('Received music review request:', id);
 
     let client;
     try {
         client = await pool.connect();
+        if (!client) {
+            res.status(500).send("Connection Error");
+            return;
+        }
+
+        console.log('Received music review request:', id);
+
         const result = await client.query(
             `SELECT REVIEWRATING.R_ID, REVIEWRATING.DESCRIPTION, REVIEWRATING.RATING, USERS.NAME
             FROM REVIEWRATING
@@ -28,69 +35,93 @@ router.post("/", async (req, res) => {
             LIMIT 5`,
             [id]
         );
+        console.log(`Query Result: `, result.rows);
 
         if (!result.rows.length) {
-            return res.status(404).send("No reviews found for the given music ID");
+            res.status(404).send("No reviews found for the given media");
+            return;
         }
 
-        const transformedData = result.rows.map((data) => ({
+        const transformData = (data) => ({
             id: data.r_id,
             name: data.name,
             description: data.description,
-            rating: data.rating,
-        }));
+            rating: data.rating
+        });
 
-        res.json(transformedData);
-        console.log("Review data sent successfully");
+        const transformedData = result.rows.map(transformData);
+
+        res.send(transformedData);
+        console.log("Review Data sent");
     } catch (err) {
-        console.error("Error during database query:", err);
+        console.error("Error during database query: ", err);
         res.status(500).send("Internal Server Error");
     } finally {
         if (client) {
-            client.release();
+            try {
+                client.release();
+            } catch (err) {
+                console.error("Error releasing database connection: ", err);
+            }
         }
     }
 });
 
-// Add a review for a music track
-router.post("/add", async (req, res) => {
-    const { user_id, music_id, rating, description } = req.body;
-    console.log("Received add review request:", { user_id, music_id, description, rating });
 
-    if (!music_id || !user_id || !rating || !description) {
-        return res.status(400).send("Missing required fields");
+
+router.post('/add', async (req, res) => {
+const { user_id, music_id, rating, description } = req.body;
+console.log('Received add review request:', { user_id, music_id, description, rating });
+
+if (!music_id || !user_id || !rating || !description) {
+    res.status(400).send("Missing required fields");
+    return;
+}
+
+let client;
+try {
+    client = await pool.connect();
+    if (!client) {
+        res.status(500).send("Connection Error");
+        return;
     }
 
-    let client;
-    try {
-        client = await pool.connect();
-        const review_id = generateReviewId(description);
-        const currentDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+    const review_id = generateReviewId(description);
+    console.log('Generated review id:', review_id);
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
 
-        // Insert review into REVIEWRATING table
-        await client.query(
-            `INSERT INTO REVIEWRATING (R_ID, DESCRIPTION, RATING, REVIEW_FOR, REVIEW_DATE)
-            VALUES ($1, $2, $3, 'MEDIA', $4)`,
-            [review_id, description, rating, currentDate]
-        );
+    // Insert review into REVIEWRATING table
+    await client.query(
+        `INSERT INTO REVIEWRATING (R_ID, DESCRIPTION, RATING, REVIEW_FOR, REVIEW_DATE)
+        VALUES ($1, $2, $3, 'MEDIA', $4)`,
+        [review_id, description, rating, currentDate]
+    );
+    console.log(`Review Insert time: ${currentDate}`);
 
-        // Insert into REVIEWABOUTMUSIC table
-        await client.query(
-            `INSERT INTO REVIEWABOUTMUSIC (music_id, R_ID, user_id)
-            VALUES ($1, $2, $3)`,
-            [music_id, review_id, user_id]
-        );
+    // Insert into USERGIVEREVIEW table
+    await client.query(
+        `INSERT INTO REVIEWABOUTMUSIC (music_id, R_ID, user_id)
+        VALUES ($1, $2, $3)`,
+        [music_id, review_id, user_id]
+    );
 
-        res.status(201).send("Review added successfully");
-        console.log("Review added successfully");
-    } catch (err) {
-        console.error("Error during database query:", err);
-        res.status(500).send("Internal Server Error");
-    } finally {
-        if (client) {
+    res.status(201).send("Review added to music successfully");
+    console.log("Review added successfully");
+} catch (err) {
+    console.error("Error during database query: ", err);
+    res.status(500).send("Internal Server Error");
+} finally {
+    if (client) {
+        try {
             client.release();
+        } catch (err) {
+            console.error("Error releasing database connection: ", err);
         }
     }
+}
 });
+
+
+
 
 module.exports = router;
